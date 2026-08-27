@@ -1,6 +1,6 @@
 begin;
 
-select plan(45);
+select plan(46);
 
 select has_table('public','commercial_channel_policies','commercial channel policy table exists');
 select has_table('public','price_schedule_bindings','price binding table exists');
@@ -40,6 +40,17 @@ values('80000000-0000-0000-0000-000000000001','ce000000-0000-0000-0000-000000000
 
 set local role authenticated;
 select set_config('request.jwt.claims','{"sub":"fb100000-0000-4000-8000-000000000001","role":"authenticated"}',true);
+select lives_ok($test$
+  select public.staff_preview_trade_order(
+    'staff_assisted_business',
+    '92000000-0000-0000-0000-000000000001',
+    '',
+    '95000000-0000-0000-0000-000000000001',
+    '99000000-0000-0000-0000-000000000001',
+    '90000000-0000-0000-0000-000000000001',
+    '[{"item_id":"ce000000-0000-0000-0000-000000000006","quantity":1}]'::jsonb
+  )
+$test$,'licensed-business preview does not require direct-customer policy');
 select lives_ok($test$
   select * from public.staff_create_trade_order(
     'direct_individual',null,'Aurelion Earandil','aurelion',null,null,
