@@ -57,8 +57,12 @@ function guidedOrderError(error: { code?: string; message: string }): string {
     return "That business or license is no longer authorized. Choose a current record.";
   }
   if (error.message.includes("direct_item_not_allowed")) return "One of these goods is not available for direct individual orders.";
+  if (error.message.includes("assisted_order_invalid") || error.message.includes("order_item_invalid") || error.message.includes("order_line_quantity_invalid")) {
+    return "Choose the buyer, goods, and a valid quantity before checking the order.";
+  }
+  if (error.code === "55000") return "The registry could not complete its automatic checks. Nothing was saved. Try again, then tell the Owner if it repeats.";
   if (error.code === "42501" || error.message.includes("permission_denied")) return "You do not have permission to enter this order.";
-  return "The order could not be checked. No record was created.";
+  return "The registry hit a technical problem while checking this order. Nothing was saved. Try again, then tell the Owner if it repeats.";
 }
 
 export async function guidedTradeOrderAction(

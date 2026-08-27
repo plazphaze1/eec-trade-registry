@@ -8,6 +8,7 @@ import type { GuidedOrderState, TradeOrderPreview } from "@/lib/order-preview";
 import { REGISTRY_CONFIG } from "@/lib/registry-config";
 
 const initialState: GuidedOrderState = {};
+type GuidedLine = { key: number; itemId: string; quantity: string };
 
 function amount(value: number | null, currency: string | null) {
   return value === null ? "To be confirmed" : `${new Intl.NumberFormat().format(value)} ${currency ?? REGISTRY_CONFIG.currency.code}`;
@@ -48,14 +49,17 @@ export function GuidedOrderForm({ workspace }: { workspace: LaunchWorkspace }) {
   }));
   const buyerOptions = [...businessOptions, ...directOptions];
   const [buyerKey, setBuyerKey] = useState(buyerOptions[0]?.key ?? "new");
-  const [lineNumbers, setLineNumbers] = useState([1]);
+  const [lines, setLines] = useState<GuidedLine[]>([{ key: 1, itemId: "", quantity: "1" }]);
   const [fulfillment, setFulfillment] = useState<"collection" | "delivery" | "consignment">("collection");
+  const [contactLabel, setContactLabel] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [notes, setNotes] = useState("");
   const [state, action, pending] = useActionState(guidedTradeOrderAction, initialState);
   const selectedBuyer = buyerOptions.find((buyer) => buyer.key === buyerKey);
   const isNewCustomer = buyerKey === "new";
   const isDirect = isNewCustomer || selectedBuyer?.channel === "direct_individual";
   const visibleItems = useMemo(() => isDirect ? workspace.items.filter((item) => item.direct_allowed) : workspace.items, [isDirect, workspace.items]);
-  const nextLine = [1, 2, 3, 4, 5].find((number) => !lineNumbers.includes(number)) ?? 5;
+  const nextLine = [1, 2, 3, 4, 5].find((number) => !lines.some((line) => line.key === number)) ?? 5;
 
   return (
     <form action={action} className="simple-task-layout order-simple-layout">
@@ -77,19 +81,19 @@ export function GuidedOrderForm({ workspace }: { workspace: LaunchWorkspace }) {
           {selectedBuyer && <small>{selectedBuyer.channel === "staff_assisted_business" ? "Licensed pricing is selected automatically." : "Individual premium and weekly limit are automatic."}</small>}
         </label>
 
-        {isNewCustomer && <div className="inline-simple-fields"><label className="field"><span>Customer name</span><input autoFocus maxLength={200} name="new_customer_name" required /></label><label className="field"><span>Discord name (optional)</span><input maxLength={300} name="contact_label" /></label></div>}
-        {!isNewCustomer && !isDirect && <label className="field"><span>Who is it for? <small>Optional</small></span><input maxLength={300} name="contact_label" placeholder="Leave blank if the business is the recipient" /></label>}
+        {isNewCustomer && <div className="inline-simple-fields"><label className="field"><span>Customer name</span><input autoFocus maxLength={200} name="new_customer_name" onChange={(event) => setCustomerName(event.target.value)} required value={customerName} /></label><label className="field"><span>Discord name (optional)</span><input maxLength={300} name="contact_label" onChange={(event) => setContactLabel(event.target.value)} value={contactLabel} /></label></div>}
+        {!isNewCustomer && !isDirect && <label className="field"><span>Who is it for? <small>Optional</small></span><input maxLength={300} name="contact_label" onChange={(event) => setContactLabel(event.target.value)} placeholder="Leave blank if the business is the recipient" value={contactLabel} /></label>}
         {!isNewCustomer && isDirect && <input name="contact_label" type="hidden" value="" />}
         {!isNewCustomer && <input name="new_customer_name" type="hidden" value="" />}
 
         <div className="simple-form-divider" />
         <div className="simple-field-heading"><span>What do they want?</span><small>Add only the goods in this order.</small></div>
-        <div className="guided-order-lines">{lineNumbers.map((number, index) => <div className="guided-order-line simple-order-line" key={number}>
-          <label className="field"><span>{index === 0 ? "Item" : `Item ${index + 1}`}</span><select defaultValue="" name={`item_id_${number}`} required><option disabled value="">Choose goods</option>{visibleItems.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-          <label className="field quantity-field"><span>Quantity</span><input defaultValue="1" min="0.001" name={`quantity_${number}`} required step="0.001" type="number" /></label>
-          {lineNumbers.length > 1 && <button aria-label={`Remove item ${index + 1}`} className="line-remove-button" onClick={() => setLineNumbers((numbers) => numbers.filter((candidate) => candidate !== number))} type="button">×</button>}
+        <div className="guided-order-lines">{lines.map((line, index) => <div className="guided-order-line simple-order-line" key={line.key}>
+          <label className="field"><span>{index === 0 ? "Item" : `Item ${index + 1}`}</span><select name={`item_id_${line.key}`} onChange={(event) => setLines((current) => current.map((candidate) => candidate.key === line.key ? { ...candidate, itemId: event.target.value } : candidate))} required value={visibleItems.some((item) => item.id === line.itemId) ? line.itemId : ""}><option disabled value="">Choose goods</option>{visibleItems.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
+          <label className="field quantity-field"><span>Quantity</span><input min="0.001" name={`quantity_${line.key}`} onChange={(event) => setLines((current) => current.map((candidate) => candidate.key === line.key ? { ...candidate, quantity: event.target.value } : candidate))} required step="0.001" type="number" value={line.quantity} /></label>
+          {lines.length > 1 && <button aria-label={`Remove item ${index + 1}`} className="line-remove-button" onClick={() => setLines((current) => current.filter((candidate) => candidate.key !== line.key))} type="button">×</button>}
         </div>)}</div>
-        {lineNumbers.length < 5 && <button className="text-action-button" onClick={() => setLineNumbers((numbers) => [...numbers, nextLine])} type="button">+ Add another item</button>}
+        {lines.length < 5 && <button className="text-action-button" onClick={() => setLines((current) => [...current, { key: nextLine, itemId: "", quantity: "1" }])} type="button">+ Add another item</button>}
 
         <div className="simple-form-divider" />
         <fieldset className="simple-choice-field"><legend>How will they get it?</legend><div>
@@ -97,7 +101,7 @@ export function GuidedOrderForm({ workspace }: { workspace: LaunchWorkspace }) {
           <label><input checked={fulfillment === "delivery"} name="handoff_choice" onChange={() => setFulfillment("delivery")} type="radio" /><span><strong>Delivery</strong><small>An Agent will take it</small></span></label>
         </div></fieldset>
 
-        <details className="advanced-fields"><summary>Special order options</summary><div><label className="special-choice"><input checked={fulfillment === "consignment"} name="special_handoff" onChange={(event) => setFulfillment(event.target.checked ? "consignment" : "collection")} type="checkbox" /><span>This is a consignment order</span></label><label className="field"><span>Customer note</span><textarea maxLength={2000} name="notes" rows={3} /></label></div></details>
+        <details className="advanced-fields"><summary>Special order options</summary><div><label className="special-choice"><input checked={fulfillment === "consignment"} name="special_handoff" onChange={(event) => setFulfillment(event.target.checked ? "consignment" : "collection")} type="checkbox" /><span>This is a consignment order</span></label><label className="field"><span>Customer note</span><textarea maxLength={2000} name="notes" onChange={(event) => setNotes(event.target.value)} rows={3} value={notes} /></label></div></details>
 
         {state.error && <p className="staff-flash staff-flash-error" role="alert">{state.error}</p>}
         <button className="button button-primary simple-task-submit" disabled={pending || !jurisdiction || visibleItems.length === 0} name="_intent" value="preview">{pending ? "Checking…" : state.preview ? "Check updated total" : "Check total"}</button>
