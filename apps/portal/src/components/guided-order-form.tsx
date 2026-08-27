@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { type FormEvent, useActionState, useMemo, useState, useTransition } from "react";
 
 import { guidedTradeOrderAction } from "@/app/staff/launch/actions";
 import type { LaunchWorkspace } from "@/lib/launch-workspace";
@@ -54,15 +54,27 @@ export function GuidedOrderForm({ workspace }: { workspace: LaunchWorkspace }) {
   const [contactLabel, setContactLabel] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [notes, setNotes] = useState("");
-  const [state, action, pending] = useActionState(guidedTradeOrderAction, initialState);
+  const [state, dispatch, actionPending] = useActionState(guidedTradeOrderAction, initialState);
+  const [transitionPending, startTransition] = useTransition();
+  const pending = actionPending || transitionPending;
   const selectedBuyer = buyerOptions.find((buyer) => buyer.key === buyerKey);
   const isNewCustomer = buyerKey === "new";
   const isDirect = isNewCustomer || selectedBuyer?.channel === "direct_individual";
   const visibleItems = useMemo(() => isDirect ? workspace.items.filter((item) => item.direct_allowed) : workspace.items, [isDirect, workspace.items]);
   const nextLine = [1, 2, 3, 4, 5].find((number) => !lines.some((line) => line.key === number)) ?? 5;
 
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const submitter = (event.nativeEvent as SubmitEvent).submitter;
+    if (submitter instanceof HTMLButtonElement && submitter.name) {
+      formData.set(submitter.name, submitter.value);
+    }
+    startTransition(() => dispatch(formData));
+  }
+
   return (
-    <form action={action} className="simple-task-layout order-simple-layout">
+    <form className="simple-task-layout order-simple-layout" onSubmit={handleSubmit}>
       <input name="channel" type="hidden" value={isDirect ? "direct_individual" : "staff_assisted_business"} />
       <input name="business_key" type="hidden" value={selectedBuyer?.businessKey ?? ""} />
       <input name="direct_customer_id" type="hidden" value={selectedBuyer?.directId ?? ""} />
