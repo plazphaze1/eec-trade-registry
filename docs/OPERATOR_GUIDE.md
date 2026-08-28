@@ -47,29 +47,28 @@ Open **New order**.
 
 Example: Solitude Tailor orders a Nocturnal Dress for Aurelion Earandil.
 
-1. Under **Who is buying?**, choose **Solitude Tailor**.
-2. Under **Who is it for?**, enter **Aurelion Earandil**. This is optional and does not change who receives the wholesale terms.
-3. Choose **Nocturnal Dress** and enter the quantity.
-4. Choose **Collection** or **Delivery**.
-5. Select **Check total**.
-6. Confirm the licensed-business price and select **Record order**.
+1. Under **Ordering for**, choose **Solitude Tailor**.
+2. Find **Nocturnal Dress** and select **Add to order**.
+3. In the cart, change the quantity if needed and optionally enter **Aurelion Earandil** as the recipient.
+4. Choose **Collect** or **Deliver**.
+5. Select **Review order**, confirm the business price, and select **Place order**.
 
 The site carries the active business authorization and license internally. Staff do not type a sales channel, license reference, dealer reference, price schedule, control level, warehouse, reservation, or audit reference.
 
 ### Direct individual order
 
-1. Choose the returning individual under **Who is buying?**, or choose **New individual customer**.
+1. Choose the returning individual under **Ordering for**, or choose **New individual**.
 2. For a new person, enter the character name and optional Discord name.
-3. Choose the goods and quantity.
+3. Find the goods, select **Add to order**, and adjust the quantity in the cart.
 4. Choose collection or delivery.
-5. Select **Check total**.
-6. Confirm the premium price and remaining weekly limit, then select **Record order**.
+5. Select **Review order**.
+6. Confirm the premium price and remaining weekly limit, then select **Place order**.
 
 Direct pricing and personal limits are determined by Supabase. Staff cannot bypass them by selecting a different form path.
 
 ### Multiple items
 
-Select **Add another item** only when the same buyer is ordering more than one good. Do not create empty lines. An unwanted added line can be removed with the × button.
+Select **Add to order** on each product the same buyer wants. Use **Remove** in the cart for an unwanted product.
 
 ### Orders without stock
 
@@ -91,13 +90,13 @@ Only the next permitted action appears.
 
 ### Review
 
-For an ordinary request, select **Approve order**. Open the alternate-decision section only to approve a different quantity, deliberately wait for stock, or deny the request.
+For an ordinary request, select **Make ready**. When stock can cover the order, this completes the routine approval and holds the goods in one interaction. When stock is unavailable, select **Mark waiting for stock**.
 
 Restricted or unique goods may require an Owner or another specifically authorized Agent. The button is not permission; Supabase checks authority again on submission.
 
 ### Make ready
 
-When stock is available, select **Make order ready**. If there is one valid source, the site chooses it. If several sources could cover the order, choose the physical location.
+The site chooses the stock source. Agents do not select warehouse accounts or reservation records during ordinary work.
 
 This creates an internal stock hold so two Agents cannot promise the same unit. Operators do not manage a separate reservation desk during ordinary work.
 
@@ -131,23 +130,17 @@ A new purchase is awaiting payment evidence until an Agent records the in-charac
 
 ## Receive ordinary stock
 
-Use **Stock → Receive ordinary stock** for goods whose supply policy permits a normal receipt.
+Open **Stock** for goods whose supply policy permits a normal receipt.
 
-1. Choose the item.
+1. Find the item and select **Add stock**.
 2. Enter the quantity physically received.
-3. Select **Add to stock**.
+3. Select **Add**.
 
 Player-sourced-only materials are rejected from this form even if a button is shown incorrectly. Buy them through **Buy materials** so provenance and payment are captured. Unique goods use the unique-goods tool because each asset requires its own identity.
 
-The stock table distinguishes:
+Each item shows **Available**, which already excludes goods held for existing orders. The number is calculated; staff never overwrite a current-stock cell.
 
-- **On hand:** physically present according to posted movements.
-- **Reserved:** held for existing orders.
-- **Available:** on hand minus active holds.
-
-The numbers are calculated; staff never overwrite a current-stock cell.
-
-Advanced hold history, elapsed holds, reversals, and ledger evidence are under **Stock history and advanced controls**.
+Owners reach hold history, corrections, and movement evidence through **Today → Staff tools → Stock records**. These records are not part of ordinary stock intake.
 
 ## Customers and licenses
 

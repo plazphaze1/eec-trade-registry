@@ -315,25 +315,25 @@ Final machine state names will be fixed before migrations. User-facing wording r
 
 1. Dealer creates a draft for a represented organization.
 2. Dealer adds items and quantities. The UI displays current estimates.
-3. Dealer selects fulfillment mode, destination or collection preference, and supplies required justification.
+3. Dealer adds products to a cart and chooses collection or delivery. The current representation, dealer authorization, license context, and routine audit wording are derived.
 4. The mature submission command revalidates representative scope, dealer and license standing, item publication, control requirements, price, order increments, quota, circulation ceiling, and policy.
 5. The function records price and rule snapshots, determines each line's review path, creates quota holds if policy requires, writes history/audit, and commits.
 6. Notifications are queued after commit.
 
 Submission does not create physical inventory movement or a stock reservation. Orders may be submitted when stock is unavailable; the authoritative workflow records an explicit awaiting-stock outcome instead of rejecting the commercial request or posting negative stock.
 
-Implementation note: `dealer_submit_order` currently validates active scoped representation, current dealer authorization, an optional current license, published items, positive quantities, and configured control snapshots. It creates every line as `review_required`, keeps the configured currency and price as a nullable snapshot, allocates an `EEC-ORD` reference from sequence data, and writes audit/history/outbox records atomically. Exact endorsement prerequisites, dealer-specific price schedules, increments, quotas, and circulation rules remain unresolved and therefore are not represented as passed checks.
+Implementation note: the dealer storefront exposes products and a cart. It chooses the active authorization and license from the authenticated representation instead of displaying their database records. `dealer_submit_order` still validates those records, published items, positive quantities, and control snapshots, then writes the order, history, audit, and outbox atomically.
 
 ### Staff-assisted business order flow
 
 1. A public customer asks a licensed business to source an EEC item. The public customer does not become the EEC wholesale ordering party.
 2. A verified representative of the business presents the item, quantity, fulfillment preference, and relevant context to an authorized EEC agent through an approved channel.
-3. The agent selects the business from a secured staff projection and the command revalidates representative authority, current dealer authorization, relevant license, item publication, control requirements, and current policy.
-4. The agent records an on-behalf-of reason and approved request context. The staff actor is the command actor and the licensed business is the ordering party.
+3. The agent selects the buying account, adds goods to a cart, optionally names the final recipient, and chooses collection or delivery. The command revalidates representative authority, current dealer authorization, relevant license, item publication, control requirements, and current policy.
+4. Routine provenance and actor context are derived by the server action. The staff actor is the command actor and the licensed business is the ordering party.
 5. The command creates the same order, line snapshots, history, audit, and outbox work as dealer submission and enters the normal staff-review queue.
 6. No entry action creates a reservation, inventory movement, title transfer, quota consumption, or guaranteed settled price.
 
-Implementation note: ADR 0017 approves this operating model, but the authoritative assisted-entry command and `/staff/orders/new` surface are not yet implemented. Until then, the representative must use the dealer submission flow. Staff must not impersonate the business, borrow dealer credentials, insert rows directly, or treat a Discord message as an order.
+Implementation note: the authoritative assisted-entry command and `/staff/orders/new` storefront are implemented. The storefront requests an authoritative price and policy review before **Place order**, preserves the cart when a check fails, and never treats its hidden context as authorization.
 
 ### Staff review flow
 
@@ -345,7 +345,7 @@ Implementation note: ADR 0017 approves this operating model, but the authoritati
 
 Implementation note: the current staff command selects the required ordinary, restricted, or unique approval permission from snapshotted control flags. It supports full or partial approval, denial, and awaiting-stock decisions with optimistic order versions. Price may be set or remain explicitly pending. Header status is derived transactionally from all line outcomes; no browser code decides it.
 
-Interface note: the staff order detail is the canonical object workspace. After review, the same line reveals the permission-filtered reservation action; after reservation, it reveals the handoff action. These remain separate secure database transactions even though the agent does not change pages or copy a reference. Queue-wide inventory and fulfillment desks remain available for exception work.
+Interface note: the staff order detail is the canonical object workspace. An ordinary line presents one **Make ready** interaction, which records ordinary approval and then holds available stock through the existing secure commands. If stock is unavailable, the order remains Open and waiting. Restricted approval and final physical handoff remain explicit. Queue-wide inventory and fulfillment desks are dark exception tools.
 
 ### Cancellation and denial
 
@@ -374,7 +374,7 @@ Requires an authorized actor, reason, and permitted state. The initial term is 4
 
 Implementation note: `staff_create_reservation` locks the physical inventory account and order line, re-derives ledger on-hand and non-elapsed active claims, enforces approved remaining quantity, and creates a 48-hour claim atomically. Full claims move a line to `reserved`; partial claims remain explicitly `partially_awaiting_stock`. Extension is version-checked and cannot revive an elapsed claim.
 
-The ordinary order workspace derives a single available source when only one assigned stock account can cover the item. If several sources are available, the agent must choose. If none are available, the order stays approved or awaiting stock and links to inventory intake without inventing a balance.
+The ordinary order workspace derives a source that can cover the item and does not ask the Agent to understand inventory accounts. If none can cover it, the order stays Open and waiting without inventing a balance. Reservation records and expiry controls are visible only in Owner system records.
 
 ### Consume reservation
 

@@ -37,6 +37,7 @@ const toolGroups: Array<{ label: string; tools: Tool[] }> = [
   {
     label: "Evidence and system",
     tools: [
+      { href: "/staff/inventory?view=system", icon: "box", label: "Stock records", description: "Inspect holds, corrections, and movement evidence.", ownerOnly: true },
       { href: "/staff/documents", icon: "document", label: "Official documents", description: "Generate and download frozen PDF snapshots of authoritative records." },
       { href: "/staff/compliance", icon: "shield", label: "Compliance", description: "Record investigations, findings, appeals, and configured actions." },
       { href: "/staff/integrations", icon: "external", label: "Sheets and Discord", description: "Open the public Sheet, check freshness, and inspect delivery failures." },

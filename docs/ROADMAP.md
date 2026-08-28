@@ -91,6 +91,8 @@ Implementation status: The first policy-neutral increment provides Supabase Auth
 
 ADR 0023 adds the simplified operations shell: eight primary destinations, four routine starting actions, non-zero attention sentences, one explained advanced Staff tools panel, derived buyer-channel selection, fast player-material purchasing, and a single ordinary Operator Guide. Existing secure commands and advanced routes remain available without competing for primary navigation.
 
+ADR 0024 completes the storefront boundary for primary work: staff and business ordering use searchable products and carts; the Stock page is an item-and-availability list with inline receipt entry; ordinary order progression uses one visible next action; and reservation, version, ledger, and correction machinery is moved to Owner-only system records.
+
 ### User outcome
 
 Authorized staff can maintain the master catalogue, prices, publication, and control metadata; public output changes from the same source record.
@@ -156,7 +158,7 @@ Staff can authorize dealers and issue real licenses with modular endorsements; t
 
 ## 6. Slice 4 — Dealer catalogue and wholesale ordering
 
-Implementation status: Lightweight Supabase credential sessions, effective-dated representative scopes, current dealer-authorization checks, and the private organization registry overview are implemented. The first wholesale increment adds a published-item requisition form, idempotent submission without price or stock, immutable line/control snapshots, dealer tracking and cancellation, a staff queue, control-specific partial/deny/awaiting-stock decisions, editable nullable prices, optimistic concurrency, audit/history, and notification outbox records. ADR 0017 now approves public-customer intermediation through a licensed business and direct staff-assisted entry on behalf of that verified business. Dealer self-service is implemented; the matching staff-assisted command and `/staff/orders/new` surface remain an explicit gap. Dealer-specific catalogue eligibility, price schedules and provenance, drafts, quotas, and override objects remain future work, while fungible reservations and fulfillment are implemented in later slices.
+Implementation status: Lightweight Supabase credential sessions, effective-dated representative scopes, current dealer-authorization checks, and the private organization registry overview are implemented. The wholesale increment includes searchable dealer and staff storefronts, cart entry, authoritative trade-price snapshots, staff-assisted entry for a verified business, direct-individual premium pricing and limits, dealer tracking and cancellation, a staff queue, control-specific review, awaiting-stock handling, optimistic concurrency, audit/history, and notification outbox records. Dealer-specific eligibility exceptions, drafts, and override objects remain future work, while fungible reservations and fulfillment are implemented in later slices.
 
 ### User outcome
 

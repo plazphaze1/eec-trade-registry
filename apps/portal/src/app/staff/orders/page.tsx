@@ -11,12 +11,19 @@ interface StaffOrdersPageProps {
 }
 
 function nextStep(status: string) {
-  if (["submitted", "under_review"].includes(status)) return "Review order";
+  if (["submitted", "under_review"].includes(status)) return "Prepare order";
   if (status === "awaiting_stock") return "Waiting for stock";
   if (["approved", "processing", "partially_fulfilled"].includes(status)) return "Continue order";
   if (status === "fulfilled") return "Completed";
   if (["cancelled", "denied"].includes(status)) return "Closed";
   return status.replaceAll("_", " ");
+}
+
+function visibleStatus(status: string) {
+  if (["fulfilled"].includes(status)) return "Completed";
+  if (["reserved", "processing"].includes(status)) return "Ready";
+  if (["cancelled", "denied"].includes(status)) return "Closed";
+  return "Open";
 }
 
 export default async function StaffOrdersPage({ searchParams }: StaffOrdersPageProps) {
@@ -58,7 +65,7 @@ export default async function StaffOrdersPage({ searchParams }: StaffOrdersPageP
           <article className="order-card" key={order.id}>
             <header>
               <div>
-                <span className={`order-status order-status-${order.status}`}>{order.status.replaceAll("_", " ")}</span>
+                <span className={`order-status order-status-${order.status}`}>{visibleStatus(order.status)}</span>
                 <h2>{order.public_reference}</h2>
                 <p>{order.ordering_party_name}</p>
               </div>

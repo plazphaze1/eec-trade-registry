@@ -38,16 +38,13 @@ export default async function DealerOrdersPage({ searchParams }: DealerOrdersPag
     <main className="dealer-main">
       <header className="dealer-page-header">
         <div>
-          <p className="eyebrow">Authenticated representative · requisitions</p>
-          <h1>Wholesale orders</h1>
-          <p>
-            Submit requests even when stock or pricing is not yet configured. Staff
-            review and warehouse allocation remain separate authoritative steps.
-          </p>
+          <p className="eyebrow">Your purchases</p>
+          <h1>Orders</h1>
+          <p>See what is open, ready, or completed.</p>
         </div>
         <div className="staff-button-row">
           <Link className="button button-primary" href="/dealer/orders/new">
-            New requisition
+            Shop
           </Link>
         </div>
       </header>
@@ -60,7 +57,7 @@ export default async function DealerOrdersPage({ searchParams }: DealerOrdersPag
             <header>
               <div>
                 <span className={`order-status order-status-${order.status}`}>
-                  {order.status.replaceAll("_", " ")}
+                  {order.status === "fulfilled" ? "Completed" : order.status === "reserved" || order.status === "processing" ? "Ready" : "Open"}
                 </span>
                 <h2>{order.public_reference}</h2>
                 <p>{order.ordering_party_name}</p>
@@ -73,20 +70,20 @@ export default async function DealerOrdersPage({ searchParams }: DealerOrdersPag
                 <dd>{new Date(order.submitted_at).toLocaleString(locale)}</dd>
               </div>
               <div>
-                <dt>Fulfillment</dt>
-                <dd>{order.fulfillment_mode}</dd>
+                <dt>Getting it</dt>
+                <dd>{order.fulfillment_mode === "delivery" ? "Delivery" : "Collection"}</dd>
               </div>
               <div>
                 <dt>Pricing</dt>
                 <dd>
                   {order.lines.some((line) => line.pricing_status === "pending")
-                    ? "Pending review"
+                    ? "Being confirmed"
                     : `Configured in ${order.currency_code}`}
                 </dd>
               </div>
             </dl>
             <Link className="button button-secondary" href={`/dealer/orders/${order.id}`}>
-              View requisition
+              View order
             </Link>
           </article>
         ))}
@@ -94,9 +91,9 @@ export default async function DealerOrdersPage({ searchParams }: DealerOrdersPag
 
       {result.data.length === 0 && (
         <section className="empty-state">
-          <p className="eyebrow">No requisitions</p>
+          <p className="eyebrow">No orders</p>
           <h2>Start the first order</h2>
-          <p>Submission is allowed without current warehouse stock.</p>
+          <p>Use Shop to place the first order.</p>
         </section>
       )}
     </main>
