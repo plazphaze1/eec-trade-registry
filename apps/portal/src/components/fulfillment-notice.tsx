@@ -1,8 +1,6 @@
 const notices: Record<string, string> = {
-  completed:
-    "The reservation was consumed, the balanced stock issue posted, and the order state updated.",
-  reversed:
-    "A linked reversal restored stock and reopened demand. The consumed reservation remains historical evidence.",
+  completed: "The order was completed and stock was updated.",
+  reversed: "The handoff was corrected and the order was reopened.",
 };
 
 const errors: Record<string, string> = {

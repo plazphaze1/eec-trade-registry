@@ -81,7 +81,7 @@ Authorized dealer representatives can:
 
 A dealer cannot edit authoritative eligibility, pricing, stock, quota, license, compliance, or custody state.
 
-The approved intermediated ordering model also permits a specifically authorized EEC staff agent to enter the same requisition on behalf of a verified licensed business. The licensed business remains the ordering party; the public customer is not converted into an EEC wholesale account. Dealer self-service and staff-assisted entry must share the same authoritative validation and downstream order workflow. ADR 0017 records this decision; the staff-assisted entry command and screen are not yet implemented.
+The approved intermediated ordering model also permits a specifically authorized EEC staff agent to enter the same requisition on behalf of a verified licensed business. The licensed business remains the ordering party; the public customer is not converted into an EEC wholesale account. Dealer self-service and staff-assisted entry share authoritative validation and the downstream order workflow. ADRs 0017 and 0024 record the implemented command and storefront boundary.
 
 ### 4.3 Staff console
 
@@ -280,11 +280,15 @@ Frontend code may display estimates for usability only when clearly labeled and 
 - A verification lookup returns a clear result without exposing whether a private, unpublished record exists.
 - A dealer sees why an item is unavailable or requires review in policy-safe language.
 - A first-time Agent can record an ordinary order in approximately 30 seconds without consulting documentation once required policy and price data are present.
+- Ordering is presented as a familiar shop and cart: search goods, add quantities, choose collection or delivery, review, and place. Commercial classifications and internal records are not form inputs.
+- Staff-visible stock is presented by item as one available quantity. Reservation, account, location-state, version, and ledger evidence are absent from ordinary stock checking.
+- Ordinary order progress uses no more than Open, Ready, Completed, and Closed; a restricted-good approval is an explicit exception rather than a routine state.
 - A prepared player-material purchase can be recorded from supplier, material, and quantity in approximately 30 seconds.
 - A prepared ordinary item can be onboarded and an ordinary inventory receipt can be posted in approximately 30 seconds through the rapid-operations workspace.
 - Work queues identify ownership, age, blocking reason, and next permitted actions.
 - The interface never presents raw Booleans, enum codes, or database identifiers when plain language is appropriate.
 - Routine forms never ask staff to choose a sales channel, price schedule, license reference, warehouse, ledger account, reservation record, or audit reference when the authoritative service can derive it.
+- A first-time player or Agent can identify the next button from the screen itself. If an ordinary task needs a guide to explain the interface, the interface has failed this requirement.
 - Dates, currency labels, organizational titles, and setting-specific vocabulary are configuration-driven.
 - Accessibility, mobile behavior, and localization expectations must be defined before interface implementation.
 

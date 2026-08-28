@@ -3,6 +3,8 @@
 - Status: accepted
 - Date: 2026-08-17
 
+ADR 0024 strengthens this decision with storefront carts, child-simple visible states, and Owner-only stock system records.
+
 ## Context
 
 The platform accumulated a separate route, form, counter, and vocabulary set for nearly every secure command. Those commands are necessary for authorization, inventory integrity, custody, and auditability, but presenting them all as ordinary navigation made routine server work harder than a spreadsheet. Agents were asked to select classifications that Supabase could derive and to understand references that the system could carry automatically.

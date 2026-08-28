@@ -5,6 +5,7 @@ import { z } from "zod";
 import {
   cancelStaffOrderAction,
   fulfillOrderReservationAction,
+  prepareOrderLineAction,
   priceOrderLineAction,
   reserveOrderLineAction,
   reviewOrderLineAction,
@@ -25,15 +26,16 @@ interface StaffOrderDetailProps {
 
 function label(value: string) {
   const labels: Record<string, string> = {
-    approved: "Approved",
-    awaiting_stock: "Waiting for stock",
+    approved: "Open",
+    awaiting_stock: "Open · waiting for stock",
     cancelled: "Cancelled",
     denied: "Denied",
     fulfilled: "Completed",
-    partially_fulfilled: "In progress",
-    processing: "In progress",
-    review_required: "Needs review",
-    submitted: "Needs review",
+    partially_fulfilled: "Open",
+    processing: "Ready",
+    reserved: "Ready",
+    review_required: "Open",
+    submitted: "Open",
   };
   return labels[value] ?? value.replaceAll("_", " ");
 }
@@ -85,20 +87,22 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
       <section className="order-detail-lines">
         {order.lines.map((line) => {
           const reservableLine = inventory?.order_lines.find((entry) => entry.id === line.id);
-          const item = reservableLine ? inventory?.items.find((entry) => entry.id === reservableLine.item_id) : null;
-          const positions = reservableLine
-            ? inventory?.positions.filter((position) => position.item_id === reservableLine.item_id && position.stock_state === "available" && position.available > 0) ?? []
+          const item = inventory?.items.find((entry) => entry.item_code === line.item_code) ?? null;
+          const positions = item
+            ? inventory?.positions.filter((position) => position.item_id === item.id && position.stock_state === "available" && position.available > 0) ?? []
             : [];
           const reservations = inventory?.reservations.filter((entry) => entry.order_line_id === line.id) ?? [];
           const activeReservation = reservations.find((entry) => entry.effective_status === "active");
           const readyReservation = fulfillment?.ready_reservations.find((entry) => entry.order_line_id === line.id);
           const completed = fulfillment?.fulfillments.filter((entry) => entry.order_reference === order.public_reference && entry.line_number === line.line_number && entry.status === "completed") ?? [];
           const reviewable = line.status === "review_required";
+          const ordinary = !line.requires_staff_review && !line.requires_transaction_approval && !line.requires_serial_tracking;
           const approved = line.quantity_approved !== null;
           const reserved = reservations.some((entry) => ["active", "consumed"].includes(entry.effective_status));
           const fulfilled = line.status === "fulfilled" || line.quantity_fulfilled >= (line.quantity_approved ?? Number.POSITIVE_INFINITY);
           const ready = reserved || fulfilled;
           const remaining = reservableLine ? reservableLine.quantity_approved - reservableLine.quantity_fulfilled - reservableLine.quantity_reserved : 0;
+          const readyPosition = positions.find((position) => position.available >= line.quantity_requested) ?? null;
 
           return (
             <article className="order-line-card order-object-card" key={line.id}>
@@ -106,7 +110,7 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
                 <div>
                   <span className={`order-status order-status-${line.status}`}>{label(line.status)}</span>
                   <h2>{line.item_name}</h2>
-                  <p>{line.item_code}{line.requires_serial_tracking ? " · Individually tracked" : line.requires_staff_review ? " · Approval required" : ""}</p>
+                  {(line.requires_serial_tracking || line.requires_staff_review) && <p>{line.requires_serial_tracking ? "Individually tracked good" : "Owner approval required"}</p>}
                 </div>
                 <strong>{line.quantity_requested} {line.unit_code}</strong>
               </header>
@@ -123,7 +127,22 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
                 <div><dt>Unit price</dt><dd>{line.unit_price_minor === null ? "Not set" : `${line.unit_price_minor} ${order.currency_code}`}</dd></div>
               </dl>
 
-              {!terminal && reviewable && (
+              {!terminal && reviewable && ordinary && (
+                <section className="order-next-action">
+                  <div className="order-next-action-copy"><p className="eyebrow">Next step</p><h3>{readyPosition ? "Make this order ready" : "Keep this order open"}</h3><p>{readyPosition ? "The goods are in stock. One click approves the ordinary order and holds them for the customer." : "The order is safely recorded. Mark it as waiting and return when stock arrives."}</p></div>
+                  <form action={prepareOrderLineAction} className="order-guided-form is-compact">
+                    <input name="order_id" type="hidden" value={order.id} />
+                    <input name="order_line_id" type="hidden" value={line.id} />
+                    <input name="expected_order_version" type="hidden" value={order.version} />
+                    <input name="approved_quantity" type="hidden" value={line.quantity_requested} />
+                    <input name="unit_price_minor" type="hidden" value={line.unit_price_minor ?? ""} />
+                    <input name="inventory_account_id" type="hidden" value={readyPosition?.account_id ?? ""} />
+                    <button className="button button-primary" type="submit"><UiIcon name={readyPosition ? "package" : "check"}/>{readyPosition ? "Make ready" : "Mark waiting for stock"}</button>
+                  </form>
+                </section>
+              )}
+
+              {!terminal && reviewable && !ordinary && (
                 <section className="order-next-action">
                   <div className="order-next-action-copy"><p className="eyebrow">Next step</p><h3>{line.requires_staff_review ? "Review required" : "Approve this order"}</h3><p>{line.requires_staff_review ? "This item’s configured control requires an authorized decision." : "The customer, price, and item were checked when the order was entered."}</p></div>
                   <form action={reviewOrderLineAction} className="order-guided-form is-compact">

@@ -88,6 +88,53 @@ export async function reviewOrderLineAction(formData: FormData) {
   redirect(destination(path, "notice", "line_reviewed"));
 }
 
+const prepareOrderLineSchema = z.object({
+  approvedQuantity: z.coerce.number().positive(),
+  expectedOrderVersion: z.coerce.number().int().positive().safe(),
+  inventoryAccountId: z.union([z.literal(""), z.guid()]).transform((value) => value || null),
+  orderId: z.guid(),
+  orderLineId: z.guid(),
+  unitPriceMinor: z.union([z.literal(""), z.coerce.number().int().nonnegative().safe()]).transform((value) => value === "" ? null : value),
+});
+
+export async function prepareOrderLineAction(formData: FormData) {
+  const parsed = prepareOrderLineSchema.safeParse({
+    approvedQuantity: formData.get("approved_quantity"),
+    expectedOrderVersion: formData.get("expected_order_version"),
+    inventoryAccountId: formData.get("inventory_account_id") ?? "",
+    orderId: formData.get("order_id"),
+    orderLineId: formData.get("order_line_id"),
+    unitPriceMinor: formData.get("unit_price_minor") ?? "",
+  });
+  const path = orderPath(formData.get("order_id"));
+  if (!parsed.success) redirect(destination(path, "error", "invalid_input"));
+  const client = await verifiedClient();
+  if (!client) redirect("/staff/login");
+  const input = parsed.data;
+  const { error: reviewError } = await client.rpc("staff_review_order_line", {
+    p_decision: input.inventoryAccountId ? "approve" : "awaiting_stock",
+    p_expected_order_version: input.expectedOrderVersion,
+    p_order_line_id: input.orderLineId,
+    p_quantity_approved: input.approvedQuantity,
+    p_reason: "Ordinary order prepared by staff.",
+    p_request_id: crypto.randomUUID(),
+    p_unit_price_minor: input.unitPriceMinor,
+  });
+  if (reviewError) redirect(errorPath(path, reviewError));
+  if (input.inventoryAccountId) {
+    const { error: reservationError } = await client.rpc("staff_create_reservation", {
+      p_inventory_account_id: input.inventoryAccountId,
+      p_order_line_id: input.orderLineId,
+      p_quantity: input.approvedQuantity,
+      p_reason: "Available stock held for this customer order.",
+      p_request_id: crypto.randomUUID(),
+    });
+    if (reservationError) redirect(errorPath(path, reservationError));
+  }
+  refreshOrderWorkflow(path);
+  redirect(destination(path, "notice", input.inventoryAccountId ? "prepared" : "backordered"));
+}
+
 export async function priceOrderLineAction(formData: FormData) {
   const path = orderPath(formData.get("order_id"));
   const parsed = readPriceOrderLineForm(formData);

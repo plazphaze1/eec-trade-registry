@@ -7,9 +7,9 @@ import { signOutDealerAction } from "@/app/dealer/actions";
 import { UiIcon } from "@/components/ui-icon";
 
 const items = [
-  ["/dealer", "Overview", "dashboard"],
+  ["/dealer", "Home", "dashboard"],
+  ["/dealer/orders/new", "Shop", "catalogue"],
   ["/dealer/orders", "Orders", "clipboard"],
-  ["/dealer/consignments", "Consigned stock", "box"],
 ] as const;
 
 export function DealerShell({ children, institutionName }: { children: React.ReactNode; institutionName: string }) {

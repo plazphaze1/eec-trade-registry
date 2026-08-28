@@ -41,7 +41,7 @@ export default async function DealerOrderDetail({
     <main className="staff-editor-main dealer-main">
       <Link className="back-link" href="/dealer/orders">← Back to orders</Link>
       <header className="staff-editor-header">
-        <p className="eyebrow">Dealer requisition · {order.status.replaceAll("_", " ")}</p>
+        <p className="eyebrow">{order.status === "fulfilled" ? "Completed" : order.status === "reserved" || order.status === "processing" ? "Ready" : "Open"}</p>
         <h1>{order.public_reference}</h1>
         <p>{order.ordering_party_name} · submitted {new Date(order.submitted_at).toLocaleString(locale)}</p>
       </header>
@@ -54,17 +54,16 @@ export default async function DealerOrderDetail({
             <header>
               <div>
                 <span className={`order-status order-status-${line.status}`}>
-                  {line.status.replaceAll("_", " ")}
+                  {line.status === "fulfilled" ? "Completed" : line.status === "reserved" ? "Ready" : "Open"}
                 </span>
                 <h2>{line.item_name}</h2>
-                <p>{line.item_code} · {line.control_profile_code}</p>
               </div>
               <strong>{line.quantity_requested} {line.unit_code}</strong>
             </header>
             <dl className="order-facts">
-              <div><dt>Approved</dt><dd>{line.quantity_approved ?? "Pending"}</dd></div>
-              <div><dt>Price</dt><dd>{line.unit_price_minor === null ? "Pending" : `${line.unit_price_minor} ${order.currency_code}`}</dd></div>
-              <div><dt>Stock</dt><dd>{line.status.includes("awaiting_stock") ? "Awaiting stock" : "Not reserved at submission"}</dd></div>
+              <div><dt>Quantity</dt><dd>{line.quantity_approved ?? line.quantity_requested}</dd></div>
+              <div><dt>Price each</dt><dd>{line.unit_price_minor === null ? "Being confirmed" : `${line.unit_price_minor} ${order.currency_code}`}</dd></div>
+              <div><dt>Availability</dt><dd>{line.status.includes("awaiting_stock") ? "Waiting for stock" : line.status === "reserved" ? "Ready" : "Being prepared"}</dd></div>
             </dl>
           </article>
         ))}
@@ -73,14 +72,14 @@ export default async function DealerOrderDetail({
       {!['cancelled', 'denied', 'fulfilled'].includes(order.status) && (
         <section className="staff-danger-zone">
           <div>
-            <p className="eyebrow">Unfulfilled order</p>
-            <h2>Cancel requisition</h2>
-            <p>Cancellation preserves the order and line history. Fulfilled quantities cannot be cancelled through this path.</p>
+            <p className="eyebrow">Need to stop?</p>
+            <h2>Cancel order</h2>
+            <p>Completed goods cannot be cancelled.</p>
           </div>
           <form action={cancelDealerOrderAction} className="staff-status-form">
             <input name="order_id" type="hidden" value={order.id} />
             <input name="expected_version" type="hidden" value={order.version} />
-            <label className="field"><span>Cancellation reason</span><textarea maxLength={500} minLength={1} name="reason" required rows={3} /></label>
+            <label className="field"><span>Why are you cancelling?</span><textarea maxLength={500} minLength={1} name="reason" required rows={3} /></label>
             <button className="button button-secondary" type="submit">Cancel order</button>
           </form>
         </section>
