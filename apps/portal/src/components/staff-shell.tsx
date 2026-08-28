@@ -25,6 +25,7 @@ const groups: Array<{ label: string; items: NavigationItem[] }> = [
 
 function isCurrent(pathname: string, item: NavigationItem) {
   if (item.href === "/staff" && pathname.startsWith("/staff/items")) return true;
+  if (item.href === "/staff/orders" && pathname === "/staff/orders/new") return false;
   return item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
 }
 

@@ -127,7 +127,7 @@ export function GuidedOrderForm({ stock, workspace }: { stock: OrderStock; works
         <div className="shop-product-grid">{filteredItems.map((item) => {
           const cartLine = cart.find((line) => line.itemId === item.id);
           const availability = stock[item.id];
-          return <article className="shop-product-card" key={item.id}><div><h3>{item.name}</h3><p>{availability ? availability.available > 0 ? `${availability.available} ${availability.unit} in stock` : "Out of stock · ordering is still available" : "Ordering is available"}</p></div><button className={cartLine ? "button button-secondary" : "button button-primary"} disabled={cart.length >= 5 && !cartLine} onClick={() => addItem(item.id)} type="button">{cartLine ? `Add another · ${cartLine.quantity} in order` : "Add to order"}</button></article>;
+          return <article className="shop-product-card" key={item.id}><div><h3>{item.name}</h3><p>{availability ? availability.available > 0 ? `${availability.available} ${availability.unit} in stock` : "0 in stock · can still be ordered" : "0 in stock · can still be ordered"}</p></div><button className={cartLine ? "button button-secondary" : "button button-primary"} disabled={cart.length >= 5 && !cartLine} onClick={() => addItem(item.id)} type="button">{cartLine ? `Add another · ${cartLine.quantity} in order` : "Add to order"}</button></article>;
         })}</div>
         {filteredItems.length === 0 && <div className="empty-state"><h3>No matching goods</h3><p>Try another name.</p></div>}
       </section>
@@ -148,7 +148,7 @@ export function GuidedOrderForm({ stock, workspace }: { stock: OrderStock; works
         {state.error && <p className="staff-flash staff-flash-error" role="alert">{state.error}</p>}
         {previewIsCurrent && state.preview && <OrderPreview preview={state.preview} />}
         {!previewIsCurrent && cart.length > 0 && <p className="shop-checkout-note">Prices, license rules, and limits are checked automatically before the order is placed.</p>}
-        <button className="button button-primary shop-checkout-button" disabled={pending || !jurisdiction || cart.length === 0 || (isNewCustomer && !customerName.trim())} name="_intent" value={previewIsCurrent ? "submit" : "preview"}>{pending ? "Working…" : previewIsCurrent ? "Place order" : "Review order"}</button>
+        <button className="button button-primary shop-checkout-button" disabled={pending || !jurisdiction || cart.length === 0 || (isNewCustomer && !customerName.trim())} name="_intent" value={previewIsCurrent ? "submit" : "preview"}>{pending ? "Working…" : cart.length === 0 ? "Add something to begin" : previewIsCurrent ? "Place order" : "Review order"}</button>
       </aside>
     </form>
   );
