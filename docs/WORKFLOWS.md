@@ -86,6 +86,9 @@ Let specifically assigned catalogue staff maintain canonical item source records
 3. Advanced pricing, licensing, reserve policy, queue-wide fulfillment, transfers, consignment, unique goods, documents, compliance, integrations, access, and health live in one explained collapsed Staff tools panel.
 4. Moving a feature out of primary navigation changes no database permission, RLS policy, state transition, audit requirement, or integration behavior.
 5. `docs/OPERATOR_GUIDE.md` is the ordinary Agent guide. The governing technical documents remain the authority for invariants and policy gates.
+6. Public application task selection uses normal links rather than JavaScript-only tabs. Routine applications derive the configured standard class and jurisdiction, while special permissions remain optional.
+7. Stock shows every active item. Its card directs staff to ordinary receipt, player purchase, or unique-asset handling; eligibility filtering never makes a zero-stock item disappear.
+8. Guaranteed buying-price setup is embedded in Buy materials. The advanced economy route is an Owner-only system-record view and is not part of ordinary navigation.
 
 ## 2.2 Rapid item onboarding and ordinary receipt
 
@@ -705,21 +708,22 @@ No workflow-dependent implementation should guess these decisions. A decision re
 
 ### Establish policy
 
-1. An economic steward selects a canonical material.
-2. Staff configure the player-sourced reserve mode and ordered critical, minimum, target, and surplus thresholds.
-3. Staff publish an effective-dated guaranteed purchase offer after the actual floor rate is approved.
-4. The offer becomes visible on the internal economy desk. Publishing it does not create stock.
+1. Player-sourced reserve mode is configured for each canonical material.
+2. An authorized operator opens **Buy materials** and enters the approved guaranteed amount per unit.
+3. Supabase serializes the material/currency change, retires any overlapping current offer, and creates the replacement with actor, reason, request identifier, and effective time.
+4. Optional critical, minimum, target, and surplus thresholds remain Owner system policy. They are not required to record a buying price.
+5. Publishing a buying price does not create stock.
 
 ### Register a producer
 
 1. An EEC agent identifies the player character or organization selling material.
-2. A procurement officer creates a private supplier record and receives an `EEC-SUP-*` reference.
+2. If the seller is not listed, the operator enters the seller name on **Buy materials**. The configured default party type and jurisdiction are derived, and the private supplier receives an `EEC-SUP-*` reference.
 3. The supplier remains distinct from licensed dealers. Selling material to the Company grants no authority to buy wholesale goods.
 
 ### Accept a delivery
 
 1. The supplier brings gathered material to an authorized EEC agent or warehouse interaction.
-2. The agent selects the supplier, current offer, receiving location, and inspected accepted quantity.
+2. The agent selects the seller, material, and inspected accepted quantity. The current offer and ordinary receiving location are derived.
 3. Supabase revalidates the current offer, minimum, supply policy, supplier standing, fungible item, warehouse scope, and request ID.
 4. One transaction creates the `EEC-PRC-*` delivery, snapshotted payment obligation, balanced external-to-physical ledger receipt, audit record, and outbox event.
 5. The reserve quantity becomes visible from ledger-derived stock. The delivery remains `pending` for settlement.

@@ -7,10 +7,16 @@ export const REGISTRY_CONFIG = {
     code: "harbor-district",
     mode: "fixed",
   },
+  licensing: {
+    defaultClassCode: "commercial-dealer",
+  },
   orderChannels: ["business", "direct"] as const,
   pricing: {
     directMultiplier: 3,
     exposeTiePriority: false,
+  },
+  procurement: {
+    defaultSupplierPartyTypeCode: "individual",
   },
   warehouse: {
     mode: "single",

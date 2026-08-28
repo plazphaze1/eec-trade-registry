@@ -47,23 +47,25 @@ export default async function StaffInventoryPage({ searchParams }: StaffInventor
   const locale = getDefaultLocale();
   const isOwner = access.ok && access.data.state === "authorized" && access.data.access_class === "owner";
   const showSystemRecords = isOwner && parameters.view === "system";
-  const receivableIds = new Set(workspace.items.filter((item) => item.inventory_mode === "fungible").map((item) => item.id));
-  const stockLocations = workspace.warehouses.flatMap((warehouse) =>
-    warehouse.locations.map((location) => ({
-      id: location.id,
-      label: `${warehouse.display_name} · ${location.display_name}`,
-    })),
-  );
-  const stockItems = Array.from(workspace.positions.reduce((items, position) => {
-    const current = items.get(position.item_id) ?? { available: 0, id: position.item_id, name: position.item_name, receivable: receivableIds.has(position.item_id), unit: position.unit_code };
-    if (position.stock_state === "available") current.available += position.available;
-    items.set(position.item_id, current);
-    return items;
-  }, new Map<string, { available: number; id: string; name: string; receivable: boolean; unit: string }>()).values());
-  for (const item of workspace.items) {
-    if (!stockItems.some((candidate) => candidate.id === item.id)) stockItems.push({ available: 0, id: item.id, name: item.display_name, receivable: receivableIds.has(item.id), unit: item.unit_code });
-  }
+  const receivableIds = new Set(workspace.receipt_item_ids);
+  const availableByItem = workspace.positions.reduce((balances, position) => {
+    if (position.stock_state === "available") {
+      balances.set(position.item_id, (balances.get(position.item_id) ?? 0) + position.available);
+    }
+    return balances;
+  }, new Map<string, number>());
+  const stockItems = workspace.items.map((item) => ({
+    action: receivableIds.has(item.id) ? "receipt" as const : item.inventory_mode === "serialized" ? "asset" as const : "purchase" as const,
+    available: availableByItem.get(item.id) ?? 0,
+    id: item.id,
+    name: item.display_name,
+    unit: item.unit_code,
+  }));
   stockItems.sort((left, right) => left.name.localeCompare(right.name));
+  const locations = workspace.warehouses.flatMap((warehouse) => warehouse.locations);
+  const defaultLocationId = locations.find((location) => location.location_type === "available")?.id
+    ?? locations.find((location) => location.location_type === "receiving")?.id
+    ?? null;
 
   return (
     <main className="staff-main">
@@ -80,7 +82,7 @@ export default async function StaffInventoryPage({ searchParams }: StaffInventor
 
       <InventoryNotice error={parameters.error} notice={parameters.notice} />
 
-      {!showSystemRecords && <SimpleStockWorkspace items={stockItems} locations={stockLocations} />}
+      {!showSystemRecords && <SimpleStockWorkspace defaultLocationId={defaultLocationId} items={stockItems} />}
 
       {showSystemRecords && <div className="staff-tools-panel stock-tools-panel is-system-records"><div className="staff-tools-content">
       <section className="inventory-section embedded-inventory-section">

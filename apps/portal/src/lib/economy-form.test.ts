@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  readDeliveryForm, readOfferForm, readSettlementForm, readSupplierForm, readSupplyPolicyForm,
+  readDeliveryForm, readOfferForm, readSettlementForm, readSimpleBuyingPriceForm,
+  readSupplierForm, readSupplyPolicyForm,
 } from "@/lib/economy-form";
 
 const id = (suffix: number) => `10000000-0000-4000-8000-${String(suffix).padStart(12, "0")}`;
@@ -52,6 +53,20 @@ describe("economy forms", () => {
     }));
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.effectiveUntil).toBeNull();
+  });
+
+  it("parses a one-field guaranteed buying price", () => {
+    const result = readSimpleBuyingPriceForm(form({
+      amount_minor: "18", currency_id: id(3), item_id: id(4),
+    }));
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.amountMinor).toBe(18);
+  });
+
+  it("rejects a zero guaranteed buying price", () => {
+    expect(readSimpleBuyingPriceForm(form({
+      amount_minor: "0", currency_id: id(3), item_id: id(4),
+    })).success).toBe(false);
   });
 
   it("requires positive delivery quantity", () => {

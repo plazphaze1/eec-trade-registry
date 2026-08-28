@@ -132,7 +132,7 @@ export default async function ConfigurationPage({ searchParams }: PageProps) {
             <details className="configuration-advanced"><summary>Optional receipt details</summary><label className="field"><span>Source reference</span><input maxLength={200} name="source_reference" /></label><label className="field"><span>Audit note</span><input maxLength={500} name="reason" /></label></details>
             <button className="button button-primary" disabled={!capabilities.can_post_receipts || !receiptItems.length || !locations.length} type="submit">Add to inventory</button>
           </form>
-          <p className="field-help">Player-sourced reserves do not appear here. Receive those against a supplier and current purchase offer on the <Link href="/staff/economy">Economy desk</Link>.</p>
+          <p className="field-help">Player-sourced reserves do not appear here. Receive those from the simple <Link href="/staff/buy">Buy materials</Link> page.</p>
         </section>
       </div>
 

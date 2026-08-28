@@ -93,6 +93,8 @@ ADR 0023 adds the simplified operations shell: eight primary destinations, four 
 
 ADR 0024 completes the storefront boundary for primary work: staff and business ordering use searchable products and carts; the Stock page is an item-and-availability list with inline receipt entry; ordinary order progression uses one visible next action; and reservation, version, ledger, and correction machinery is moved to Owner-only system records.
 
+ADR 0025 removes the remaining setup detours: public licensing is a short link-selected business form; Stock includes every zero- or nonzero item and routes it to the correct intake method; ordinary receipt derives location; guaranteed buying prices are one-field records on Buy materials; first-seller registration asks only for a name; and the reserve-economy screen is dark Owner-only evidence rather than a normal workflow.
+
 ### User outcome
 
 Authorized staff can maintain the master catalogue, prices, publication, and control metadata; public output changes from the same source record.

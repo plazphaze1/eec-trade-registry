@@ -10,22 +10,30 @@ export const metadata: Metadata = {
   description: "Apply for configured East Empire Company trade authority or request renewal of an existing license.",
 };
 
-export default async function ApplyPage() {
-  const options = await getApplicationOptions(await createServerSupabaseClient());
+interface ApplyPageProps {
+  searchParams: Promise<{ task?: string }>;
+}
+
+export default async function ApplyPage({ searchParams }: ApplyPageProps) {
+  const [{ task }, options] = await Promise.all([
+    searchParams,
+    getApplicationOptions(await createServerSupabaseClient()),
+  ]);
+  const mode = task === "renew" ? "renewal" : "new";
   return (
     <main>
       <section className="hero">
         <div>
-          <p className="eyebrow">Trade registry intake</p>
-          <h1>Apply for trade authority</h1>
+          <p className="eyebrow">Business licensing</p>
+          <h1>Get or renew a trade license</h1>
           <p>
-            Start a new application, renew an existing LIC reference, or check a
-            submitted review. No login or email is required.
+            Choose what you need and answer a few short questions. No login or
+            email is required.
           </p>
         </div>
       </section>
       {options ? (
-        <ApplicationForms options={options} />
+        <ApplicationForms key={mode} mode={mode} options={options} />
       ) : (
         <section className="notice-panel">
           <h2>Applications are temporarily unavailable</h2>

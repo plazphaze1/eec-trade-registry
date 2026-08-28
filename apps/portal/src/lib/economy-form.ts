@@ -66,6 +66,18 @@ export function readOfferForm(formData: FormData) {
   });
 }
 
+export function readSimpleBuyingPriceForm(formData: FormData) {
+  return z.object({
+    amountMinor: z.coerce.number().int().positive().safe(),
+    currencyId: z.guid(),
+    itemId: z.guid(),
+  }).safeParse({
+    amountMinor: formData.get("amount_minor"),
+    currencyId: formData.get("currency_id"),
+    itemId: formData.get("item_id"),
+  });
+}
+
 export function readDeliveryForm(formData: FormData) {
   return z.object({
     offerId: z.guid(), quantity: z.coerce.number().positive(), reason,

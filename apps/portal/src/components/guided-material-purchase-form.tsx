@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { recordDeliveryAction, registerSupplierAction } from "@/app/staff/economy/actions";
 import type { EconomyWorkspace } from "@/lib/economy";
+import { REGISTRY_CONFIG } from "@/lib/registry-config";
 
 function formatNumber(value: number) {
   return new Intl.NumberFormat(undefined, { maximumFractionDigits: 3 }).format(value);
@@ -24,9 +24,23 @@ export function GuidedMaterialPurchaseForm({ workspace }: { workspace: EconomyWo
     ? Math.round(offer.amount_minor * numericQuantity)
     : 0;
   const jurisdiction = workspace.jurisdictions[0];
+  const defaultSupplierType = workspace.party_types.find(
+    (type) => type.code === REGISTRY_CONFIG.procurement.defaultSupplierPartyTypeCode,
+  ) ?? workspace.party_types[0];
 
-  if (!offers.length) {
-    return <section className="simple-task-card empty-state"><h2>No guaranteed rates are active</h2><p>Set the Company’s guaranteed buying price before accepting materials. The rate will be reused automatically on every purchase.</p><Link className="button button-primary" href="/staff/economy">Set guaranteed rates</Link></section>;
+  if (!offers.length) return null;
+
+  if (!suppliers.length && jurisdiction) {
+    return <section className="simple-task-card first-supplier-card"><div><p className="eyebrow">One-time setup</p><h2>Add the first seller</h2><p>Enter the player or organization name once. It will appear in the seller list for every future purchase.</p></div><form action={registerSupplierAction} className="simple-task-form">
+      <input name="return_to" type="hidden" value="/staff/buy" />
+      <input name="jurisdiction_id" type="hidden" value={jurisdiction.id} />
+      <input name="party_type_code" type="hidden" value={defaultSupplierType?.code ?? ""} />
+      <input name="display_name" type="hidden" value="" />
+      <input name="notes" type="hidden" value="" />
+      <input name="reason" type="hidden" value="Supplier registered during material intake." />
+      <label className="field simple-primary-field"><span>Seller name</span><input autoFocus maxLength={300} name="legal_name" placeholder="Character or organization" required /></label>
+      <button className="button button-primary" type="submit">Add seller</button>
+    </form></section>;
   }
 
   return (
@@ -60,15 +74,15 @@ export function GuidedMaterialPurchaseForm({ workspace }: { workspace: EconomyWo
             <label className="field"><span>Receiving location</span><select defaultValue="" name="stock_location_id" required><option disabled value="">Choose a location</option>{locations.map((location) => <option key={location.id} value={location.id}>{location.warehouseName} · {location.display_name}</option>)}</select></label>
           )}
 
-          <button className="button button-primary simple-task-submit" disabled={!suppliers.length || !locations.length} type="submit">Record purchase and add stock</button>
-          {(!suppliers.length || !locations.length) && <p className="field-help">Register a supplier and configure a receiving location before recording the purchase.</p>}
+          <button className="button button-primary simple-task-submit" disabled={!locations.length} type="submit">Buy and add to stock</button>
+          {!locations.length && <p className="field-help">A receiving location must be configured before a purchase can be recorded.</p>}
         </form>
 
-        {jurisdiction && <details className="advanced-fields new-supplier-panel"><summary>New supplier</summary><form action={registerSupplierAction} className="inventory-command-form">
+        {jurisdiction && <details className="advanced-fields new-supplier-panel"><summary>Add another seller</summary><form action={registerSupplierAction} className="inventory-command-form">
           <input name="return_to" type="hidden" value="/staff/buy" />
           <input name="jurisdiction_id" type="hidden" value={jurisdiction.id} />
           <input name="reason" type="hidden" value="Supplier registered during material intake." />
-          <fieldset className="segmented-choice"><legend>Supplier type</legend>{workspace.party_types.slice(0, 2).map((type, index) => <label key={type.code}><input defaultChecked={index === 0} name="party_type_code" type="radio" value={type.code} /><span>{type.display_name}</span></label>)}</fieldset>
+          <input name="party_type_code" type="hidden" value={defaultSupplierType?.code ?? ""} />
           <label className="field"><span>Character or organization name</span><input maxLength={300} name="legal_name" required /></label>
           <input name="display_name" type="hidden" value="" />
           <label className="field"><span>Private note (optional)</span><input maxLength={2000} name="notes" /></label>
@@ -84,7 +98,7 @@ export function GuidedMaterialPurchaseForm({ workspace }: { workspace: EconomyWo
           <div><dt>Quantity</dt><dd>{formatNumber(numericQuantity || 0)} {offer?.unit_code}</dd></div>
         </dl>
         <div className="simple-task-total"><span>Company pays</span><strong>{formatNumber(total)} {offer?.currency_code}</strong></div>
-        <p>The rate comes from Supabase. Recording the purchase posts the inventory receipt and creates a payment record together.</p>
+        <p>The saved buying price is used automatically. This also adds the material to stock.</p>
       </aside>
     </div>
   );

@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import {
-  readDeliveryForm, readOfferForm, readSettlementForm, readSupplierForm, readSupplyPolicyForm,
+  readDeliveryForm, readOfferForm, readSettlementForm, readSimpleBuyingPriceForm,
+  readSupplierForm, readSupplyPolicyForm,
 } from "@/lib/economy-form";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
@@ -85,6 +86,24 @@ export async function createOfferAction(formData: FormData) {
     p_staff_review_quantity: input.staffReviewQuantity,
   });
   if (error) redirect(errorPath(error, path)); refresh(); redirect(destination("notice", "offer_created", path));
+}
+
+export async function setBuyingPriceAction(formData: FormData) {
+  const path = "/staff/buy";
+  const parsed = readSimpleBuyingPriceForm(formData);
+  if (!parsed.success) redirect(destination("error", "invalid_input", path));
+  const client = await verifiedClient(); if (!client) redirect("/staff/login");
+  const input = parsed.data;
+  const { error } = await client.rpc("staff_set_procurement_price", {
+    p_amount_minor: input.amountMinor,
+    p_currency_id: input.currencyId,
+    p_item_id: input.itemId,
+    p_reason: "Guaranteed buying price set from the simple material desk.",
+    p_request_id: crypto.randomUUID(),
+  });
+  if (error) redirect(errorPath(error, path));
+  refresh();
+  redirect(destination("notice", "price_saved", path));
 }
 
 export async function recordDeliveryAction(formData: FormData) {
