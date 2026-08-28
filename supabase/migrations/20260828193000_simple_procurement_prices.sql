@@ -1,4 +1,4 @@
-create function public.staff_set_procurement_price(
+create or replace function public.staff_set_procurement_price(
   p_item_id uuid,
   p_currency_id uuid,
   p_amount_minor bigint,
