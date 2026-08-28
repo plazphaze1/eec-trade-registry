@@ -564,6 +564,8 @@ The implemented economic permissions intentionally separate policy from routine 
 
 The generic `inventory.receipt.post` permission cannot bypass a player-sourced-only policy. This is a database invariant, not a hidden UI convention.
 
+ADR 0025 changes presentation, not authority. Agents use **Buy materials** for ordinary seller registration, price-controlled receipt, and settlement evidence when their effective scopes permit those commands. The full reserve-economy and per-material policy records are linked only to Owner at `/staff/economy?view=system`; direct navigation also checks Owner access. The one-field buying-price form still invokes `procurement.offer.manage`, records the actor and reason, and fails closed for an unauthorized Agent.
+
 ## 18. Launch command permissions
 
 | Permission | Authoritative capability |

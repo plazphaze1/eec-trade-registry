@@ -1040,6 +1040,8 @@ Links a supplier registry record to one party and assigns a stable `EEC-SUP-*` r
 
 An effective-dated guaranteed purchase offer for one item and currency. It snapshots the amount per item unit, minimum accepted delivery, optional staff-review quantity, notes, and author. Overlapping active offers for the same item and currency are rejected. An offer creates neither stock nor debt by itself.
 
+The simplified price command serializes changes by item and currency, retires overlapping active offers, and inserts one new current offer with a fresh request identifier and audit context. It never edits a delivery snapshot or deletes earlier offers. The ordinary interface supplies a configured minimum quantity of one and leaves optional review thresholds unset; advanced policy records may still use the full offer command.
+
 ### `procurement_deliveries`
 
 Evidence that a registered supplier delivered an accepted quantity against a current offer. It snapshots the item, quantity, rate, rounded total, currency, warehouse/location, receiving actor, and immutable inventory transaction. Settlement status is pending until staff records an external payment or voucher reference. This operational status is not a treasury balance.

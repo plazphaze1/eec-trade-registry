@@ -25,6 +25,7 @@ Implementation proceeds through the policy-gated vertical slices in `ROADMAP.md`
 9. **Keystone reserves come from production.** Configured baseline materials enter Company stock through accepted supplier deliveries, not administrative spawning. Guaranteed purchase floors and high reserve resale terms form an economic corridor without replacing player trade.
 10. **Routine administration beats spreadsheet work.** Once policy inputs exist, creating an ordinary item or posting an ordinary stock receipt should take no more than approximately 30 seconds without sacrificing permission checks, audit history, or ledger provenance.
 11. **The interface is smaller than the domain.** Ordinary staff describe the buyer, goods, quantity, and handoff; Supabase derives classifications and carries references. Advanced systems remain available in one explained Staff tools panel and on the records to which they apply, not in primary navigation.
+12. **Setup belongs inside the task.** A player applies with plain business questions, Stock shows every item even at zero, and guaranteed buying prices are set where staff buy materials. Separate setup desks must not block a routine action.
 
 ## 3. Users and actors
 
@@ -282,8 +283,11 @@ Frontend code may display estimates for usability only when clearly labeled and 
 - A first-time Agent can record an ordinary order in approximately 30 seconds without consulting documentation once required policy and price data are present.
 - Ordering is presented as a familiar shop and cart: search goods, add quantities, choose collection or delivery, review, and place. Commercial classifications and internal records are not form inputs.
 - Staff-visible stock is presented by item as one available quantity. Reservation, account, location-state, version, and ledger evidence are absent from ordinary stock checking.
+- Stock includes ordinary, player-sourced, and unique catalogue items even when their available quantity is zero. The item card routes the operator to the correct intake method instead of omitting the item.
 - Ordinary order progress uses no more than Open, Ready, Completed, and Closed; a restricted-good approval is an explicit exception rather than a routine state.
 - A prepared player-material purchase can be recorded from supplier, material, and quantity in approximately 30 seconds.
+- A first buying price is entered on the Buy materials page as one amount per unit. Changing it creates a new authoritative offer and preserves the prior one as history.
+- A public business applicant chooses between new and renewal using ordinary links, then answers business name, Discord contact, trade categories, and purpose. Configured routine class and region selections are derived; exceptional endorsements are optional.
 - A prepared ordinary item can be onboarded and an ordinary inventory receipt can be posted in approximately 30 seconds through the rapid-operations workspace.
 - Work queues identify ownership, age, blocking reason, and next permitted actions.
 - The interface never presents raw Booleans, enum codes, or database identifiers when plain language is appropriate.

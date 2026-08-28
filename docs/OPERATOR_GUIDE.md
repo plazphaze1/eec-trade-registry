@@ -114,15 +114,19 @@ Cancellation is at the bottom of the order page. It preserves history and releas
 
 Use **Buy materials** when a miner, hunter, lumber worker, or other supplier sells naturally produced reserve materials to the Company.
 
+If a material has no buying price yet, open **First, set what the Company pays**, enter the amount beside that material, and select **Save price**. This is a one-time setup. Use **Update** in the same panel whenever the future buying price changes; earlier purchases keep their original price.
+
+If no seller has been registered yet, enter the seller name and select **Add seller**. The seller stays in the list for future purchases. Registering a seller does not make them a licensed wholesale business.
+
 1. Choose the supplier.
 2. Choose the material.
 3. Enter the accepted quantity.
 4. Confirm the guaranteed rate and total shown in the summary.
-5. Select **Record purchase and add stock**.
+5. Select **Buy and add to stock**.
 
 The rate is read from the current effective offer. The command records the supplier purchase, freezes the amount owed, and posts the balanced stock receipt together.
 
-If the supplier is new, open **New supplier**, enter the character or organization name, and register them. Registering a supplier does not make them a licensed wholesale business.
+For another new seller, open **Add another seller** beneath the purchase form and enter the name.
 
 ### Payment evidence
 
@@ -134,9 +138,9 @@ Open **Stock** for goods whose supply policy permits a normal receipt.
 
 1. Find the item and select **Add stock**.
 2. Enter the quantity physically received.
-3. Select **Add**.
+3. Select **Save**.
 
-Player-sourced-only materials are rejected from this form even if a button is shown incorrectly. Buy them through **Buy materials** so provenance and payment are captured. Unique goods use the unique-goods tool because each asset requires its own identity.
+Every active catalogue item appears even when its quantity is zero. Player-sourced materials show **Buy from a player** so provenance and payment are captured. Unique goods show **Open unique goods** because each asset requires its own identity.
 
 Each item shows **Available**, which already excludes goods held for existing orders. The number is calculated; staff never overwrite a current-stock cell.
 
@@ -158,6 +162,8 @@ Use **Applications** for public requests:
 
 A pending application is never a valid license. Approval must finish the issuance or renewal transaction.
 
+The public form deliberately asks only for the business name, Discord contact, ordinary trade categories, and a short description. The standard class and region are configured automatically. Unusual bulk, consignment, controlled, or serialized authority is available under **special permissions** rather than confronting every applicant.
+
 ## Catalogue
 
 Use **Catalogue** to find the goods and materials maintained by the Company. Select **Add item** for new ordinary configuration.
@@ -173,7 +179,7 @@ The bottom of Today contains a collapsed **Staff tools** panel. Every tool is ex
 - **Licenses:** issue or change institutional authority.
 - **Staff access:** approve Discord identities and manage Agents; Owner only.
 - **Reference setup:** add reusable categories, units, license types, endorsements, and control profiles.
-- **Reserve economy:** set reserve targets and guaranteed purchasing rates.
+- **Material policy records:** inspect advanced reserve targets and offer history; Owner only. Routine prices and purchases stay on **Buy materials**.
 - **Advanced pricing:** create special business, license-class, regional, or channel pricing.
 - **Fulfillment queue:** inspect handoffs across many orders during exception work.
 - **Warehouse transfers:** record movement between configured locations and in-transit custody.

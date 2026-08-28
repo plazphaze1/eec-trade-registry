@@ -11,6 +11,7 @@ import { EconomyNotice } from "@/components/economy-notice";
 import { ReferenceBlock } from "@/components/reference-block";
 import { StaffAccessDenied } from "@/components/staff-access-denied";
 import { getStaffEconomyWorkspace } from "@/lib/economy";
+import { getMyStaffAccessState } from "@/lib/staff-access";
 import { requireStaffSession } from "@/lib/staff-auth";
 
 interface PageProps {
@@ -24,7 +25,12 @@ const money = (value: number, code = "SEP") => `${new Intl.NumberFormat().format
 export default async function MaterialPage({ params, searchParams }: PageProps) {
   const [{ code }, parameters] = await Promise.all([params, searchParams]);
   const { client } = await requireStaffSession();
-  const result = await getStaffEconomyWorkspace(client);
+  const [result, access] = await Promise.all([
+    getStaffEconomyWorkspace(client),
+    getMyStaffAccessState(client),
+  ]);
+  const isOwner = access.ok && access.data.state === "authorized" && access.data.access_class === "owner";
+  if (!isOwner) return <main className="staff-main"><StaffAccessDenied /></main>;
   if (!result.ok && result.code === "access_denied") return <main className="staff-main"><StaffAccessDenied /></main>;
   if (!result.ok) return <main className="staff-main"><section className="notice-panel"><h1>Material unavailable</h1><p>The authoritative economic workspace could not be loaded.</p></section></main>;
 
@@ -43,7 +49,7 @@ export default async function MaterialPage({ params, searchParams }: PageProps) 
   const jurisdiction = workspace.jurisdictions[0];
 
   return <main className="staff-main">
-    <header className="staff-page-header"><div><p className="eyebrow">Material record</p><h1>{position.item_name}</h1><p>One place for reserve policy, guaranteed buying rate, delivery intake, and current ledger position.</p></div><div className="staff-button-row"><Link className="button button-secondary" href="/staff/economy">Back to economy queue</Link></div></header>
+    <header className="staff-page-header"><div><p className="eyebrow">Owner · material record</p><h1>{position.item_name}</h1><p>Advanced policy and history for this material.</p></div><div className="staff-button-row"><Link className="button button-primary" href="/staff/buy">Back to simple buying</Link><Link className="button button-secondary" href="/staff/economy?view=system">All material records</Link></div></header>
     <ReferenceBlock label="Material code" reference={position.item_code} status={position.reserve_state.replaceAll("_", " ")} />
     <EconomyNotice error={parameters.error} notice={parameters.notice} />
 

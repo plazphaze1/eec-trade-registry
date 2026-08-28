@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import Link from "next/link";
+import { useActionState } from "react";
 
 import {
   checkApplicationAction,
@@ -13,13 +14,21 @@ import { REGISTRY_CONFIG } from "@/lib/registry-config";
 
 const initial: ApplicationState = {};
 
-export function ApplicationForms({ options }: { options: ApplicationOptions }) {
-  const [mode, setMode] = useState<"new" | "renewal">("new");
+export function ApplicationForms({
+  mode,
+  options,
+}: {
+  mode: "new" | "renewal";
+  options: ApplicationOptions;
+}) {
   const [state, submit, pending] = useActionState(submitApplicationAction, initial);
   const [lookup, check, checking] = useActionState(checkApplicationAction, initial);
   const jurisdiction = options.jurisdictions.find(
     (item) => item.code === REGISTRY_CONFIG.jurisdiction.code,
   );
+  const defaultLicenseClass = options.license_classes.find(
+    (item) => item.code === REGISTRY_CONFIG.licensing.defaultClassCode,
+  ) ?? options.license_classes[0];
   const groups = options.endorsements.reduce<
     Array<{ label: string; options: ApplicationOptions["endorsements"] }>
   >((result, endorsement) => {
@@ -28,165 +37,124 @@ export function ApplicationForms({ options }: { options: ApplicationOptions }) {
     else result.push({ label: endorsement.group, options: [endorsement] });
     return result;
   }, []);
+  const ordinaryEndorsements = groups[0];
+  const specialEndorsements = groups.slice(1);
 
   return (
     <div className="application-workspace">
       {state.reference && state.token ? (
         <section className="application-receipt" aria-live="polite">
           <p className="eyebrow">Application received</p>
-          <h2>Save both values now.</h2>
-          <p>
-            The private token is shown once and cannot be recovered. You need the
-            application reference and token together to check the decision later.
-          </p>
-          <ReferenceBlock
-            label="Application reference"
-            reference={state.reference}
-            status="Submitted"
-          />
+          <h2>Save these two values.</h2>
+          <p>You will need both of them to check the result later.</p>
+          <ReferenceBlock label="Application reference" reference={state.reference} status="Submitted" />
           <ReferenceBlock label="Private status token · shown once" reference={state.token} />
         </section>
       ) : (
         <section className="application-intake">
-          <div className="application-mode" aria-label="Application type">
-            <button
-              aria-pressed={mode === "new"}
-              onClick={() => setMode("new")}
-              type="button"
-            >
-              New license
-            </button>
-            <button
-              aria-pressed={mode === "renewal"}
-              onClick={() => setMode("renewal")}
-              type="button"
-            >
-              Renew a license
-            </button>
-          </div>
+          <nav aria-label="Choose a licensing task" className="application-task-picker">
+            <Link aria-current={mode === "new" ? "page" : undefined} href="/apply">
+              <strong>Get a new license</strong>
+              <small>For a business applying for the first time</small>
+            </Link>
+            <Link aria-current={mode === "renewal" ? "page" : undefined} href="/apply?task=renew">
+              <strong>Renew a license</strong>
+              <small>For a business that already has a LIC number</small>
+            </Link>
+          </nav>
 
           {mode === "renewal" ? (
             <form action={submit} className="verification-form application-form application-renewal-form">
               <input name="application_type" type="hidden" value="renewal" />
               <input aria-hidden="true" autoComplete="off" className="form-honeypot" name="website" tabIndex={-1} />
               <div className="application-form-heading">
-                <p className="eyebrow">Renew existing authority</p>
-                <h2>Enter the current license reference.</h2>
-                <p>
-                  The registry copies the holder, license type, region, and active
-                  endorsements from the issued record. You do not need to re-enter them.
-                </p>
+                <p className="eyebrow">Renew a license</p>
+                <h2>Enter the license number.</h2>
+                <p>That is all we need. The existing business and permissions are copied automatically.</p>
               </div>
-              <label className="field">
-                <span>Current LIC reference</span>
-                <input
-                  autoComplete="off"
-                  maxLength={128}
-                  name="existing_license_reference"
-                  placeholder="EEC-LIC-…"
-                  required
-                  spellCheck={false}
-                />
+              <label className="field simple-primary-field">
+                <span>License number</span>
+                <input autoComplete="off" maxLength={128} name="existing_license_reference" placeholder="EEC-LIC-…" required spellCheck={false} />
               </label>
               {state.error && <p className="staff-flash staff-flash-error" role="alert">{state.error}</p>}
-              <button className="button button-primary" disabled={pending}>
-                {pending ? "Submitting…" : "Request renewal"}
-              </button>
+              <button className="button button-primary" disabled={pending}>{pending ? "Sending…" : "Send renewal request"}</button>
             </form>
           ) : (
-            <form action={submit} className="verification-form application-form">
+            <form action={submit} className="verification-form application-form simple-application-form">
               <input name="application_type" type="hidden" value="new" />
               <input aria-hidden="true" autoComplete="off" className="form-honeypot" name="website" tabIndex={-1} />
+              {jurisdiction && <input name="jurisdiction_code" type="hidden" value={jurisdiction.code} />}
+              {defaultLicenseClass && <input name="license_class_code" type="hidden" value={defaultLicenseClass.code} />}
               <div className="application-form-heading">
-                <p className="eyebrow">New authority</p>
-                <h2>Tell the licensing office what the business needs.</h2>
-                <p>Submitting creates a review case. It does not issue authority automatically.</p>
+                <p className="eyebrow">New business license</p>
+                <h2>Tell us about the business.</h2>
+                <p>Staff will review this before any license is issued.</p>
               </div>
               <label className="field">
-                <span>Applicant or business name</span>
-                <input maxLength={200} name="applicant_name" required />
+                <span>Business name</span>
+                <input autoComplete="organization" maxLength={200} name="applicant_name" required />
               </label>
               <label className="field">
-                <span>Discord name or contact label</span>
-                <input maxLength={300} name="contact_label" required />
-                <small>No email is required.</small>
+                <span>Your Discord name</span>
+                <input autoComplete="username" maxLength={300} name="contact_label" required />
               </label>
-              <label className="field">
-                <span>License type</span>
-                <select defaultValue="" name="license_class_code" required>
-                  <option disabled value="">Choose a license type</option>
-                  {options.license_classes.map((item) => (
-                    <option key={item.code} value={item.code}>{item.label}</option>
-                  ))}
-                </select>
-              </label>
-              {jurisdiction ? (
-                <div className="derived-choice">
-                  <span>Region</span>
-                  <strong>{jurisdiction.label}</strong>
-                  <small>Assigned automatically for this registry</small>
-                  <input name="jurisdiction_code" type="hidden" value={jurisdiction.code} />
-                </div>
-              ) : (
-                <p className="staff-flash staff-flash-error" role="alert">
-                  The configured application region is unavailable. New applications are paused.
-                </p>
+
+              {ordinaryEndorsements && (
+                <fieldset className="application-category-picker">
+                  <legend>What will the business sell?</legend>
+                  <p>Choose everything that applies.</p>
+                  <div>{ordinaryEndorsements.options.map((item) => (
+                    <label key={item.code}>
+                      <input name="endorsement_codes" type="checkbox" value={item.code} />
+                      <span>{item.label}</span>
+                    </label>
+                  ))}</div>
+                </fieldset>
               )}
-              <div className="endorsement-groups">
-                <p className="field-label">Requested endorsements</p>
-                {groups.map((group) => (
-                  <fieldset className="endorsement-group" key={group.label}>
-                    <legend>{group.label}</legend>
-                    {group.options.map((item) => (
-                      <label className="staff-checkbox" key={item.code}>
-                        <input name="endorsement_codes" type="checkbox" value={item.code} />
-                        <span><strong>{item.label}</strong><small>{item.description}</small></span>
-                      </label>
-                    ))}
-                  </fieldset>
-                ))}
-              </div>
-              <label className="field">
-                <span>What will the license be used for?</span>
-                <textarea minLength={10} maxLength={4000} name="statement" required rows={5} />
+
+              {specialEndorsements.length > 0 && (
+                <details className="application-special-permissions">
+                  <summary>Does the business need special permissions?</summary>
+                  <p>Most businesses can leave this closed. Choose these only for bulk, consignment, controlled, or individually tracked goods.</p>
+                  {specialEndorsements.map((group) => (
+                    <fieldset className="endorsement-group" key={group.label}>
+                      <legend>{group.label}</legend>
+                      {group.options.map((item) => (
+                        <label className="staff-checkbox" key={item.code}>
+                          <input name="endorsement_codes" type="checkbox" value={item.code} />
+                          <span><strong>{item.label}</strong><small>{item.description}</small></span>
+                        </label>
+                      ))}
+                    </fieldset>
+                  ))}
+                </details>
+              )}
+
+              <label className="field application-purpose">
+                <span>What does the business do?</span>
+                <textarea maxLength={4000} minLength={10} name="statement" placeholder="Example: We make and sell clothing in Solitude." required rows={3} />
               </label>
+              {(!jurisdiction || !defaultLicenseClass) && <p className="staff-flash staff-flash-error" role="alert">New applications are temporarily paused because the standard license setup is incomplete.</p>}
               {state.error && <p className="staff-flash staff-flash-error" role="alert">{state.error}</p>}
-              <button className="button button-primary" disabled={pending || !jurisdiction}>
-                {pending ? "Submitting…" : "Submit application"}
-              </button>
+              <button className="button button-primary application-submit" disabled={pending || !jurisdiction || !defaultLicenseClass}>{pending ? "Sending…" : "Send application"}</button>
             </form>
           )}
         </section>
       )}
 
-      <section className="application-status-check">
+      <details className="application-status-check">
+        <summary><strong>Already applied?</strong><span>Check the result</span></summary>
         <div>
-          <p className="eyebrow">Already applied?</p>
-          <h2>Check the review status.</h2>
-          <p>Use the application reference and one-time private token from your receipt.</p>
+          <p>Enter the two values from your application receipt.</p>
+          <form action={check} className="verification-form">
+            <label className="field"><span>Application reference</span><input name="reference" required /></label>
+            <label className="field"><span>Private status token</span><input name="token" required /></label>
+            {lookup.error && <p className="staff-flash staff-flash-error" role="alert">{lookup.error}</p>}
+            {lookup.status && lookup.reference && <ReferenceBlock label="Application reference" reference={lookup.reference} status={lookup.status.replaceAll("_", " ")} />}
+            <button className="button button-secondary" disabled={checking}>{checking ? "Checking…" : "Check status"}</button>
+          </form>
         </div>
-        <form action={check} className="verification-form">
-          <label className="field">
-            <span>Application reference</span>
-            <input name="reference" required />
-          </label>
-          <label className="field">
-            <span>Private status token</span>
-            <input name="token" required />
-          </label>
-          {lookup.error && <p className="staff-flash staff-flash-error" role="alert">{lookup.error}</p>}
-          {lookup.status && lookup.reference && (
-            <ReferenceBlock
-              label="Application reference"
-              reference={lookup.reference}
-              status={lookup.status.replaceAll("_", " ")}
-            />
-          )}
-          <button className="button button-secondary" disabled={checking}>
-            {checking ? "Checking…" : "Check status"}
-          </button>
-        </form>
-      </section>
+      </details>
     </div>
   );
 }

@@ -111,7 +111,9 @@ const inventoryWorkspaceSchema = z.object({
 
 const receiptItemIdsSchema = z.array(z.guid());
 
-export type InventoryWorkspace = z.infer<typeof inventoryWorkspaceSchema>;
+export type InventoryWorkspace = z.infer<typeof inventoryWorkspaceSchema> & {
+  receipt_item_ids: string[];
+};
 
 export type InventoryResult =
   | { ok: true; data: InventoryWorkspace }
@@ -154,7 +156,7 @@ export async function getStaffInventoryWorkspace(
     ok: true,
     data: {
       ...parsed.data,
-      items: parsed.data.items.filter((item) => parsedReceiptItemIds.data.includes(item.id)),
+      receipt_item_ids: parsedReceiptItemIds.data,
     },
   };
 }

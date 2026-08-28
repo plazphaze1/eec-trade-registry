@@ -20,7 +20,7 @@ const commands: Command[] = [
   { href: "/staff/orders", icon: "clipboard", label: "Find an order", description: "See what is open, ready, or completed", keywords: "customer collect deliver" },
   { href: "/staff/configuration#quick-add-item", icon: "box", label: "Add a catalogue item", description: "Create and publish a new good", keywords: "new product material catalogue" },
   { href: "/staff/inventory", icon: "package", label: "Check or add stock", description: "See available quantities and receive goods", keywords: "inventory quantity" },
-  { href: "/staff/economy", icon: "coins", label: "Open reserve economy", description: "Review material targets, offers, and purchasing history", keywords: "procurement policy floor reserve" },
+  { href: "/staff/economy?view=system", icon: "coins", label: "Material policy records", description: "Advanced reserve targets and buying-price history", keywords: "procurement policy floor reserve", ownerOnly: true },
   { href: "/staff/pricing", icon: "coins", label: "Publish a price rule", description: "Bind a schedule to a business, class, region, or channel", keywords: "dealer pricing wholesale" },
   { href: "/staff/consignments", icon: "truck", label: "Open consignments", description: "Manage custody, reports, commission, and settlement", keywords: "consignment finance commission" },
   { href: "/staff/assets", icon: "key", label: "Open unique assets", description: "Manage serialized goods and ready handoffs", keywords: "unique custody reservation" },

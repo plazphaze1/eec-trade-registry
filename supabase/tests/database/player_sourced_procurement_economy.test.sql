@@ -1,6 +1,6 @@
 begin;
 
-select plan(55);
+select plan(63);
 
 select has_table('public', 'item_supply_policies', 'item supply policy table exists');
 select has_table('public', 'procurement_suppliers', 'procurement supplier table exists');
@@ -10,6 +10,7 @@ select has_function('public', 'get_staff_economy_workspace', array[]::text[], 'e
 select has_function('public', 'staff_upsert_item_supply_policy', array['uuid','text','boolean','boolean','boolean','numeric','numeric','numeric','numeric','boolean','numeric','numeric','bigint','text','uuid'], 'policy command exists');
 select has_function('public', 'staff_register_procurement_supplier', array['text','text','text','uuid','text','text','uuid'], 'supplier command exists');
 select has_function('public', 'staff_create_procurement_offer', array['uuid','uuid','bigint','numeric','numeric','timestamp with time zone','timestamp with time zone','text','text','uuid'], 'purchase offer command exists');
+select has_function('public', 'staff_set_procurement_price', array['uuid','uuid','bigint','text','uuid'], 'simple buying-price command exists');
 select has_function('public', 'staff_record_procurement_delivery', array['uuid','uuid','uuid','numeric','text','uuid'], 'delivery command exists');
 select has_function('public', 'staff_mark_procurement_delivery_paid', array['uuid','bigint','text','text','uuid'], 'settlement evidence command exists');
 select ok((select relrowsecurity from pg_class where oid = 'public.item_supply_policies'::regclass), 'supply policies have RLS');
@@ -164,6 +165,34 @@ select is((select version from public.procurement_deliveries where id = current_
 select is((select count(*)::integer from public.outbox_events where deduplication_key = 'procurement.delivery_paid:d4000000-0000-0000-0000-000000000006'), 1, 'settlement emits one durable event');
 select ok(not has_table_privilege('authenticated', 'public.item_supply_policies', 'update'), 'authenticated callers cannot bypass policy commands');
 select ok((select player_sourced_only and not admin_receipt_allowed and procurement_enabled from public.item_supply_policies where item_id = 'ce000000-0000-0000-0000-000000000001'), 'keystone policy remains player-sourced after operations');
+
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"d1000000-0000-0000-0000-000000000001","role":"authenticated"}', true);
+select lives_ok($test$
+  select * from public.staff_set_procurement_price(
+    'ce000000-0000-0000-0000-000000000001',
+    '10000000-0000-0000-0000-000000000001',
+    30,
+    'Replace the current guaranteed buying price.',
+    'd4000000-0000-0000-0000-000000000007'
+  )
+$test$, 'economic steward can replace a buying price in one command');
+select lives_ok($test$
+  select * from public.staff_set_procurement_price(
+    'ce000000-0000-0000-0000-000000000001',
+    '10000000-0000-0000-0000-000000000001',
+    30,
+    'Replace the current guaranteed buying price.',
+    'd4000000-0000-0000-0000-000000000007'
+  )
+$test$, 'simple buying-price retry is idempotent');
+
+reset role;
+select is((select count(*)::integer from public.procurement_offers where item_id = 'ce000000-0000-0000-0000-000000000001' and status = 'active'), 1, 'one active buying price remains');
+select is((select amount_minor from public.procurement_offers where source_request_id = 'd4000000-0000-0000-0000-000000000007'), 30::bigint, 'replacement buying price is stored');
+select is((select status from public.procurement_offers where source_request_id = 'd4000000-0000-0000-0000-000000000002'), 'retired', 'prior buying price is preserved as retired history');
+select is((select count(*)::integer from public.procurement_offers where source_request_id = 'd4000000-0000-0000-0000-000000000007'), 1, 'price retry creates one replacement record');
+select ok(exists(select 1 from public.audit_log where record_type = 'public.procurement_offers' and request_id = 'd4000000-0000-0000-0000-000000000007' and actor_id = 'd2000000-0000-0000-0000-000000000001'), 'price replacement records the steward and request');
 
 select * from finish();
 rollback;

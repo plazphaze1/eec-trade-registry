@@ -1,20 +1,28 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { settleDeliveryAction } from "@/app/staff/economy/actions";
 import { EconomyNotice } from "@/components/economy-notice";
 import { StaffAccessDenied } from "@/components/staff-access-denied";
 import { getStaffEconomyWorkspace } from "@/lib/economy";
 import { getDefaultLocale } from "@/lib/env";
+import { getMyStaffAccessState } from "@/lib/staff-access";
 import { requireStaffSession } from "@/lib/staff-auth";
 
-interface PageProps { searchParams: Promise<{ error?: string; notice?: string }> }
+interface PageProps { searchParams: Promise<{ error?: string; notice?: string; view?: string }> }
 const number = (value: number) => new Intl.NumberFormat(undefined, { maximumFractionDigits: 3 }).format(value);
 const money = (value: number, code = "SEP") => `${new Intl.NumberFormat().format(value)} ${code}`;
 
 export default async function EconomyPage({ searchParams }: PageProps) {
   const parameters = await searchParams;
+  if (parameters.view !== "system") redirect("/staff/buy");
   const { client } = await requireStaffSession();
-  const result = await getStaffEconomyWorkspace(client);
+  const [result, access] = await Promise.all([
+    getStaffEconomyWorkspace(client),
+    getMyStaffAccessState(client),
+  ]);
+  const isOwner = access.ok && access.data.state === "authorized" && access.data.access_class === "owner";
+  if (!isOwner) return <main className="staff-main"><StaffAccessDenied /></main>;
   if (!result.ok && result.code === "access_denied") return <main className="staff-main"><StaffAccessDenied /></main>;
   if (!result.ok) return <main className="staff-main"><section className="notice-panel"><h1>Economic desk unavailable</h1><p>No fallback figures were used and no authoritative records changed.</p></section></main>;
 
@@ -32,7 +40,7 @@ export default async function EconomyPage({ searchParams }: PageProps) {
   }), { backordered: 0, committed: 0, onHand: 0, paid: 0 });
 
   return <main className="staff-main">
-    <header className="staff-page-header"><div><p className="eyebrow">Economic operations</p><h1>Reserve economy</h1><p>See which materials need attention, then open that material to set policy, publish its floor, receive supply, or record payment.</p></div><div className="staff-button-row"><Link className="button button-secondary" href="/staff/inventory">View inventory</Link></div></header>
+    <header className="staff-page-header"><div><p className="eyebrow">Owner · system records</p><h1>Material policy records</h1><p>Advanced reserve thresholds, offer history, and payment evidence. Ordinary work belongs on Buy materials.</p></div><div className="staff-button-row"><Link className="button button-primary" href="/staff/buy">Back to simple buying</Link></div></header>
     <EconomyNotice error={parameters.error} notice={parameters.notice} />
 
     {allUnconfigured && <section className="setup-callout"><div><p className="eyebrow">Setup required</p><h2>Reserve targets have not been set</h2><p>Choose the desired safety levels for each player-sourced material. Ledger quantities remain untouched.</p></div><Link className="button button-primary" href={`/staff/materials/${encodeURIComponent(materials[0].item_code)}`}>Set the first material</Link></section>}
