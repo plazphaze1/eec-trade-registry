@@ -71,12 +71,12 @@ export default async function StaffInventoryPage({ searchParams }: StaffInventor
     <main className="staff-main">
       <header className="staff-page-header">
         <div>
-          <p className="eyebrow">{showSystemRecords ? "Owner tools" : "Inventory"}</p>
-          <h1>{showSystemRecords ? "Stock records" : "Stock"}</h1>
-          <p>{showSystemRecords ? "Corrections and historical evidence for exceptional work." : "See what is available or add newly received goods."}</p>
+          <p className="eyebrow">{showSystemRecords ? "Owner tools" : "Warehouse"}</p>
+          <h1>{showSystemRecords ? "Stock records" : "What is in stock?"}</h1>
+          <p>{showSystemRecords ? "Corrections and historical evidence for exceptional work." : "Find an item, see how many are ready, or add more in one click."}</p>
         </div>
         <div className="staff-button-row">
-          {showSystemRecords ? <Link className="button button-secondary" href="/staff/inventory">Back to stock</Link> : <Link className="button button-primary" href="/staff/buy">Buy materials</Link>}
+          {showSystemRecords ? <Link className="button button-secondary" href="/staff/inventory">Back to stock</Link> : <Link className="button button-primary" href="/staff/buy">Buy from a player</Link>}
         </div>
       </header>
 

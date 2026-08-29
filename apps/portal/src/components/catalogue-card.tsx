@@ -23,15 +23,15 @@ export function CatalogueCard({ item, locale }: CatalogueCardProps) {
   );
 
   return (
-    <article className="catalogue-card">
+    <article className="catalogue-card storefront-product-card">
       <div className="card-topline">
-        <span>{item.category_name}</span>
-        <span>{item.item_code}</span>
+        <span className="product-category">{item.category_name}</span>
+        <span className="product-code">{item.item_code}</span>
       </div>
 
       <div className="card-body">
         <div>
-          <h2>
+          <h2 className="product-name">
             <Link href={`/catalogue/${item.slug}`}>{item.display_name}</Link>
           </h2>
           <p>{item.description}</p>
@@ -39,16 +39,12 @@ export function CatalogueCard({ item, locale }: CatalogueCardProps) {
 
         <dl className="card-facts">
           <div>
-            <dt>Public price</dt>
+            <dt>Price</dt>
             <dd>{price ?? "Price by request"}</dd>
           </div>
           <div>
             <dt>Availability</dt>
             <dd>{item.availability_label}</dd>
-          </div>
-          <div>
-            <dt>Control</dt>
-            <dd>{item.control_label}</dd>
           </div>
           {minimum && (
             <div>
@@ -60,9 +56,9 @@ export function CatalogueCard({ item, locale }: CatalogueCardProps) {
       </div>
 
       <div className="card-footer">
-        <p>{item.requirement_summary}</p>
-        <Link className="text-link" href={`/catalogue/${item.slug}`}>
-          View registry entry <span aria-hidden="true">→</span>
+        <p><strong>How to buy:</strong> {item.requirement_summary}</p>
+        <Link className="button button-secondary button-compact" href={`/catalogue/${item.slug}`}>
+          View item <span aria-hidden="true">→</span>
         </Link>
       </div>
     </article>

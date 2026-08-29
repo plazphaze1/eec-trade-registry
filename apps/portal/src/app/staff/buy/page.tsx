@@ -20,7 +20,7 @@ export default async function BuyMaterialsPage({ searchParams }: PageProps) {
   const pending = result.data.deliveries.filter((delivery) => delivery.settlement_status === "pending" && !delivery.is_reversed).slice(0, 5);
   return (
     <main className="staff-main simple-task-main">
-      <header className="staff-page-header"><div><p className="eyebrow">Player materials</p><h1>Buy materials</h1><p>Choose who is selling, what they brought, and how many. The saved price and stock update are automatic.</p></div><Link className="button button-secondary" href="/staff/inventory">View stock</Link></header>
+      <header className="staff-page-header"><div><p className="eyebrow">Player supplies</p><h1>Buy materials from a player</h1><p>Pick the seller, the material, and the amount. The price and stock are handled for you.</p></div><Link className="button button-secondary" href="/staff/inventory">Back to stock</Link></header>
       <EconomyNotice error={parameters.error} notice={parameters.notice} />
       <SimpleBuyingPrices workspace={result.data} />
       <GuidedMaterialPurchaseForm workspace={result.data} />

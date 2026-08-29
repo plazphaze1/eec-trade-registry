@@ -9,7 +9,7 @@ function source(relativePath: string): string {
 describe("public rendering contracts", () => {
   it("ships a useful catalogue h1 in the server-rendered route source", () => {
     const catalogue = source("../app/page.tsx");
-    expect(catalogue).toContain("<h1>Published trade catalogue</h1>");
+    expect(catalogue).toContain("<h1>Find what you need.</h1>");
     expect(catalogue).not.toContain("Retrieving current catalogue records");
   });
 

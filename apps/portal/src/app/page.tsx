@@ -43,21 +43,21 @@ export default async function CataloguePage({
     <main>
       <section className="hero catalogue-hero">
         <div>
-          <p className="eyebrow">Official public catalogue</p>
-          <h1>Published trade catalogue</h1>
+          <p className="eyebrow">East Empire Company marketplace</p>
+          <h1>Find what you need.</h1>
           <p className="hero-copy">
-            Browse goods currently offered by {institutionName}. Open an entry
-            for its public terms, purchasing requirements, and control level.
+            Browse everything {institutionName} buys and sells. Prices,
+            availability, and business requirements are shown in plain language.
           </p>
           <div className="hero-actions">
             <a className="button button-primary" href="#catalogue-title">
-              <UiIcon name="search" /> Browse catalogue
+              <UiIcon name="search" /> Start shopping
             </a>
             <Link className="button button-secondary" href="/verify">
-              <UiIcon name="shield" /> Verify a record
+              <UiIcon name="shield" /> Check a license
             </Link>
             <Link className="text-link hero-quiet-link" href="/apply">
-              Apply for a license <UiIcon name="arrow" size={15} />
+              Need a business license? <UiIcon name="arrow" size={15} />
             </Link>
           </div>
         </div>
@@ -66,8 +66,8 @@ export default async function CataloguePage({
       <section className="catalogue-shell" aria-labelledby="catalogue-title">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Public catalogue</p>
-            <h2 id="catalogue-title">Published goods</h2>
+            <p className="eyebrow">Browse all goods</p>
+            <h2 id="catalogue-title">Shop the catalogue</h2>
           </div>
           {generatedAt && <p>Updated <RelativeTime value={generatedAt} /></p>}
         </div>

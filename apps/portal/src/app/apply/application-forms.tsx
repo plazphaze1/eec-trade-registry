@@ -54,12 +54,12 @@ export function ApplicationForms({
         <section className="application-intake">
           <nav aria-label="Choose a licensing task" className="application-task-picker">
             <Link aria-current={mode === "new" ? "page" : undefined} href="/apply">
-              <strong>Get a new license</strong>
-              <small>For a business applying for the first time</small>
+              <strong>I need a new license</strong>
+              <small>My business has never had one</small>
             </Link>
             <Link aria-current={mode === "renewal" ? "page" : undefined} href="/apply?task=renew">
-              <strong>Renew a license</strong>
-              <small>For a business that already has a LIC number</small>
+              <strong>I already have a license</strong>
+              <small>Renew using my LIC number</small>
             </Link>
           </nav>
 
@@ -69,15 +69,15 @@ export function ApplicationForms({
               <input aria-hidden="true" autoComplete="off" className="form-honeypot" name="website" tabIndex={-1} />
               <div className="application-form-heading">
                 <p className="eyebrow">Renew a license</p>
-                <h2>Enter the license number.</h2>
-                <p>That is all we need. The existing business and permissions are copied automatically.</p>
+                <h2>What is your license number?</h2>
+                <p>We will copy the existing business details. This is the only question.</p>
               </div>
               <label className="field simple-primary-field">
-                <span>License number</span>
+                <span>Your LIC number</span>
                 <input autoComplete="off" maxLength={128} name="existing_license_reference" placeholder="EEC-LIC-…" required spellCheck={false} />
               </label>
               {state.error && <p className="staff-flash staff-flash-error" role="alert">{state.error}</p>}
-              <button className="button button-primary" disabled={pending}>{pending ? "Sending…" : "Send renewal request"}</button>
+              <button className="button button-primary" disabled={pending}>{pending ? "Sending…" : "Ask to renew"}</button>
             </form>
           ) : (
             <form action={submit} className="verification-form application-form simple-application-form">
@@ -86,36 +86,43 @@ export function ApplicationForms({
               {jurisdiction && <input name="jurisdiction_code" type="hidden" value={jurisdiction.code} />}
               {defaultLicenseClass && <input name="license_class_code" type="hidden" value={defaultLicenseClass.code} />}
               <div className="application-form-heading">
-                <p className="eyebrow">New business license</p>
-                <h2>Tell us about the business.</h2>
-                <p>Staff will review this before any license is issued.</p>
+                <p className="eyebrow">New license · 3 short steps</p>
+                <h2>Tell us about your business.</h2>
+                <p>A Company agent will read this and make the final decision.</p>
               </div>
-              <label className="field">
-                <span>Business name</span>
-                <input autoComplete="organization" maxLength={200} name="applicant_name" required />
-              </label>
-              <label className="field">
-                <span>Your Discord name</span>
-                <input autoComplete="username" maxLength={300} name="contact_label" required />
-              </label>
+              <section className="application-step">
+                <div className="application-step-heading"><span>1</span><div><h3>Who are you?</h3><p>So staff know which business and Discord user to contact.</p></div></div>
+                <div className="application-step-fields">
+                  <label className="field">
+                    <span>Business name</span>
+                    <input autoComplete="organization" maxLength={200} name="applicant_name" placeholder="Example: Solitude Fine Tailoring" required />
+                  </label>
+                  <label className="field">
+                    <span>Your Discord name</span>
+                    <input autoComplete="username" maxLength={300} name="contact_label" placeholder="Example: aurelion" required />
+                  </label>
+                </div>
+              </section>
 
               {ordinaryEndorsements && (
-                <fieldset className="application-category-picker">
-                  <legend>What will the business sell?</legend>
-                  <p>Choose everything that applies.</p>
-                  <div>{ordinaryEndorsements.options.map((item) => (
-                    <label key={item.code}>
-                      <input name="endorsement_codes" type="checkbox" value={item.code} />
-                      <span>{item.label}</span>
-                    </label>
-                  ))}</div>
-                </fieldset>
+                <section className="application-step">
+                  <div className="application-step-heading"><span>2</span><div><h3>What will you sell?</h3><p>Pick one or more. You can ask to change these later.</p></div></div>
+                  <fieldset className="application-category-picker">
+                    <legend className="sr-only">Goods the business will sell</legend>
+                    <div>{ordinaryEndorsements.options.map((item) => (
+                      <label key={item.code}>
+                        <input name="endorsement_codes" type="checkbox" value={item.code} />
+                        <span>{item.label}</span>
+                      </label>
+                    ))}</div>
+                  </fieldset>
+                </section>
               )}
 
               {specialEndorsements.length > 0 && (
                 <details className="application-special-permissions">
-                  <summary>Does the business need special permissions?</summary>
-                  <p>Most businesses can leave this closed. Choose these only for bulk, consignment, controlled, or individually tracked goods.</p>
+                  <summary>Special permissions <small>Most businesses can skip this</small></summary>
+                  <p>Open this only for bulk distribution, consignment, regulated goods, or individually tracked items.</p>
                   {specialEndorsements.map((group) => (
                     <fieldset className="endorsement-group" key={group.label}>
                       <legend>{group.label}</legend>
@@ -130,20 +137,23 @@ export function ApplicationForms({
                 </details>
               )}
 
-              <label className="field application-purpose">
-                <span>What does the business do?</span>
-                <textarea maxLength={4000} minLength={10} name="statement" placeholder="Example: We make and sell clothing in Solitude." required rows={3} />
-              </label>
+              <section className="application-step">
+                <div className="application-step-heading"><span>3</span><div><h3>Describe the business</h3><p>One sentence is enough.</p></div></div>
+                <label className="field application-purpose">
+                  <span>What does the business do?</span>
+                  <textarea maxLength={4000} minLength={10} name="statement" placeholder="Example: We make and sell clothing in Solitude." required rows={3} />
+                </label>
+              </section>
               {(!jurisdiction || !defaultLicenseClass) && <p className="staff-flash staff-flash-error" role="alert">New applications are temporarily paused because the standard license setup is incomplete.</p>}
               {state.error && <p className="staff-flash staff-flash-error" role="alert">{state.error}</p>}
-              <button className="button button-primary application-submit" disabled={pending || !jurisdiction || !defaultLicenseClass}>{pending ? "Sending…" : "Send application"}</button>
+              <button className="button button-primary application-submit" disabled={pending || !jurisdiction || !defaultLicenseClass}>{pending ? "Sending…" : "Send for review"}</button>
             </form>
           )}
         </section>
       )}
 
       <details className="application-status-check">
-        <summary><strong>Already applied?</strong><span>Check the result</span></summary>
+        <summary><strong>Already sent an application?</strong><span>Check its status</span></summary>
         <div>
           <p>Enter the two values from your application receipt.</p>
           <form action={check} className="verification-form">
