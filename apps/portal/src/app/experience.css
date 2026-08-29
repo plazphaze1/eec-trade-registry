@@ -976,6 +976,11 @@ body > main { width: min(1440px, calc(100% - 48px)); }
   .app-mobile-bar { display: flex; min-height: 72px; background: var(--xp-navy); }
   .app-mobile-bar .app-brand strong { color: #fff; }
   .app-mobile-bar .app-brand small { color: #b8c7d4; }
+  .app-mobile-bar summary {
+    border-color: rgba(255, 255, 255, .3);
+    background: rgba(255, 255, 255, .07);
+    color: #fff;
+  }
   .staff-main,
   .dealer-main { width: min(100% - 36px, 900px); padding-top: 34px; }
   .catalogue-hero { padding-inline: 34px; }
