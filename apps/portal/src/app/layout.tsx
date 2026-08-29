@@ -5,6 +5,7 @@ import { getInstitutionName, getSiteOrigin } from "@/lib/env";
 
 import "./globals.css";
 import "./interface.css";
+import "./experience.css";
 
 const institutionName = getInstitutionName();
 const metadataOrigin = process.env.NEXT_PUBLIC_SITE_URL

@@ -26,6 +26,7 @@ Implementation proceeds through the policy-gated vertical slices in `ROADMAP.md`
 10. **Routine administration beats spreadsheet work.** Once policy inputs exist, creating an ordinary item or posting an ordinary stock receipt should take no more than approximately 30 seconds without sacrificing permission checks, audit history, or ledger provenance.
 11. **The interface is smaller than the domain.** Ordinary staff describe the buyer, goods, quantity, and handoff; Supabase derives classifications and carries references. Advanced systems remain available in one explained Staff tools panel and on the records to which they apply, not in primary navigation.
 12. **Setup belongs inside the task.** A player applies with plain business questions, Stock shows every item even at zero, and guaranteed buying prices are set where staff buy materials. Separate setup desks must not block a routine action.
+13. **The experience is consumer-grade.** Public and routine staff surfaces use familiar shopping patterns, readable type, generous targets, and one dominant next action. Registry evidence and policy machinery remain available without visually competing with the task.
 
 ## 3. Users and actors
 

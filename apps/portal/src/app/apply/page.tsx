@@ -24,11 +24,11 @@ export default async function ApplyPage({ searchParams }: ApplyPageProps) {
     <main>
       <section className="hero">
         <div>
-          <p className="eyebrow">Business licensing</p>
-          <h1>Get or renew a trade license</h1>
+          <p className="eyebrow">Business licensing · about 2 minutes</p>
+          <h1>Let&apos;s get your business licensed.</h1>
           <p>
-            Choose what you need and answer a few short questions. No login or
-            email is required.
+            Answer a few simple questions. You do not need an account or email,
+            and nothing is approved automatically.
           </p>
         </div>
       </section>

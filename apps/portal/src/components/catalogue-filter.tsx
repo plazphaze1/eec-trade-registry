@@ -15,12 +15,12 @@ export function CatalogueFilter({
   return (
     <form className="catalogue-filter" method="get" role="search">
       <label className="field field-search">
-        <span>Search the registry</span>
+        <span>What are you looking for?</span>
         <input
           defaultValue={query.search ?? ""}
           maxLength={100}
           name="q"
-          placeholder="Item name, code, description, or tag"
+          placeholder="Search for stone, clothing, metal…"
           type="search"
         />
       </label>
@@ -38,7 +38,7 @@ export function CatalogueFilter({
       </label>
 
       <button className="button button-primary" type="submit">
-        Search catalogue
+        Search
       </button>
 
       {(query.search || query.category) && (
