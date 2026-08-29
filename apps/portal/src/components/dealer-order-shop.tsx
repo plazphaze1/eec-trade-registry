@@ -36,7 +36,7 @@ export function DealerOrderShop({ data }: { data: DealerOrderReferenceData }) {
       <input name="license_id" type="hidden" value={license?.id ?? ""} />
       <input name="fulfillment_mode" type="hidden" value={fulfillment} />
       <input name="reason" type="hidden" value="Business representative placed this order." />
-      {cart.map((line) => <span key={line.itemId}><input name="item_ids" type="hidden" value={line.itemId} /><input name="quantities" type="hidden" value={line.quantity} /></span>)}
+      {cart.map((line) => <span className="shop-hidden-cart-line" key={line.itemId}><input name="item_ids" type="hidden" value={line.itemId} /><input name="quantities" type="hidden" value={line.quantity} /></span>)}
 
       <section className="shop-products">
         <div className="shop-buyer-bar">
