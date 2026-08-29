@@ -112,7 +112,7 @@ export function GuidedOrderForm({ stock, workspace }: { stock: OrderStock; works
       <input name="jurisdiction_id" type="hidden" value={jurisdiction?.id ?? ""} />
       <input name="fulfillment_mode" type="hidden" value={fulfillment} />
       <input name="reason" type="hidden" value="Staff recorded the customer order." />
-      {cart.map((line) => <span key={line.key}><input name={`item_id_${line.key}`} type="hidden" value={line.itemId} /><input name={`quantity_${line.key}`} type="hidden" value={line.quantity} /></span>)}
+      {cart.map((line) => <span className="shop-hidden-cart-line" key={line.key}><input name={`item_id_${line.key}`} type="hidden" value={line.itemId} /><input name={`quantity_${line.key}`} type="hidden" value={line.quantity} /></span>)}
 
       <section className="shop-products">
         <div className="shop-buyer-bar">

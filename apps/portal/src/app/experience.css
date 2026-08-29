@@ -847,7 +847,7 @@ body > main { width: min(1440px, calc(100% - 48px)); }
   background: #fff;
 }
 
-.buying-price-panel > summary > span:nth-child(2) { flex: 1; }
+.buying-price-panel > summary > span:nth-child(2) { display: grid; flex: 1; gap: 4px; }
 .buying-price-panel > summary strong { color: var(--xp-ink); font-size: 1rem; }
 .buying-price-panel > summary small { margin-top: 5px; color: var(--xp-muted); font-size: .74rem; }
 .buying-price-panel > summary > span:last-child { color: var(--xp-blue); font-size: .72rem; }
@@ -919,6 +919,9 @@ body > main { width: min(1440px, calc(100% - 48px)); }
   grid-template-columns: minmax(0, .8fr) minmax(340px, 1fr);
   align-items: center;
 }
+
+/* Hidden form values must never become items in the checkout grid. */
+.shop-hidden-cart-line { display: none; }
 
 /* Dealer portal */
 .dealer-app-shell { min-height: 100vh; background: var(--xp-bg); }
