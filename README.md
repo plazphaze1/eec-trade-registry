@@ -79,53 +79,18 @@ After `npm run db:reset`, the public verification pages are available at:
 
 These are demonstration records, not approved institutional terminology or policy. Public lookups use exact references and return the same `not_verifiable` contract for unknown, malformed, private, and unpublished records. Production launch still requires edge rate limiting and abuse monitoring.
 
-## Local dealer access
+## Local business access
 
-The dealer portal is available at `http://127.0.0.1:3000/dealer/login`. Authentication alone grants no organization access.
+The Business portal is available at `http://127.0.0.1:3000/dealer/login`. A business signs in with an active `LIC` reference and an Owner-issued private access code. No email or Discord account is required.
 
 For local development only:
 
-1. Create an email/password user in local Supabase Studio and copy its user UUID.
-2. In the local SQL editor, link that identity to the fictional seeded dealer:
+1. Sign in to the staff console as an Owner.
+2. Open **Customers**, choose the seeded Harbor Supply Cooperative record, and find **Business portal**.
+3. Set a private access code of at least eight characters.
+4. Sign in at `/dealer/login` with `LIC-DEMO-4Q2M` and that code.
 
-```sql
-with created_actor as (
-  insert into public.actor_profiles (
-    auth_user_id,
-    display_name,
-    actor_type
-  )
-  values (
-    '<AUTH_USER_UUID>',
-    'Local Dealer Representative',
-    'dealer'
-  )
-  returning id
-)
-insert into public.party_representatives (
-  principal_party_id,
-  actor_id,
-  role_definition_id,
-  authority_scope,
-  verified_at
-)
-select
-  '92000000-0000-0000-0000-000000000001',
-  created_actor.id,
-  role.id,
-  '{
-    "portal.read": true,
-    "order.read": true,
-    "order.create": true,
-    "order.cancel": true
-  }'::jsonb,
-  now()
-from created_actor
-join public.representative_role_definitions as role
-  on role.code = 'portal-representative';
-```
-
-The overview remains read-only, while `/dealer/orders` exposes only the represented party's order projection and secure order commands. Submission records demand but does not reserve or move stock. Production enrollment, recovery, revocation operations, magic links, and secure private-link exchange require approved administrative workflows.
+The Owner can reset or disable the code from the same business record. The portal exposes only that business's licensed shop and orders. Submission records demand but does not reserve or move stock.
 
 ## Local licensing access
 

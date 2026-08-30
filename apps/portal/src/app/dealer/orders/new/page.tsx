@@ -49,7 +49,7 @@ export default async function NewDealerOrderPage({
 
       <OrderNotice error={parameters.error} notice={parameters.notice} />
 
-      {representations.length > 0 ? <DealerOrderShop data={result.data} /> : <section className="empty-state"><h2>No business account is connected</h2><p>An Owner must connect your Discord identity to a business before you can order.</p></section>}
+      {representations.length > 0 ? <DealerOrderShop data={result.data} /> : <section className="empty-state"><h2>This business cannot order yet</h2><p>Ask an EEC Owner to check the license and reset the business access code.</p></section>}
     </main>
   );
 }

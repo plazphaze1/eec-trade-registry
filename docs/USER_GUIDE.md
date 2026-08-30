@@ -73,7 +73,7 @@ The portal has four simple access classes:
 | Access class | Authentication | Main capabilities |
 |---|---|---|
 | Public | None | Browse the catalogue and verify exact dealer or license references |
-| Business | Dealer credentials plus an active representative grant for one exact business | View that represented organization, submit and inspect its orders, cancel eligible orders, and report its consignment observations |
+| Business | Active license number plus a private access code issued by an Owner | View that exact business, shop, submit and inspect orders, cancel eligible orders, and report consignment observations |
 | Agent | Discord OAuth plus an owner-approved Agent assignment | Perform day-to-day EEC trade, licensing, inventory, dealer, finance, and compliance work |
 | Owner | Discord OAuth plus protected Owner authority | Everything an Agent can do, plus staff access approval, restricted audit, and platform administration |
 
@@ -593,7 +593,7 @@ Discord OAuth answers “Which Discord account signed in?” It does not answer 
 6. The database creates the staff actor and Agent assignment together. The new Agent can refresh or sign in again and use the dashboard.
 7. To remove an approved Agent, find the approved request in the same workspace and choose **Block this identity** with a reason.
 
-Changing a Discord server role does not create, expand, or revoke EEC authority. Business users are not approved here; they use the Dealer portal and must be tied to their exact business.
+Changing a Discord server role does not create, expand, or revoke EEC authority. Business users are not approved here; an Owner enables the Business portal from the exact business record and gives the business its license number and a private access code.
 
 ### 7.22 Identifier cheat sheet
 
@@ -1201,9 +1201,14 @@ The tailor and Aurelion agree on their own retail terms. The business may add an
 
 The business should record enough information in its own roleplay or Discord conversation to know what Aurelion wants, but Aurelion does not become the EEC wholesale ordering party.
 
-#### Step 4: The verified business representative submits the EEC order
+#### Step 4: The verified business submits the EEC order
 
-In the current live implementation, an individually authenticated representative signs into the dealer portal and submits:
+An Owner enables **Business portal** on the business record and privately supplies one access code. The business opens `/dealer/login` and enters:
+
+- Its active `LIC` number
+- Its private access code
+
+No email or Discord login is needed. After sign-in, the business chooses **Shop** and submits:
 
 - The represented business
 - The exact catalogue item
@@ -1212,7 +1217,7 @@ In the current live implementation, an individually authenticated representative
 
 The system creates an `EEC-ORD` reference and snapshots the business, license/control context, item, quantity, and any current price state.
 
-The planned model permits an EEC agent to enter the same requisition on behalf of a verified business. That staff-assisted screen is not yet live. Until it exists, the business representative must submit through the dealer portal. Staff must not borrow the dealer password or create a misleading direct database row.
+An EEC Agent may also enter the same requisition from **New order** on behalf of the verified business. The business remains the ordering party in either path. Staff must not ask for or borrow the business access code.
 
 #### Step 5: The EEC agent reviews the request
 

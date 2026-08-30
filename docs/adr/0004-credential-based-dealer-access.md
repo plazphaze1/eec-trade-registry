@@ -3,6 +3,8 @@
 Status: Accepted for the policy-neutral implementation increment
 Date: 2026-08-04
 
+Superseded in part: ADR 0028 replaces the visible individual-email credential flow with license-number plus private-code organization access. The actor, representative-grant, and database authorization boundaries below remain in force.
+
 ## Context
 
 Dealer representatives need low-friction private access, but authentication must not imply authority to act for an organization. The product permits lightweight credentials or secure private links. Enrollment, credential recovery, private-link reuse, organization switching, private pricing, ordering, and step-up authentication policies remain unresolved.

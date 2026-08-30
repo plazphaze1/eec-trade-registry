@@ -1008,6 +1008,17 @@ body > main { width: min(1240px, calc(100% - 48px)); }
 .customer-license-list strong { font-size: .8rem; }
 .customer-license-list small { color: var(--muted); font-size: .68rem; }
 .customer-record-tools .staff-form { box-shadow: none; }
+.business-access-section { display: grid; gap: 18px; }
+.business-access-section .inventory-section-heading { margin: 0; }
+.business-access-section .inventory-section-heading p:not(.eyebrow) { max-width: 720px; margin: 6px 0 0; color: var(--muted); }
+.business-access-grid { display: grid; grid-template-columns: minmax(240px,.75fr) minmax(320px,1.25fr); gap: 14px; }
+.business-access-grid .detail-card { display: flex; flex-direction: column; justify-content: center; padding: 22px; border-radius: 14px; background: var(--xp-surface-soft); box-shadow: none; }
+.business-access-grid .detail-card h3 { margin: 7px 0; font-size: 1.25rem; }
+.business-access-grid .detail-card p,.business-access-grid .detail-card small { margin: 0; color: var(--muted); }
+.business-access-form { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 12px; margin: 0; padding: 20px; border: 1px solid var(--xp-line); border-radius: 14px; box-shadow: none; }
+.business-access-form .button { min-height: 44px; }
+.business-access-disable { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 16px; border-top: 1px solid var(--xp-line); }
+.business-access-disable p { margin: 0; color: var(--muted); }
 
 @media (max-width: 1050px) {
   .dashboard-quick-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
@@ -1035,5 +1046,6 @@ body > main { width: min(1240px, calc(100% - 48px)); }
   .stock-card-grid { grid-template-columns: 1fr; padding: 14px; }
   .stock-card { grid-template-columns: 82px minmax(0,1fr); }
   .stock-card > .button { grid-column: 1/-1; }
-  .dealer-account-grid,.dealer-account-card dl { grid-template-columns: 1fr; }
+  .dealer-account-grid,.dealer-account-card dl,.business-access-grid,.business-access-form { grid-template-columns: 1fr; }
+  .business-access-disable { align-items: stretch; flex-direction: column; }
 }

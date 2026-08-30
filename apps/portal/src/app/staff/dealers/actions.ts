@@ -9,6 +9,13 @@ import {
   readCreateDealerForm,
   readUpdateDealerForm,
 } from "@/lib/staff-dealer-form";
+import {
+  businessAccountEmail,
+  getStaffBusinessAccess,
+  readDisableBusinessAccessForm,
+  readSetBusinessAccessForm,
+} from "@/lib/business-access";
+import { createIntegrationSupabaseClient } from "@/lib/integration-supabase";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
 function destination(path: string, key: "error" | "notice", value: string) {
@@ -113,4 +120,110 @@ export async function changeDealerStatusAction(formData: FormData) {
   revalidatePath("/staff/licensing/new");
   revalidatePath("/verify/dealer");
   redirect(destination(path, "notice", "dealer_status_changed"));
+}
+
+export async function setBusinessPortalAccessAction(formData: FormData) {
+  const path = dealerPath(formData.get("dealer_authorization_id"));
+  const parsed = readSetBusinessAccessForm(formData);
+  if (!parsed.success) redirect(destination(path, "error", "invalid_access_code"));
+  const client = await verifiedClient();
+  if (!client) redirect("/staff/login");
+
+  const current = await getStaffBusinessAccess(
+    client,
+    parsed.data.dealerAuthorizationId,
+  );
+  if (!current.ok) {
+    redirect(
+      destination(
+        path,
+        "error",
+        current.code === "access_denied" ? "access_denied" : "save_failed",
+      ),
+    );
+  }
+  if (current.data.eligible_license_references.length === 0) {
+    redirect(destination(path, "error", "business_license_required"));
+  }
+
+  let adminClient;
+  try {
+    adminClient = createIntegrationSupabaseClient();
+  } catch {
+    console.error("[staff-business-access] Service authentication is unavailable.");
+    redirect(destination(path, "error", "save_failed"));
+  }
+
+  let authUserId = current.data.auth_user_id;
+  let createdAuthUser = false;
+  if (current.data.configured && authUserId) {
+    const updated = await adminClient.auth.admin.updateUserById(authUserId, {
+      password: parsed.data.accessCode,
+    });
+    if (updated.error) {
+      console.error(`[staff-business-access:update-auth] ${updated.error.code ?? "unknown"}`);
+      redirect(destination(path, "error", "save_failed"));
+    }
+  } else {
+    const created = await adminClient.auth.admin.createUser({
+      email: businessAccountEmail(current.data.party_id),
+      email_confirm: true,
+      password: parsed.data.accessCode,
+      user_metadata: {
+        account_purpose: "business_portal",
+        party_id: current.data.party_id,
+      },
+    });
+    if (created.error || !created.data.user) {
+      console.error(`[staff-business-access:create-auth] ${created.error?.code ?? "unknown"}`);
+      redirect(destination(path, "error", "save_failed"));
+    }
+    authUserId = created.data.user.id;
+    createdAuthUser = true;
+  }
+
+  const requestId = crypto.randomUUID();
+  const { error } = await client.rpc("staff_activate_business_portal_account", {
+    p_auth_user_id: authUserId,
+    p_dealer_authorization_id: parsed.data.dealerAuthorizationId,
+    p_reason: current.data.configured
+      ? "Owner reset the business portal access code."
+      : "Owner enabled business portal access.",
+    p_request_id: requestId,
+  });
+  if (error) {
+    console.error(`[staff-business-access:activate] ${error.code ?? "unknown"}`);
+    if (createdAuthUser && authUserId) {
+      await adminClient.auth.admin.deleteUser(authUserId);
+    }
+    if (error.code === "42501") redirect(destination(path, "error", "access_denied"));
+    if (error.code === "22023") redirect(destination(path, "error", "business_license_required"));
+    redirect(destination(path, "error", "save_failed"));
+  }
+
+  revalidatePath(path);
+  revalidatePath("/dealer");
+  redirect(destination(path, "notice", "business_access_ready"));
+}
+
+export async function disableBusinessPortalAccessAction(formData: FormData) {
+  const path = dealerPath(formData.get("dealer_authorization_id"));
+  const parsed = readDisableBusinessAccessForm(formData);
+  if (!parsed.success) redirect(destination(path, "error", "invalid_input"));
+  const client = await verifiedClient();
+  if (!client) redirect("/staff/login");
+  const { error } = await client.rpc("staff_disable_business_portal_account", {
+    p_dealer_authorization_id: parsed.data.dealerAuthorizationId,
+    p_reason: "Owner disabled business portal access.",
+    p_request_id: crypto.randomUUID(),
+  });
+  if (error) {
+    console.error(`[staff-business-access:disable] ${error.code ?? "unknown"}`);
+    if (error.code === "42501") redirect(destination(path, "error", "access_denied"));
+    if (error.code === "P0002") redirect(destination(path, "error", "not_found"));
+    redirect(destination(path, "error", "save_failed"));
+  }
+  revalidatePath(path);
+  revalidatePath("/dealer");
+  redirect(destination(path, "notice", "business_access_disabled"));
 }

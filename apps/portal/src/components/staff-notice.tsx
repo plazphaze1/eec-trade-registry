@@ -28,6 +28,8 @@ const notices: Record<string, string> = {
   access_approved: "The Discord identity is now approved as an Agent.",
   access_denied_recorded: "The access request was denied and no staff authority was granted.",
   access_blocked: "The Discord identity is blocked and any Agent authority is disabled.",
+  business_access_ready: "Business portal access is ready. Give the business its license number and the private access code you just set.",
+  business_access_disabled: "Business portal access was disabled immediately. Existing sessions can no longer place orders.",
 };
 
 const errors: Record<string, string> = {
@@ -42,6 +44,8 @@ const errors: Record<string, string> = {
   save_failed: "The change could not be saved. No authoritative data was changed.",
   price_missing: "No authoritative price applies to that direct order. Configure a public price first.",
   weekly_limit: "That quantity would exceed the customer’s current weekly personal limit.",
+  invalid_access_code: "Use a private access code between 8 and 128 characters.",
+  business_license_required: "Issue or reactivate a business license before enabling portal access.",
 };
 
 export function StaffNotice({

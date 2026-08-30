@@ -19,7 +19,7 @@ Discord authentication and the planned Discord bot integration solve different p
 - Redirect successful callbacks only to the fixed staff route. Do not accept a caller-controlled continuation URL.
 - Resolve business authority independently on every protected database call from the Supabase Auth UUID, active actor profile, effective-dated staff assignment, role, and permission.
 - Bind and provision production staff by immutable provider/Supabase identifiers. Never use a Discord display name, username, guild nickname, guild membership, or Discord role as an authority key.
-- Keep dealer authentication policy unchanged. Dealer email/password credentials and representative grants remain a separate surface.
+- Keep business authentication separate from staff Discord OAuth. ADR 0028 later replaced the visible dealer email with an active license number while retaining Supabase Auth and representative grants behind the Business portal.
 - Keep Discord bot/command identity binding, server/channel configuration, and notification policy separate and unresolved where already documented.
 
 The login experience does not ask the staff member to enter an email or password. The upstream provider and Supabase may process provider account attributes required for the OAuth identity; those attributes are not business authorization data and are not displayed as login credentials.

@@ -5,6 +5,7 @@ import {
   readPublicSupabaseEnvironment,
   type PublicSupabaseEnvironment,
 } from "@/lib/env";
+import { BUSINESS_AUTH_COOKIE_NAME } from "@/lib/business-auth-cookie";
 import { CatalogueConfigurationError } from "@/lib/supabase";
 
 function requireSupabaseEnvironment(): PublicSupabaseEnvironment {
@@ -15,7 +16,7 @@ function requireSupabaseEnvironment(): PublicSupabaseEnvironment {
   return environment;
 }
 
-export async function createServerSupabaseClient() {
+async function createCookieSupabaseClient(cookieName?: string) {
   const environment = requireSupabaseEnvironment();
   const cookieStore = await cookies();
 
@@ -23,6 +24,7 @@ export async function createServerSupabaseClient() {
     environment.NEXT_PUBLIC_SUPABASE_URL,
     environment.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
+      ...(cookieName ? { cookieOptions: { name: cookieName } } : {}),
       cookies: {
         getAll() {
           return cookieStore.getAll();
@@ -40,4 +42,12 @@ export async function createServerSupabaseClient() {
       },
     },
   );
+}
+
+export async function createServerSupabaseClient() {
+  return createCookieSupabaseClient();
+}
+
+export async function createBusinessSupabaseClient() {
+  return createCookieSupabaseClient(BUSINESS_AUTH_COOKIE_NAME);
 }

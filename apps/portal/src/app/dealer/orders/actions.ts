@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { readCancelOrderForm, readSubmitOrderForm } from "@/lib/order-form";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createBusinessSupabaseClient } from "@/lib/supabase-server";
 
 function destination(path: string, key: "error" | "notice", value: string) {
   return `${path}?${new URLSearchParams({ [key]: value }).toString()}`;
@@ -35,7 +35,7 @@ function errorPath(path: string, error: { code?: string; message: string }) {
 }
 
 async function verifiedClient() {
-  const client = await createServerSupabaseClient();
+  const client = await createBusinessSupabaseClient();
   const { data, error } = await client.auth.getClaims();
   return !error && typeof data?.claims?.sub === "string" ? client : null;
 }

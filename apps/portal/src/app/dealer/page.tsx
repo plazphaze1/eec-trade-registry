@@ -22,7 +22,7 @@ export default async function DealerPortalPage() {
   return (
     <main className="dealer-main dealer-home">
       <header className="dealer-page-header">
-        <div><p className="eyebrow">Business account</p><h1>Welcome, {result.data.actor_display_name}</h1><p>Shop, follow an order, or check the business licenses connected to your Discord account.</p></div>
+        <div><p className="eyebrow">Business account</p><h1>Welcome, {result.data.actor_display_name}</h1><p>Shop with your active business license and follow every order in one place.</p></div>
         <div className="staff-button-row"><Link className="button button-primary" href="/dealer/orders/new">Shop</Link><Link className="button button-secondary" href="/dealer/orders">View orders</Link></div>
       </header>
 

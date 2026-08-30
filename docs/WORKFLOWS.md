@@ -153,14 +153,16 @@ Implementation note: the initial function always returns one row. A miss contain
 
 Provide low-friction access scoped to the correct dealer organization and representative.
 
-### Credential path
+### License-number access path
 
-1. Staff or an approved enrollment function creates a representative relationship.
-2. Dealer representative enrolls with a lightweight Supabase Auth credential or approved identity provider.
-3. Successful authentication creates a session.
-4. Each request resolves active representative grants and allowed scopes.
+1. An Owner opens the authorized business record and sets a private access code.
+2. The business receives its existing `LIC` number and the private code through an approved private channel.
+3. The business enters those two values on the Business portal. No email or Discord account is required.
+4. The trusted server confirms that the license, dealer authorization, business account, actor, and representative grant are all active, then asks Supabase Auth to verify the code.
+5. Successful authentication creates a dedicated business session that does not replace the staff Discord session.
+6. Every protected request re-resolves active representative grants and allowed scopes. An expired license or Owner disable action fails closed immediately.
 
-Implementation note: the initial credential path uses Supabase Auth email/password sessions and recognizes only the policy-neutral `portal.read` scope. The private overview is read-only, requires a current representative grant and a currently authority-conferring dealer authorization, and returns only organizations linked to the authenticated dealer actor. Enrollment and credential recovery are not public portal operations.
+Implementation note: Supabase Auth still owns the password hash, but the required Auth email is a non-routable server-only implementation identifier. It is never requested from or shown to the business. An Owner resets the code from the business record; the registry records rotation metadata but never the code itself.
 
 ### Secure-link path
 
