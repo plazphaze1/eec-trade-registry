@@ -1,6 +1,6 @@
 begin;
 
-select plan(40);
+select plan(41);
 
 -- This suite exercises the lifecycle commands against the original catalogue
 -- fixture. Public seed data retires demonstrations by default, so explicitly
@@ -431,12 +431,14 @@ select is(
 
 select is(
   (
-    select display_name
-    from public.get_public_catalogue_item('harbor-lantern')
+    select public_name
+    from public.get_staff_catalogue_item('70000000-0000-0000-0000-000000000001')
   ),
   'Public Harbor Light',
-  'the public catalogue reads the replacement public name immediately'
+  'the secured staff projection reads the replacement public name immediately'
 );
+
+reset role;
 
 select is(
   (
@@ -448,8 +450,6 @@ select is(
   2,
   'the previous public presentation remains in effective-dated history'
 );
-
-reset role;
 
 select ok(
   (
