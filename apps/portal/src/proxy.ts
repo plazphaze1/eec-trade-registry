@@ -2,7 +2,10 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { readPublicSupabaseEnvironment } from "@/lib/env";
-import { updateSupabaseSession } from "@/lib/supabase-proxy";
+import {
+  updateBusinessSupabaseSession,
+  updateSupabaseSession,
+} from "@/lib/supabase-proxy";
 
 export async function proxy(request: NextRequest) {
   const segments = request.nextUrl.pathname.split("/").filter(Boolean);
@@ -33,6 +36,9 @@ export async function proxy(request: NextRequest) {
       }
     }
     return NextResponse.next({ request });
+  }
+  if (segments[0] === "dealer") {
+    return updateBusinessSupabaseSession(request);
   }
   return updateSupabaseSession(request);
 }

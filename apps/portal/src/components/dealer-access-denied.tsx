@@ -5,12 +5,11 @@ import { signOutDealerAction } from "@/app/dealer/actions";
 export function DealerAccessDenied() {
   return (
     <section className="notice-panel staff-access-panel">
-      <p className="eyebrow">Authenticated · no active dealer representation</p>
-      <h1>Dealer portal access is not assigned</h1>
+      <p className="eyebrow">Business access ended</p>
+      <h1>This business cannot use the portal right now</h1>
       <p>
-        Your identity was verified, but no current representative grant with
-        portal access was found for an actively authorized dealer organization.
-        Expired and revoked grants fail closed immediately.
+        The business license or portal access is no longer active. Sign out and
+        ask an EEC Owner to check the business record or reset its access code.
       </p>
       <div className="staff-button-row">
         <form action={signOutDealerAction}>

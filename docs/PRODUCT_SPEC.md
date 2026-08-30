@@ -67,9 +67,9 @@ No login is required. The portal provides:
 
 The public portal must not reveal private prices, exact stock unless explicitly allowed, internal risk classifications, private contacts, order history, investigations, staff notes, authentication data, or unpublished goods.
 
-### 4.2 Dealer portal
+### 4.2 Business portal
 
-Dealer access is private but intentionally lightweight. Depending on the final identity policy, access may use Supabase Auth credentials, emailed magic links, or a secure access-grant exchange that creates a short-lived session.
+Business access is private and intentionally lightweight. A business signs in with its active license number and a private access code issued by an Owner. No email address or Discord account is required. The license number identifies the business authority but is not secret; Supabase Auth stores the access-code hash behind a server-only internal identity.
 
 Authorized dealer representatives can:
 
@@ -303,7 +303,7 @@ Frontend code may display estimates for usability only when clearly labeled and 
 - Staff authenticate through Supabase Auth using Discord OAuth and the server-side PKCE callback flow approved in ADR 0009. The staff portal exposes no email/password form.
 - Discord authentication never grants staff authority by itself; active actor and permission assignments in PostgreSQL remain mandatory.
 - Staff authorization is enforced in PostgreSQL row-level security and secure functions, not only hidden UI controls.
-- Dealer sessions are scoped to represented parties and expire or can be revoked.
+- Business sessions are scoped to one represented party, use a cookie separate from staff Discord sessions, and fail closed when the account, representative grant, dealer authorization, or license is disabled or expires.
 - Raw private-link tokens are never stored; only strong token digests and metadata are retained.
 - Private links are single-use or short-lived and are exchanged for a scoped session where practical.
 - Supabase service-role keys, Discord tokens or webhook URLs, Google credentials, and private status tokens remain server-side and are never committed.
@@ -368,7 +368,7 @@ The product owner approved the following initial deployment policy on 2026-08-04
 - East Empire Company is the configured public institution name. Timestamps are stored in UTC and displayed in `America/New_York`; the zero-decimal `SEP` currency is displayed as Septims.
 - The initial license catalogue uses three configurable classes—general trade, commercial dealer, and institutional trade—and modular configurable endorsements.
 - Authorization follows active permissions and scope. There is no universal second-approver requirement.
-- Dealer authentication begins with individual password credentials through Supabase Auth.
+- Business authentication uses an active license number plus an Owner-issued private access code. The visible portal requests no email or Discord identity; Supabase Auth owns the code hash and session behind a server-only internal identifier.
 - Staff authentication begins with individual Discord OAuth identities through Supabase Auth. Provider identity and database business authorization remain separate.
 - ADR 0021 makes the server-facing access model Owner, Agent, business, and public. A first Discord login creates a pending owner-review record and no authority. Owner approval creates the Agent assignment; business access remains tied to a specific dealer relationship rather than a global staff role.
 - Prices are editable but may be unset. An unset price is pending/unavailable, not zero.

@@ -4,7 +4,7 @@ import { DealerShell } from "@/components/dealer-shell";
 import { getInstitutionName } from "@/lib/env";
 
 export const metadata: Metadata = {
-  title: "Dealer portal",
+  title: "Business portal",
   robots: { index: false, follow: false },
 };
 

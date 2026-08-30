@@ -386,7 +386,7 @@ It must not include application answers, private contacts, internal standing, st
 
 The implemented anonymous surface is limited to `public_dealer_verification(text)` and `public_license_verification(text)`. Anonymous and ordinary authenticated callers have no direct table access. Both functions use exact normalized references, fixed response contracts, and record-level public-disclosure flags. Production rate limiting remains an edge and operations requirement rather than database business state.
 
-### Dealer portal may include
+### Business portal may include
 
 - The representative's own profile and represented parties
 - Own dealer authorization, licenses, endorsements, conditions, applications, orders, reservations, transfers, and documents
@@ -455,8 +455,9 @@ There is no universal dual-control rule. Any active actor with the required perm
 
 ### Dealers
 
-- Lightweight credentials, magic links, or secure-link session exchange
-- Representative relationship verified before private access
+- Active license number plus a private access code; no business email or Discord account is required
+- Server-only license-to-Auth resolution; the public license number is an identifier, not the secret
+- One organization account bound to a scoped representative relationship
 - Revocable sessions and grants
 - Sensitive actions may require stronger identity than catalogue viewing
 - Private URLs are not posted in public Discord channels or exported Sheets

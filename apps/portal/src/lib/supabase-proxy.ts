@@ -1,9 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
+import { BUSINESS_AUTH_COOKIE_NAME } from "@/lib/business-auth-cookie";
 import { readPublicSupabaseEnvironment } from "@/lib/env";
 
-export async function updateSupabaseSession(request: NextRequest) {
+async function updateCookieSession(request: NextRequest, cookieName?: string) {
   const environment = readPublicSupabaseEnvironment();
   if (!environment) {
     return NextResponse.next({ request });
@@ -14,6 +15,7 @@ export async function updateSupabaseSession(request: NextRequest) {
     environment.NEXT_PUBLIC_SUPABASE_URL,
     environment.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
+      ...(cookieName ? { cookieOptions: { name: cookieName } } : {}),
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -36,4 +38,12 @@ export async function updateSupabaseSession(request: NextRequest) {
 
   await supabase.auth.getClaims();
   return response;
+}
+
+export async function updateSupabaseSession(request: NextRequest) {
+  return updateCookieSession(request);
+}
+
+export async function updateBusinessSupabaseSession(request: NextRequest) {
+  return updateCookieSession(request, BUSINESS_AUTH_COOKIE_NAME);
 }

@@ -156,7 +156,22 @@ Key fields:
 
 At least one representative identity is required. The authorization function must validate both dates and scope.
 
-Implementation note: the credential-based dealer portal implements actor-linked representative grants, configurable representative roles, JSON scope with `portal.read`, effective dates, revocation, verification time, overlap protection, audit triggers, and a secured organization-scoped overview. Representative-party and private-link exchange paths remain future work.
+Implementation note: the business portal uses one organization actor and an active representative grant with `portal.read`, order, and optional consignment scopes. The visible sign-in is license number plus private access code; no email or Discord identity is requested.
+
+### `business_portal_accounts`
+
+Lifecycle metadata binding one business party to its dedicated Supabase Auth actor. It stores no access code and no credential hash; Supabase Auth is the only credential store.
+
+Key fields:
+
+- `party_id`, `actor_id`
+- `status`
+- `credential_version`, `credential_rotated_at`
+- `activated_at`, `disabled_at`
+- `created_by_actor_id`, `updated_by_actor_id`
+- idempotent request identifiers and timestamps
+
+The staff activation command creates or reactivates the business actor and scoped representative grant atomically. Disabling blocks the actor and revokes active grants so an already-issued browser session cannot keep using protected business functions.
 
 ### `portal_access_grants`
 

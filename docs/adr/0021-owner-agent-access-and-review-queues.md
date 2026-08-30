@@ -15,7 +15,7 @@ Discord OAuth proved a staff user's identity but an unassigned successful login 
 - Existing active platform administrators receive the user-facing **Owner** assignment during migration without losing any existing authority.
 - The ordinary portal presents only Owner and Agent as staff access classes. Granular permission scopes and legacy role bundles remain internal authorization machinery and test fixtures; they are not ordinary server-administration choices.
 - Owner receives all current permission scopes. Agent receives current day-to-day scopes but cannot administer staff access or read restricted audit history. Future permission migrations must deliberately decide whether a new scope belongs to Owner, Agent, or both.
-- **Business** is not a global staff role. Business access remains bound to a specific party, dealer authorization, and representative grant through the Dealer portal. The public remains unauthenticated.
+- **Business** is not a global staff role. Business access remains bound to a specific party, dealer authorization, license, and representative grant through the Business portal. ADR 0028 defines its license-number and private-code login. The public remains unauthenticated.
 - New access requests and decisions create durable outbox events. Discord delivery is only a notification projection and depends on a configured staff-alert destination.
 - License applications receive a dedicated staff review workspace showing requested endorsements, canonical-holder selection, approval or denial controls, and recent decision history. The existing authoritative application decision function remains the only mutation path.
 

@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createBusinessSupabaseClient } from "@/lib/supabase-server";
 
 export async function requireDealerSession() {
-  const client = await createServerSupabaseClient();
+  const client = await createBusinessSupabaseClient();
   const { data, error } = await client.auth.getClaims();
   const subject = data?.claims?.sub;
 
@@ -15,7 +15,7 @@ export async function requireDealerSession() {
 }
 
 export async function hasAuthenticatedDealerSession(): Promise<boolean> {
-  const client = await createServerSupabaseClient();
+  const client = await createBusinessSupabaseClient();
   const { data, error } = await client.auth.getClaims();
   return !error && typeof data?.claims?.sub === "string";
 }

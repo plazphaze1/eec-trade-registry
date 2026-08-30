@@ -97,6 +97,8 @@ ADR 0025 removes the remaining setup detours: public licensing is a short link-s
 
 ADR 0027 consolidates the remaining item-level detours into **Stock & prices**. Each item now shows ledger-derived availability, base selling price, and applicable Company buying price, with inline ordinary receipt, player purchase, seller setup, and price replacement. The underlying ledger, procurement offer, and effective-dated price commands remain separate and authoritative.
 
+ADR 0028 removes email and Discord from ordinary business access. An Owner sets or resets one private code on the business record; the business signs in with its current license number and that code. Business and staff sessions use separate cookies, the code hash remains in Supabase Auth, and license/authorization/representative checks still fail closed in PostgreSQL.
+
 ### User outcome
 
 Authorized staff can maintain the master catalogue, prices, publication, and control metadata; public output changes from the same source record.

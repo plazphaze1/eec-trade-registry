@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { readDealerConsignmentReportForm } from "@/lib/consignment-form";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createBusinessSupabaseClient } from "@/lib/supabase-server";
 
 const path = "/dealer/consignments";
 function destination(key: "error" | "notice", value: string) {
@@ -22,7 +22,7 @@ function errorPath(error: { code?: string; message: string }) {
 export async function submitConsignmentReportAction(formData: FormData) {
   const parsed = readDealerConsignmentReportForm(formData);
   if (!parsed.success) redirect(destination("error", "invalid_input"));
-  const client = await createServerSupabaseClient();
+  const client = await createBusinessSupabaseClient();
   const { data: claims, error: claimsError } = await client.auth.getClaims();
   if (claimsError || typeof claims?.claims?.sub !== "string") redirect("/dealer/login");
   const input = parsed.data;

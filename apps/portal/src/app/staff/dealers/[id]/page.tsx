@@ -2,11 +2,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 
-import { changeDealerStatusAction, updateDealerAction } from "@/app/staff/dealers/actions";
+import {
+  changeDealerStatusAction,
+  disableBusinessPortalAccessAction,
+  setBusinessPortalAccessAction,
+  updateDealerAction,
+} from "@/app/staff/dealers/actions";
 import { ReferenceBlock } from "@/components/reference-block";
 import { StaffAccessDenied } from "@/components/staff-access-denied";
 import { StaffNotice } from "@/components/staff-notice";
 import { requireStaffSession } from "@/lib/staff-auth";
+import { getStaffBusinessAccess } from "@/lib/business-access";
 import { getStaffDealer } from "@/lib/staff-dealers";
 import { getStaffLicenses } from "@/lib/staff-licensing";
 
@@ -24,12 +30,17 @@ export default async function DealerDetailPage({ params, searchParams }: { param
   const parameters = await searchParams;
   if (!z.guid().safeParse(id).success) notFound();
   const { client } = await requireStaffSession();
-  const [result, licensesResult] = await Promise.all([getStaffDealer(client, id), getStaffLicenses(client)]);
+  const [result, licensesResult, businessAccessResult] = await Promise.all([
+    getStaffDealer(client, id),
+    getStaffLicenses(client),
+    getStaffBusinessAccess(client, id),
+  ]);
   if (!result.ok && result.code === "access_denied") return <main className="staff-main"><StaffAccessDenied /></main>;
   if (!result.ok) return <main className="staff-main"><section className="notice-panel"><h1>The dealer record could not be loaded</h1><p>No authoritative data was changed.</p></section></main>;
   if (!result.data) notFound();
   const dealer = result.data;
   const licenses = licensesResult.ok ? licensesResult.data.filter((license) => license.dealer_reference === dealer.public_reference) : [];
+  const businessAccess = businessAccessResult.ok ? businessAccessResult.data : null;
   const statusTargets = targets(dealer.status_code);
 
   return <main className="staff-main">
@@ -37,6 +48,18 @@ export default async function DealerDetailPage({ params, searchParams }: { param
     <ReferenceBlock label="Dealer reference" reference={dealer.public_reference} status={dealer.status_label}/>
     <StaffNotice error={parameters.error} notice={parameters.notice} />
     <section className="customer-license-section"><div className="inventory-section-heading"><div><p className="eyebrow">Licenses</p><h2>What this business may order</h2></div></div>{licenses.length > 0 ? <div className="customer-license-list">{licenses.map((license) => <Link href={`/staff/licensing/${license.id}`} key={license.id}><span className={`staff-status staff-status-${license.status_code}`}>{license.status_label}</span><strong>{license.license_class_label}</strong><small>{license.endorsements.filter((item) => !item.revoked_at).length} endorsement{license.endorsements.filter((item) => !item.revoked_at).length === 1 ? "" : "s"}</small></Link>)}</div> : <div className="empty-state"><p>No license is linked to this business yet.</p><Link className="button button-primary" href="/staff/licensing/new">Issue license</Link></div>}</section>
+    {businessAccess && <section className="customer-license-section business-access-section">
+      <div className="inventory-section-heading"><div><p className="eyebrow">Business portal</p><h2>License number + private access code</h2><p>No email or Discord account is needed. Set one code, then give the business its LIC number and that code.</p></div><span className={`staff-status ${businessAccess.status === "active" ? "staff-status-active" : "staff-status-suspended"}`}>{businessAccess.status === "active" ? "Ready" : businessAccess.configured ? "Disabled" : "Not set up"}</span></div>
+      {businessAccess.eligible_license_references.length > 0 ? <div className="business-access-grid">
+        <article className="detail-card"><p className="eyebrow">They sign in with</p><h3>{businessAccess.eligible_license_references[0]}</h3><p>and the private code you set below.</p>{businessAccess.credential_rotated_at && <small>Code last changed {new Date(businessAccess.credential_rotated_at).toLocaleString()}</small>}</article>
+        <form action={setBusinessPortalAccessAction} className="staff-form business-access-form">
+          <input name="dealer_authorization_id" type="hidden" value={dealer.id} />
+          <label className="field"><span>{businessAccess.configured ? "New private access code" : "Create private access code"}</span><input autoComplete="new-password" minLength={8} maxLength={128} name="access_code" placeholder="At least 8 characters" required type="password" /><small>This replaces the old code immediately. The code is never shown or stored in the registry.</small></label>
+          <button className="button button-primary" type="submit">{businessAccess.configured ? "Reset access code" : "Enable business portal"}</button>
+        </form>
+      </div> : <div className="empty-state"><h3>Issue a license first</h3><p>Portal access can be enabled as soon as this business has an active license.</p><Link className="button button-primary" href="/staff/licensing/new">Issue license</Link></div>}
+      {businessAccess.status === "active" && <form action={disableBusinessPortalAccessAction} className="business-access-disable"><input name="dealer_authorization_id" type="hidden" value={dealer.id} /><p>Need to stop access? This signs the business out of all protected operations immediately.</p><button className="button button-secondary" type="submit">Disable business portal</button></form>}
+    </section>}
     <details className="staff-tools-panel inline-tools-panel customer-record-tools"><summary><span><span><strong>Edit business record</strong><small>Public details, internal notes, and authorization status</small></span></span><span>Open</span></summary><div className="staff-tools-content">
     <section className="detail-grid"><article className="detail-card"><p className="eyebrow">Current authority</p><h2>{dealer.status_label}</h2><dl><div><dt>Effective from</dt><dd>{new Date(dealer.effective_from).toLocaleString()}</dd></div><div><dt>Public record</dt><dd>{dealer.public_disclosure_enabled ? "Published" : "Private"}</dd></div></dl></article></section>
     <form action={updateDealerAction} className="staff-form">

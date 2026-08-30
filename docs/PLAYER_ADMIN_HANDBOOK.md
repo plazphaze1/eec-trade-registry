@@ -69,7 +69,7 @@ The business receives the customer's request, decides whether it wants to take t
 
 This is the player authorized to act for the licensed business. The representative may be its owner, manager, buyer, or another approved character.
 
-The representative can use the dealer portal when granted the required access. They must never borrow another player's credentials or use an EEC staff account.
+The business can use the Business portal after an Owner sets its private access code. It signs in with the current license number and that code; no email or Discord account is required. Staff must never ask for or use the business's private code.
 
 ### EEC agent
 
@@ -245,7 +245,7 @@ The order should record:
 
 #### Current live-portal method
 
-The deployed portal currently requires the business's authorized representative to submit the requisition through the dealer portal. The EEC agent then opens the staff order queue and reviews it.
+The business can submit the requisition through the Business portal with its license number and private access code, or an EEC Agent can enter it on the business's behalf from **New order**. The EEC Agent then reviews it in the staff order queue.
 
 #### Agreed assisted-order method
 
@@ -254,7 +254,7 @@ The intended roleplay workflow also allows the EEC agent to enter the order dire
 Until that feature is implemented:
 
 - Do not ask the EEC agent to log in as the business.
-- Do not share dealer passwords.
+- Do not share a business's private access code outside that business. An Owner can reset it at any time.
 - Have the verified business representative submit the dealer requisition.
 - The agent may guide the representative and then process the resulting order.
 
