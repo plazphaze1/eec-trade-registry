@@ -9,8 +9,11 @@ import {
 import { InventoryNotice } from "@/components/inventory-notice";
 import { SimpleStockWorkspace } from "@/components/simple-stock-workspace";
 import { StaffAccessDenied } from "@/components/staff-access-denied";
+import { getStaffConfigurationWorkspace } from "@/lib/configuration";
+import { getStaffEconomyWorkspace } from "@/lib/economy";
 import { getDefaultLocale } from "@/lib/env";
 import { getStaffInventoryWorkspace } from "@/lib/inventory";
+import { REGISTRY_CONFIG } from "@/lib/registry-config";
 import { getMyStaffAccessState } from "@/lib/staff-access";
 import { requireStaffSession } from "@/lib/staff-auth";
 
@@ -25,9 +28,11 @@ function quantity(value: number) {
 export default async function StaffInventoryPage({ searchParams }: StaffInventoryPageProps) {
   const parameters = await searchParams;
   const { client } = await requireStaffSession();
-  const [result, access] = await Promise.all([
+  const [result, access, configuration, economy] = await Promise.all([
     getStaffInventoryWorkspace(client),
     getMyStaffAccessState(client),
+    getStaffConfigurationWorkspace(client),
+    getStaffEconomyWorkspace(client),
   ]);
   if (!result.ok && result.code === "access_denied") {
     return <main className="staff-main"><StaffAccessDenied /></main>;
@@ -54,35 +59,77 @@ export default async function StaffInventoryPage({ searchParams }: StaffInventor
     }
     return balances;
   }, new Map<string, number>());
-  const stockItems = workspace.items.map((item) => ({
-    action: receivableIds.has(item.id) ? "receipt" as const : item.inventory_mode === "serialized" ? "asset" as const : "purchase" as const,
-    available: availableByItem.get(item.id) ?? 0,
-    id: item.id,
-    name: item.display_name,
-    unit: item.unit_code,
-  }));
+  const configurationData = configuration.ok ? configuration.data : null;
+  const economyData = economy.ok ? economy.data : null;
+  const publicSchedule = configurationData?.price_schedules.find((schedule) => schedule.audience_code === "public");
+  const buyingCurrency = economyData?.currencies.find((currency) => currency.code === REGISTRY_CONFIG.currency.code)
+    ?? economyData?.currencies[0];
+  const currentOffers = economyData?.offers.filter((offer) => offer.is_current) ?? [];
+  const stockItems = workspace.items.map((item) => {
+    const configured = configurationData?.items.find((candidate) => candidate.id === item.id);
+    const offer = currentOffers.find((candidate) => candidate.item_id === item.id);
+    const procurementEnabled = economyData?.positions.some((position) => position.item_id === item.id && position.procurement_enabled) ?? false;
+    const priceScheduleId = configured?.price_schedule_id ?? publicSchedule?.id ?? null;
+    const published = configured?.publication_status === "published";
+    return {
+      action: receivableIds.has(item.id) ? "receipt" as const : item.inventory_mode === "serialized" ? "asset" as const : "purchase" as const,
+      available: availableByItem.get(item.id) ?? 0,
+      buyingPrice: procurementEnabled && buyingCurrency ? {
+        amount: offer?.amount_minor ?? null,
+        currencyCode: buyingCurrency.code,
+        currencyId: buyingCurrency.id,
+        offerId: offer?.id ?? null,
+      } : null,
+      id: item.id,
+      name: item.display_name,
+      salePrice: published && configured && priceScheduleId && configured.control_profile_code && configured.availability_profile_code ? {
+        amount: configured.price_amount_minor,
+        availabilityProfileCode: configured.availability_profile_code,
+        bulkMinimum: configured.bulk_minimum,
+        controlProfileCode: configured.control_profile_code,
+        currencyCode: configured.currency_code ?? publicSchedule?.currency_code ?? REGISTRY_CONFIG.currency.code,
+        orderIncrement: configured.order_increment ?? 1,
+        priceScheduleId,
+        publicDescription: configured.public_description ?? configured.description,
+        publicName: configured.public_name ?? configured.display_name,
+        requirementSummary: configured.requirement_summary ?? "Contact an authorized representative for current terms and availability.",
+        canEdit: Boolean(configurationData?.capabilities.can_manage_pricing && configurationData.capabilities.can_manage_publication),
+      } : null,
+      unit: item.unit_code,
+    };
+  });
   stockItems.sort((left, right) => left.name.localeCompare(right.name));
   const locations = workspace.warehouses.flatMap((warehouse) => warehouse.locations);
-  const defaultLocationId = locations.find((location) => location.location_type === "available")?.id
+  const defaultReceiptLocationId = locations.find((location) => location.location_type === "available")?.id
     ?? locations.find((location) => location.location_type === "receiving")?.id
     ?? null;
+  const defaultPurchaseLocationId = economyData?.warehouses.flatMap((warehouse) => warehouse.locations)
+    .find((location) => location.location_type === "receiving")?.id ?? null;
+  const suppliers = economyData?.suppliers.filter((supplier) => supplier.status === "active")
+    .map((supplier) => ({ id: supplier.id, name: supplier.display_name })) ?? [];
+  const defaultSupplierPartyType = economyData?.party_types.find((type) => type.code === REGISTRY_CONFIG.procurement.defaultSupplierPartyTypeCode)
+    ?? economyData?.party_types[0];
+  const defaultSupplierSetup = economyData?.jurisdictions[0] && defaultSupplierPartyType ? {
+    jurisdictionId: economyData.jurisdictions[0].id,
+    partyTypeCode: defaultSupplierPartyType.code,
+  } : null;
 
   return (
     <main className="staff-main">
       <header className="staff-page-header">
         <div>
           <p className="eyebrow">{showSystemRecords ? "Owner tools" : "Warehouse"}</p>
-          <h1>{showSystemRecords ? "Stock records" : "What is in stock?"}</h1>
-          <p>{showSystemRecords ? "Corrections and historical evidence for exceptional work." : "Find an item, see how many are ready, or add more in one click."}</p>
+          <h1>{showSystemRecords ? "Stock records" : "Stock & prices"}</h1>
+          <p>{showSystemRecords ? "Corrections and historical evidence for exceptional work." : "Search an item, add stock, or change its normal prices without leaving this page."}</p>
         </div>
         <div className="staff-button-row">
-          {showSystemRecords ? <Link className="button button-secondary" href="/staff/inventory">Back to stock</Link> : <Link className="button button-primary" href="/staff/buy">Buy from a player</Link>}
+          {showSystemRecords ? <Link className="button button-secondary" href="/staff/inventory">Back to stock</Link> : <Link className="button button-secondary" href="/staff/configuration">Add a new item</Link>}
         </div>
       </header>
 
       <InventoryNotice error={parameters.error} notice={parameters.notice} />
 
-      {!showSystemRecords && <SimpleStockWorkspace defaultLocationId={defaultLocationId} items={stockItems} />}
+      {!showSystemRecords && <SimpleStockWorkspace defaultPurchaseLocationId={defaultPurchaseLocationId} defaultReceiptLocationId={defaultReceiptLocationId} defaultSupplierSetup={defaultSupplierSetup} items={stockItems} suppliers={suppliers} />}
 
       {showSystemRecords && <div className="staff-tools-panel stock-tools-panel is-system-records"><div className="staff-tools-content">
       <section className="inventory-section embedded-inventory-section">

@@ -95,6 +95,8 @@ ADR 0024 completes the storefront boundary for primary work: staff and business 
 
 ADR 0025 removes the remaining setup detours: public licensing is a short link-selected business form; Stock includes every zero- or nonzero item and routes it to the correct intake method; ordinary receipt derives location; guaranteed buying prices are one-field records on Buy materials; first-seller registration asks only for a name; and the reserve-economy screen is dark Owner-only evidence rather than a normal workflow.
 
+ADR 0027 consolidates the remaining item-level detours into **Stock & prices**. Each item now shows ledger-derived availability, base selling price, and applicable Company buying price, with inline ordinary receipt, player purchase, seller setup, and price replacement. The underlying ledger, procurement offer, and effective-dated price commands remain separate and authoritative.
+
 ### User outcome
 
 Authorized staff can maintain the master catalogue, prices, publication, and control metadata; public output changes from the same source record.

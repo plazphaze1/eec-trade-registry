@@ -16,10 +16,9 @@ type Command = {
 
 const commands: Command[] = [
   { href: "/staff/orders/new", icon: "spark", label: "Shop / new order", description: "Add goods to a customer order", keywords: "new customer cart" },
-  { href: "/staff/buy", icon: "coins", label: "Buy materials", description: "Receive player-supplied materials at the guaranteed rate", keywords: "procurement floor bulk ore leather supplier" },
   { href: "/staff/orders", icon: "clipboard", label: "Find an order", description: "See what is open, ready, or completed", keywords: "customer collect deliver" },
   { href: "/staff/configuration#quick-add-item", icon: "box", label: "Add a catalogue item", description: "Create and publish a new good", keywords: "new product material catalogue" },
-  { href: "/staff/inventory", icon: "package", label: "Check or add stock", description: "See available quantities and receive goods", keywords: "inventory quantity" },
+  { href: "/staff/inventory", icon: "package", label: "Stock & prices", description: "Add stock, buy player materials, or update normal prices", keywords: "inventory quantity procurement floor bulk ore leather supplier price" },
   { href: "/staff/economy?view=system", icon: "coins", label: "Material policy records", description: "Advanced reserve targets and buying-price history", keywords: "procurement policy floor reserve", ownerOnly: true },
   { href: "/staff/pricing", icon: "coins", label: "Publish a price rule", description: "Bind a schedule to a business, class, region, or channel", keywords: "dealer pricing wholesale" },
   { href: "/staff/consignments", icon: "truck", label: "Open consignments", description: "Manage custody, reports, commission, and settlement", keywords: "consignment finance commission" },

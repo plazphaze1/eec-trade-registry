@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 import {
@@ -10,6 +10,7 @@ import {
   readReservationMutationForm,
   readReverseInventoryForm,
 } from "@/lib/inventory-form";
+import { readPublicTermsForm } from "@/lib/configuration-form";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
 const inventoryPath = "/staff/inventory";
@@ -54,9 +55,40 @@ async function verifiedClient() {
 }
 
 function refreshInventorySurfaces() {
+  updateTag("public-catalogue");
   revalidatePath(inventoryPath);
+  revalidatePath("/staff/configuration");
   revalidatePath("/staff/orders");
   revalidatePath("/dealer/orders");
+  revalidatePath("/catalogue");
+  revalidatePath("/");
+}
+
+export async function setInventorySalePriceAction(formData: FormData) {
+  const parsed = readPublicTermsForm(formData);
+  if (!parsed.success) redirect(destination("error", "invalid_input"));
+  const client = await verifiedClient();
+  if (!client) redirect("/staff/login");
+  const input = parsed.data;
+  const { error } = await client.rpc("staff_set_item_public_terms", {
+    p_availability_profile_code: input.availabilityProfileCode,
+    p_bulk_minimum: input.bulkMinimum,
+    p_control_profile_code: input.controlProfileCode,
+    p_item_id: input.itemId,
+    p_order_increment: input.orderIncrement,
+    p_price_action: input.priceAction,
+    p_price_amount_minor: input.priceAmountMinor,
+    p_price_schedule_id: input.priceScheduleId,
+    p_public_description: input.publicDescription,
+    p_public_name: input.publicName,
+    p_publish: input.publish,
+    p_reason: input.reason || "Base selling price updated from Stock and prices.",
+    p_request_id: crypto.randomUUID(),
+    p_requirement_summary: input.requirementSummary,
+  });
+  if (error) redirect(errorPath(error));
+  refreshInventorySurfaces();
+  redirect(destination("notice", "sale_price_saved"));
 }
 
 export async function postInventoryReceiptAction(formData: FormData) {

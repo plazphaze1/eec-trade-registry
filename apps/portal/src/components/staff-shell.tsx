@@ -12,9 +12,8 @@ const groups: Array<{ label: string; items: NavigationItem[] }> = [
   { label: "Everyday work", items: [
     { href: "/staff/dashboard", icon: "dashboard", label: "Home", exact: true },
     { href: "/staff/orders/new", icon: "spark", label: "Create an order", exact: true },
-    { href: "/staff/buy", icon: "coins", label: "Buy from a player", exact: true },
     { href: "/staff/orders", icon: "clipboard", label: "Orders" },
-    { href: "/staff/inventory", icon: "box", label: "Stock" },
+    { href: "/staff/inventory", icon: "box", label: "Stock & prices" },
     { href: "/staff/applications", icon: "license", label: "License requests" },
   ] },
   { label: "Records", items: [

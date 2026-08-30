@@ -12,7 +12,7 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 const economyPath = "/staff/economy";
 function returnPath(formData: FormData) {
   const candidate = formData.get("return_to");
-  return typeof candidate === "string" && (candidate === "/staff/buy" || /^\/staff\/materials\/[A-Za-z0-9-]+$/.test(candidate))
+  return typeof candidate === "string" && (candidate === "/staff/buy" || candidate === "/staff/inventory" || /^\/staff\/materials\/[A-Za-z0-9-]+$/.test(candidate))
     ? candidate
     : economyPath;
 }
@@ -89,7 +89,7 @@ export async function createOfferAction(formData: FormData) {
 }
 
 export async function setBuyingPriceAction(formData: FormData) {
-  const path = "/staff/buy";
+  const path = returnPath(formData);
   const parsed = readSimpleBuyingPriceForm(formData);
   if (!parsed.success) redirect(destination("error", "invalid_input", path));
   const client = await verifiedClient(); if (!client) redirect("/staff/login");
