@@ -270,7 +270,7 @@ begin
       effective_from, verified_at, verified_by
     ) values (
       dealer_record.dealer_party_id, current_actor_id, role_id, scopes,
-      statement_timestamp(), statement_timestamp(), author_actor_id
+      current_timestamp, current_timestamp, author_actor_id
     );
   end if;
 
