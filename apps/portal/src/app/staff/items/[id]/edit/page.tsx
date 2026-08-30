@@ -74,8 +74,9 @@ export default async function EditStaffCatalogueItemPage({
         <p className="eyebrow">Canonical record · {item.item_code}</p>
         <h1>{item.display_name}</h1>
         <p>
-          Editing this source record does not rewrite its effective-dated public
-          presentation or price. Concurrent changes are rejected by record version.
+          Change the item and its public catalogue name in one place. Public
+          price and trade terms remain separately effective-dated. Concurrent
+          changes are rejected by record version.
         </p>
       </header>
 

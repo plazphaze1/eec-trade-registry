@@ -58,7 +58,7 @@ Let specifically assigned catalogue staff maintain canonical item source records
 5. Each later database request independently validates the Supabase session and resolves an active actor profile, effective-dated role assignment, and required permission.
 6. The internal work queue is returned by a secured projection and includes staff-only catalogue fields needed for this task.
 7. Creating an item calls a secure command that creates one unpublished canonical record. It does not create publication, price, eligibility, inventory, or asset state.
-8. Editing an item supplies the expected record version. The command locks and rechecks the row so stale work cannot overwrite a concurrent change.
+8. Editing an item supplies the expected record version. The command locks and rechecks the row so stale work cannot overwrite a concurrent change. When the item has a current public publication, the same ordinary form shows its customer-facing name and replaces that name in the same transaction when changed; the previous publication remains in effective-dated history.
 9. Item code and public slug remain immutable after creation until a correction policy is approved.
 10. Archive and restore are explicit status commands with a mandatory reason. Archiving removes the item from current public projections without deleting publication, price, or audit history.
 11. Every accepted write records actor, authentication identity, permission and assignment, request/correlation ID, reason, previous state, new state, source surface, and timestamp.
@@ -73,7 +73,7 @@ Let specifically assigned catalogue staff maintain canonical item source records
 
 ### Deliberate exclusions
 
-- Backdated or scheduled publication; effective-now public creation, replacement, and withdrawal are implemented in Quick operations
+- Backdated or scheduled publication; effective-now public creation, full-terms replacement, and withdrawal are implemented in Quick operations. The ordinary item editor can replace only the current customer-facing name while preserving the other effective terms.
 - Specialized private/dealer price precedence and approval; explicit active-schedule public price set/clear is implemented
 - Item-code or slug corrections
 - Existing reference-record rename/archive and role administration; new category, unit, availability, license-class, endorsement, and control-profile creation is implemented

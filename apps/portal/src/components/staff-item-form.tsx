@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 import {
   createCatalogueItemAction,
   updateCatalogueItemAction,
@@ -14,6 +18,14 @@ interface StaffItemFormProps {
 
 export function StaffItemForm({ item, references }: StaffItemFormProps) {
   const editing = Boolean(item);
+  const [displayName, setDisplayName] = useState(item?.display_name ?? "");
+  const [publicName, setPublicName] = useState(
+    item?.public_name ?? item?.display_name ?? "",
+  );
+  const [namesLinked, setNamesLinked] = useState(
+    !item?.public_name || item.public_name === item.display_name,
+  );
+  const hasPublicListing = item?.publication_status === "published";
 
   return (
     <form
@@ -83,16 +95,55 @@ export function StaffItemForm({ item, references }: StaffItemFormProps) {
         <legend>Canonical record</legend>
         <div className="staff-form-grid">
           <label className="field staff-field-wide">
-            <span>Internal display name</span>
+            <span>Item name</span>
             <input
-              defaultValue={item?.display_name}
               maxLength={160}
               name="display_name"
+              onChange={(event) => {
+                const nextName = event.target.value;
+                setDisplayName(nextName);
+                if (namesLinked) setPublicName(nextName);
+              }}
               required
+              value={displayName}
             />
           </label>
+          {hasPublicListing && (
+            <label className="field staff-field-wide">
+              <span>Public catalogue name</span>
+              <div className="staff-inline-field-action">
+                <input
+                  maxLength={200}
+                  name="public_name"
+                  onChange={(event) => {
+                    const nextName = event.target.value;
+                    setPublicName(nextName);
+                    setNamesLinked(nextName === displayName);
+                  }}
+                  required
+                  value={publicName}
+                />
+                {!namesLinked && (
+                  <button
+                    className="button button-secondary button-compact"
+                    onClick={() => {
+                      setPublicName(displayName);
+                      setNamesLinked(true);
+                    }}
+                    type="button"
+                  >
+                    Use item name
+                  </button>
+                )}
+              </div>
+              <small>
+                This is the name customers see. It follows the item name until
+                you deliberately make it different.
+              </small>
+            </label>
+          )}
           <label className="field staff-field-wide">
-            <span>Internal description</span>
+            <span>Item description</span>
             <textarea
               defaultValue={item?.description}
               maxLength={4000}

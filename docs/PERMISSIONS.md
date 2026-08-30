@@ -178,6 +178,8 @@ Implementation note: the configurable elevated `platform_administrator` role rec
 
 Rapid-operations implementation note: `platform_administrator` additionally receives `configuration.read` and `configuration.manage` for reference-data administration. `catalogue_manager` receives `configuration.read`, `publication.manage`, and `pricing.manage`. A compound quick-item command still rechecks `catalogue.manage`, `procurement.policy.manage`, optional `publication.manage`, optional `pricing.manage`, and optional warehouse-scoped `inventory.receipt.post` separately. Configuration administration alone cannot post stock or create commercial authority.
 
+The ordinary item editor may update a canonical item and its current public name in one transaction. The command independently requires `catalogue.manage` for the canonical record and `publication.manage` before replacing the effective-dated public presentation; possessing only one permission cannot mutate the other surface.
+
 ADR 0021 supersedes the ordinary role-composition UI. Existing platform administrators are migrated to the `owner` bundle, which receives all current active scopes. Owner approval grants the `agent` bundle, which receives current operational scopes but excludes `access.private.read`, `access.assignment.manage`, and `audit.private.read`. Granular legacy bundles remain internal and may still support tests or future scoped policy; they are not presented as everyday server roles.
 
 ## 4. Proposed staff roles

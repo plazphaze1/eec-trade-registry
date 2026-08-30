@@ -786,6 +786,29 @@ button:focus-visible {
   line-height: 1.55;
 }
 
+.staff-inline-field-action {
+  display: flex;
+  gap: 0.65rem;
+  align-items: stretch;
+}
+
+.staff-inline-field-action input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.staff-inline-field-action .button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .staff-inline-field-action {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
 .staff-audit-fieldset {
   background: var(--paper);
 }
