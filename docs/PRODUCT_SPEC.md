@@ -27,6 +27,7 @@ Implementation proceeds through the policy-gated vertical slices in `ROADMAP.md`
 11. **The interface is smaller than the domain.** Ordinary staff describe the buyer, goods, quantity, and handoff; Supabase derives classifications and carries references. Advanced systems remain available in one explained Staff tools panel and on the records to which they apply, not in primary navigation.
 12. **Setup belongs inside the task.** A player applies with plain business questions, Stock shows every item even at zero, and guaranteed buying prices are set where staff buy materials. Separate setup desks must not block a routine action.
 13. **The experience is consumer-grade.** Public and routine staff surfaces use familiar shopping patterns, readable type, generous targets, and one dominant next action. Registry evidence and policy machinery remain available without visually competing with the task.
+14. **One item has one routine workspace.** Stock, ordinary intake, player-sourced intake, and normal price changes are presented on the same item card. Separate ledger, procurement, publication, and pricing commands remain authoritative underneath without becoming separate navigation chores.
 
 ## 3. Users and actors
 

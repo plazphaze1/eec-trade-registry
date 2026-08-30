@@ -87,8 +87,9 @@ Let specifically assigned catalogue staff maintain canonical item source records
 4. Moving a feature out of primary navigation changes no database permission, RLS policy, state transition, audit requirement, or integration behavior.
 5. `docs/OPERATOR_GUIDE.md` is the ordinary Agent guide. The governing technical documents remain the authority for invariants and policy gates.
 6. Public application task selection uses normal links rather than JavaScript-only tabs. Routine applications derive the configured standard class and jurisdiction, while special permissions remain optional.
-7. Stock shows every active item. Its card directs staff to ordinary receipt, player purchase, or unique-asset handling; eligibility filtering never makes a zero-stock item disappear.
-8. Guaranteed buying-price setup is embedded in Buy materials. The advanced economy route is an Owner-only system-record view and is not part of ordinary navigation.
+7. **Stock & prices** shows every active item. Each card shows available stock and the applicable normal prices; zero-stock items never disappear.
+8. Opening **Manage** on a card keeps ordinary receipt, player purchase, base selling price, and guaranteed buying-price work on that item. Only serialized assets leave for their required individual-custody workflow.
+9. The dedicated Buy materials route remains available for a focused purchasing session, while the advanced economy route is an Owner-only system-record view and is not part of ordinary navigation.
 
 ## 2.2 Rapid item onboarding and ordinary receipt
 

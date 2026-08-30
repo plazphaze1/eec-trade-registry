@@ -237,15 +237,15 @@ This is the practical starting point for administrators. The word **add** has a 
 | A kind of product, such as tailoring goods | Item category | `/staff/configuration` | Does not create an item, license rule, price, or stock |
 | A way of counting goods, such as garment, crate, or unit | Unit of measure | `/staff/configuration` | Does not add inventory |
 | A product or material players can refer to | Catalogue item plus supply policy | `/staff/configuration` | Does not necessarily publish, price, or stock it unless those options are selected |
-| More ordinary physical stock | Inventory receipt | Quick receipt on `/staff/configuration` or full `/staff/inventory` desk | Does not create a new item and does not edit a stock cell |
-| Player-produced keystone material | Supplier delivery | `/staff/economy` | Does not make the supplier a dealer or license holder |
+| More ordinary physical stock | Inventory receipt | **Manage** on the item in `/staff/inventory` | Does not create a new item and does not edit a stock cell |
+| Player-produced keystone material | Supplier delivery | **Manage** on the material in `/staff/inventory` | Does not make the supplier a dealer or license holder |
 | One unique controlled object | Serialized asset | `/staff/assets` | Does not add a fungible quantity |
 | A business allowed to deal with EEC | Party plus dealer authorization | `/staff/dealers/new` | Does not issue a license or create login credentials |
 | A legal or commercial authority type | License type | `/staff/configuration` | Does not issue that license to anyone |
 | A modular permission carried by licenses | Endorsement definition | `/staff/configuration` | Does not grant the endorsement to a license |
 | An actual license held by a party | License record | `/staff/licensing/new` | Does not create dealer authority or staff access |
 | An endorsement on an existing license | Effective-dated endorsement grant | The license detail page | Does not rewrite the license class |
-| A public catalogue price | Effective-dated price rule | `/staff/configuration` | Does not settle an order price retroactively |
+| A normal base selling price | Effective-dated price rule | **Manage** on the item in `/staff/inventory` | Does not settle an order price retroactively |
 | Access for an EEC Agent | Owner-approved Agent assignment | `/staff/access` | Does not come from a Discord server role |
 | A public or staff-facing status phrase | Availability profile | `/staff/configuration` | Does not calculate or change stock |
 | A risk and review behavior | Control profile | `/staff/configuration` | Does not automatically define a specific license or endorsement requirement |
@@ -387,13 +387,13 @@ Example: add **Moonstone Ore** as an economic floor material.
 5. Configure reserve thresholds only after the economic policy owner approves them.
 6. Publish public wording if ready, but do **not** enter opening stock.
 7. Create the item.
-8. Open `/staff/economy`.
-9. Publish an effective-dated guaranteed purchase offer after the floor rate is approved.
-10. Register each actual supplier when they first sell to EEC.
-11. Receive each inspected delivery against that supplier and the current offer.
+8. Open **Stock & prices** and select **Manage** on Moonstone Ore.
+9. Enter the approved **Company buying price**.
+10. Enter the first seller's name when the card asks for it.
+11. Record each inspected delivery by selecting the seller and entering quantity on that same card.
 12. Record payment evidence only after the Septims were actually paid through the approved server process.
 
-The generic inventory receipt intentionally hides this item. This is what prevents an admin from quietly spawning the keystone reserve on the website.
+The material remains visible in Stock & prices, but the generic receipt is unavailable. The card uses the supplier-delivery command instead. This prevents an admin from quietly spawning the keystone reserve on the website.
 
 ### 7.8 Worked setup: made-to-order good with no initial stock
 
@@ -435,20 +435,20 @@ The site can support scarcity, but scarcity remains a policy choice backed by le
 
 The catalogue item describes the type. Each asset record represents one real controlled object.
 
-### 7.11 Add ordinary inventory in three fields
+### 7.11 Add stock or change prices from one item card
 
-Use **Add ordinary inventory** on `/staff/configuration` when the item already exists and the receipt is routine.
+Open **Stock & prices** at `/staff/inventory`.
 
-1. Start typing the exact item name or code.
-2. Select or enter the stable item code shown by the suggestion list.
-3. Enter a positive quantity.
-4. Select the physical receiving location.
-5. Optionally open **Optional receipt details** to enter a shipment/source reference and a more specific audit note.
-6. Select **Add to inventory** once.
+1. Search for the item by name.
+2. Read its available quantity, base selling price, and Company buying price when applicable.
+3. Select **Manage**.
+4. For an ordinary good, enter quantity and select **Add**.
+5. For a player-sourced material, select the seller, enter quantity, and select **Buy & add**. If the price or first seller is missing, the same card asks for that one prerequisite first.
+6. To change a normal price, enter the replacement under **Base selling price** or **Company buying price** and select **Update**.
 
 The system posts a balanced movement from an external source account into the selected warehouse account. The visible on-hand and available quantities are recalculated from the ledger and reservations.
 
-Use the full `/staff/inventory` desk when provenance is unusual, a prior transaction must be reversed, the location needs closer review, or the quick list correctly excludes the item.
+New prices apply only to future transactions. Existing orders and player-purchase receipts keep their snapshotted amounts. Use Owner system records when provenance is unusual, a prior transaction must be reversed, or an exceptional location needs review.
 
 Never use an ordinary receipt for:
 
@@ -807,7 +807,7 @@ The command selects the required ordinary, restricted, or unique approval permis
 - A price override is a distinct authorized action, not a hidden browser calculation.
 - Reservation and fulfillment remain separate warehouse steps.
 
-## 13. Inventory desk
+## 13. Stock & prices
 
 Open <https://eec-trade-registry-portal.vercel.app/staff/inventory>.
 
@@ -825,15 +825,23 @@ No operator directly edits a `current stock` field. The displayed position is de
 
 ### 13.2 Receive stock
 
-1. Select the warehouse and stock location permitted by the assignment scope.
-2. Select a fungible item.
-3. Enter the received quantity and source context.
-4. Enter a reason and request identifier when required.
-5. Post the receipt.
+1. Search for the item.
+2. Select **Manage**.
+3. Enter quantity under **Add stock**.
+4. Select **Add** for an ordinary receipt or **Buy & add** for a player-supplied material.
 
-The command posts a balanced transaction from an external source account into the physical warehouse account. Negative physical balances are forbidden.
+The screen derives the routine location and provenance. The authoritative command still verifies the item, actor, warehouse scope, supply mode, seller and current offer as applicable. It then posts a balanced transaction into the physical warehouse account. Negative physical balances are forbidden.
 
-### 13.3 Correct a posted receipt
+### 13.3 Change normal prices
+
+On the same item card:
+
+- **Base selling price** is the configured normal base used by future sales and channel pricing rules.
+- **Company buying price** is what EEC guarantees to pay a player supplier for that material.
+
+They are separate because selling goods and purchasing reserve materials are separate transactions. Updating either creates a new effective record and preserves historical snapshots.
+
+### 13.4 Correct a posted receipt
 
 Do not edit or delete it. An inventory controller posts one linked reversal with a reason. If needed, post a separate corrected receipt afterward.
 
