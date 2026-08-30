@@ -766,6 +766,7 @@ body > main { width: min(1440px, calc(100% - 48px)); }
 
 .stock-card-grid {
   grid-template-columns: repeat(2, minmax(360px, 1fr));
+  align-items: start;
   gap: 16px;
   padding: 20px 0 0;
 }

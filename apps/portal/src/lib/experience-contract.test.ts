@@ -21,6 +21,7 @@ describe("consumer experience contracts", () => {
     const stockWorkspace = source("../components/simple-stock-workspace.tsx");
     const inventoryActions = source("../app/staff/inventory/actions.ts");
     const economyActions = source("../app/staff/economy/actions.ts");
+    const experienceStyles = source("../app/experience.css");
     const staffShell = source("../components/staff-shell.tsx");
 
     expect(staffShell).toContain('label: "Stock & prices"');
@@ -32,5 +33,10 @@ describe("consumer experience contracts", () => {
     expect(stockWorkspace).toContain('value="/staff/inventory"');
     expect(inventoryActions).toContain('client.rpc("staff_set_item_public_terms"');
     expect(economyActions).toContain('candidate === "/staff/inventory"');
+    const stockGridRule = experienceStyles.slice(
+      experienceStyles.indexOf(".stock-card-grid"),
+      experienceStyles.indexOf(".stock-card-grid") + 240,
+    );
+    expect(stockGridRule).toContain("align-items: start;");
   });
 });
