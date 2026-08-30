@@ -32,6 +32,7 @@ export const createCatalogueItemSchema = mutableCatalogueFieldsSchema.extend({
 export const updateCatalogueItemSchema = mutableCatalogueFieldsSchema.extend({
   itemId: z.guid(),
   expectedVersion: z.coerce.number().int().positive().safe(),
+  publicName: z.string().trim().min(1).max(200).nullable(),
 });
 
 export const setCatalogueStatusSchema = z.object({
@@ -71,6 +72,7 @@ export function readCreateCatalogueItemForm(formData: FormData) {
 }
 
 export function readUpdateCatalogueItemForm(formData: FormData) {
+  const publicName = formData.get("public_name");
   return updateCatalogueItemSchema.safeParse({
     itemId: text(formData, "item_id"),
     expectedVersion: text(formData, "expected_version"),
@@ -80,6 +82,10 @@ export function readUpdateCatalogueItemForm(formData: FormData) {
     unitCode: text(formData, "unit_code"),
     inventoryMode: text(formData, "inventory_mode"),
     internalNotes: text(formData, "internal_notes"),
+    publicName:
+      typeof publicName === "string" && publicName.trim()
+        ? publicName
+        : null,
     reason: text(formData, "reason"),
   });
 }

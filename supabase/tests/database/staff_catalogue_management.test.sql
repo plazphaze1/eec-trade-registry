@@ -1,6 +1,6 @@
 begin;
 
-select plan(35);
+select plan(40);
 
 -- This suite exercises the lifecycle commands against the original catalogue
 -- fixture. Public seed data retires demonstrations by default, so explicitly
@@ -45,6 +45,12 @@ select has_function(
   'staff_update_catalogue_item',
   array['uuid', 'bigint', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'uuid'],
   'secure update command exists'
+);
+select has_function(
+  'public',
+  'staff_update_catalogue_item_with_public_name',
+  array['uuid', 'bigint', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'uuid'],
+  'combined canonical and public-name update command exists'
 );
 select has_function(
   'public',
@@ -395,6 +401,54 @@ select is(
   'restoring the canonical item returns its effective publication'
 );
 
+select lives_ok(
+  $test$
+    select * from public.staff_update_catalogue_item_with_public_name(
+      '70000000-0000-0000-0000-000000000001',
+      3,
+      'Harbor Lantern Revised',
+      'A revised canonical description.',
+      'equipment',
+      'each',
+      'fungible',
+      'Revised internal note.',
+      'Public Harbor Light',
+      'Keep the ordinary editor and public catalogue aligned.',
+      'e0000000-0000-0000-0000-000000000007'
+    )
+  $test$,
+  'the ordinary editor can update the canonical and public names atomically'
+);
+
+select is(
+  (
+    select display_name || ':' || version::text
+    from public.get_staff_catalogue_item('70000000-0000-0000-0000-000000000001')
+  ),
+  'Harbor Lantern Revised:4',
+  'the combined command advances the canonical record version'
+);
+
+select is(
+  (
+    select display_name
+    from public.get_public_catalogue_item('harbor-lantern')
+  ),
+  'Public Harbor Light',
+  'the public catalogue reads the replacement public name immediately'
+);
+
+select is(
+  (
+    select count(*)::integer
+    from public.item_publications
+    where item_id = '70000000-0000-0000-0000-000000000001'
+      and audience_code = 'public'
+  ),
+  2,
+  'the previous public presentation remains in effective-dated history'
+);
+
 reset role;
 
 select ok(
@@ -412,6 +466,23 @@ select ok(
     limit 1
   ),
   'an archive records its exact previous and new state'
+);
+
+select ok(
+  (
+    select
+      audit.permission_code = 'publication.manage'
+      and audit.reason = 'Keep the ordinary editor and public catalogue aligned.'
+      and audit.request_id = 'e0000000-0000-0000-0000-000000000007'::uuid
+      and audit.new_state ->> 'public_name' = 'Public Harbor Light'
+    from public.audit_log as audit
+    where audit.record_type = 'public.item_publications'
+      and audit.record_id <> '00000000-0000-0000-0000-000000000000'::uuid
+      and audit.new_state ->> 'public_name' = 'Public Harbor Light'
+    order by audit.occurred_at desc, audit.id desc
+    limit 1
+  ),
+  'the public-name replacement records publication authority and the audit reason'
 );
 
 select * from finish();

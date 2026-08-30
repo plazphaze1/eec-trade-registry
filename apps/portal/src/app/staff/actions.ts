@@ -139,7 +139,7 @@ export async function updateCatalogueItemAction(formData: FormData) {
     redirect("/staff/login");
   }
   const input = parsed.data;
-  const { error } = await client.rpc("staff_update_catalogue_item", {
+  const { error } = await client.rpc("staff_update_catalogue_item_with_public_name", {
     p_item_id: input.itemId,
     p_expected_version: input.expectedVersion,
     p_display_name: input.displayName,
@@ -148,6 +148,7 @@ export async function updateCatalogueItemAction(formData: FormData) {
     p_unit_code: input.unitCode,
     p_inventory_mode: input.inventoryMode,
     p_internal_notes: input.internalNotes,
+    p_public_name: input.publicName,
     p_reason: input.reason,
     p_request_id: crypto.randomUUID(),
   });
@@ -155,6 +156,9 @@ export async function updateCatalogueItemAction(formData: FormData) {
     redirect(mutationErrorPath(fallbackPath, error));
   }
 
+  updateTag("public-catalogue");
+  revalidatePath("/");
+  revalidatePath("/catalogue/[slug]", "page");
   revalidatePath("/staff");
   revalidatePath(fallbackPath);
   redirect(destination(fallbackPath, "notice", "saved"));
