@@ -23,6 +23,8 @@ describe("public rendering contracts", () => {
     const detail = source("../app/catalogue/[slug]/page.tsx");
     expect(detail).not.toContain("{item.category_name} · {item.item_code}");
     expect(detail).toContain('item.control_code !== "ordinary-economic"');
+    expect(detail).toContain("<h2>Ordering details</h2>");
+    expect(detail).toContain("An EEC Agent will confirm the price");
     expect(detail).toContain("Business sign in");
     expect(detail).toContain("Get a trade license");
   });
@@ -71,6 +73,15 @@ describe("public rendering contracts", () => {
     );
     expect(migration).toContain("role.code in ('owner', 'platform_administrator')");
     expect(migration).not.toMatch(/kiran|plazphaze/i);
+  });
+
+  it("replaces the legacy raw-material ordering sentence with plain language", () => {
+    const migration = source(
+      "../../../../supabase/migrations/20260901013000_plain_public_ordering_copy.sql",
+    );
+    expect(migration).toContain(
+      "Choose the amount you need. An EEC Agent will confirm the price and delivery.",
+    );
   });
 
   it("labels staff authentication plainly", () => {
