@@ -494,6 +494,32 @@ button:focus-visible {
   margin: 0;
 }
 
+.public-detail-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 28px 40px;
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.public-detail-actions h2,
+.public-detail-actions p {
+  margin: 0;
+}
+
+.public-detail-actions p {
+  margin-top: 7px;
+  color: var(--muted);
+}
+
+.public-detail-actions > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .tag-list {
   display: flex;
   flex-wrap: wrap;
@@ -2471,9 +2497,20 @@ button:focus-visible {
   .hero,
   .card-body,
   .entry-requirements,
+  .public-detail-actions,
   .staff-item-row,
   .staff-danger-zone {
     grid-template-columns: 1fr;
+  }
+
+  .public-detail-actions {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .public-detail-actions > div:last-child .button {
+    flex: 1;
   }
 
   .inventory-summary,

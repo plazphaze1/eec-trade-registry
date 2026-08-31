@@ -37,7 +37,7 @@ export default async function ApplyPage({ searchParams }: ApplyPageProps) {
       ) : (
         <section className="notice-panel">
           <h2>Applications are temporarily unavailable</h2>
-          <p>No fallback form is used while the authoritative registry is unavailable.</p>
+          <p>We could not load the application form. Please try again in a few minutes.</p>
         </section>
       )}
     </main>

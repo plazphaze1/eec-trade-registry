@@ -34,7 +34,7 @@ function receipt(data: unknown): ApplicationState {
         reference: String(row.public_reference),
         token: String(row.status_token),
       }
-    : { error: "The registry returned no receipt." };
+    : { error: "The application was not completed. Please try again." };
 }
 
 export async function submitApplicationAction(
@@ -61,7 +61,7 @@ export async function submitApplicationAction(
       if (error.message.includes("renewal_application_already_pending")) {
         return { error: "A renewal for that license is already awaiting review." };
       }
-      return { error: "The registry could not accept the renewal. No record was created." };
+      return { error: "The renewal could not be sent. Please try again." };
     }
     return receipt(data);
   }
@@ -89,7 +89,7 @@ export async function submitApplicationAction(
   });
   if (error) {
     console.error(`[public-application] ${error.code ?? "unknown"}`);
-    return { error: "The registry could not accept the application. No record was created." };
+    return { error: "The application could not be sent. Please try again." };
   }
   return receipt(data);
 }

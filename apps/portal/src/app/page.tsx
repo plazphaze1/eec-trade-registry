@@ -16,7 +16,7 @@ import { parseCatalogueQuery } from "@/lib/query";
 export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Trade catalogue",
-  description: "Browse the East Empire Company's official public catalogue, current purchasing terms, and controlled-trade requirements.",
+  description: "Browse East Empire Company goods, current prices, availability, and ordering requirements.",
 };
 
 interface CataloguePageProps {

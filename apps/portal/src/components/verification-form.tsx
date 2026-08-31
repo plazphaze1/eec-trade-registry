@@ -6,7 +6,7 @@ export function VerificationForm({ reference }: VerificationFormProps) {
   return (
     <form className="verification-form verification-form-single" action="/verify" method="get">
       <label className="field" htmlFor="verification-reference">
-        <span>Dealer or license reference</span>
+        <span>Business or license number</span>
         <input
           id="verification-reference"
           name="reference"
@@ -22,8 +22,8 @@ export function VerificationForm({ reference }: VerificationFormProps) {
         Verify record
       </button>
       <p>
-        The DLR or LIC prefix identifies the record. Names and organizations
-        cannot be searched.
+        A business number begins with EEC-DLR-. A license number begins with
+        EEC-LIC-. Names cannot be searched.
       </p>
     </form>
   );

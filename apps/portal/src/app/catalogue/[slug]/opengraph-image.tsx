@@ -38,14 +38,14 @@ export default async function CatalogueOpenGraphImage({
         </div>
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ color: "#33414A", display: "flex", fontFamily: "monospace", fontSize: 26 }}>
-          {item?.item_code ?? slug.toUpperCase()}
+        <div style={{ color: "#33414A", display: "flex", fontSize: 26 }}>
+          {item?.category_name ?? "East Empire Company"}
         </div>
         <div style={{ display: "flex", fontFamily: "sans-serif", fontSize: 82, fontWeight: 800, marginTop: 22 }}>
           {item?.display_name ?? "Catalogue entry"}
         </div>
         <div style={{ color: "#33414A", display: "flex", fontSize: 28, marginTop: 24 }}>
-          {item ? `${item.control_label} · ${item.availability_label}` : "East Empire Company trade registry"}
+          {item ? item.availability_label : "East Empire Company public catalogue"}
         </div>
       </div>
       <div style={{ background: "#C6BFB0", display: "flex", height: 3, width: "100%" }} />
