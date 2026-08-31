@@ -102,14 +102,14 @@ begin
   end if;
 
   if p_decision = 'deny' then
-    update public.license_applications
+    update public.license_applications as target
     set status = 'denied',
         reviewed_at = statement_timestamp(),
         reviewed_by_actor_id = actor_id,
         review_reason = btrim(p_reason),
         review_request_id = p_request_id,
-        version = version + 1
-    where id = p_application_id
+        version = target.version + 1
+    where target.id = p_application_id
     returning * into application;
   elsif application.application_type = 'new' then
     select coalesce(array_agg(definition.code), array[]::text[])
@@ -208,15 +208,15 @@ begin
     actor_id := private.set_staff_audit_context(
       'license.application.review', p_reason, p_request_id
     );
-    update public.license_applications
+    update public.license_applications as target
     set status = 'issued',
         reviewed_at = statement_timestamp(),
         reviewed_by_actor_id = actor_id,
         review_reason = btrim(p_reason),
         review_request_id = p_request_id,
         issued_license_id = issued.id,
-        version = version + 1
-    where id = p_application_id
+        version = target.version + 1
+    where target.id = p_application_id
     returning * into application;
   else
     if p_expires_at is null or p_expires_at <= statement_timestamp() then
@@ -235,15 +235,15 @@ begin
     set expires_at = p_expires_at, version = license.version + 1
     where license.id = application.existing_license_id;
 
-    update public.license_applications
+    update public.license_applications as target
     set status = 'renewed',
         reviewed_at = statement_timestamp(),
         reviewed_by_actor_id = actor_id,
         review_reason = btrim(p_reason),
         review_request_id = p_request_id,
         issued_license_id = existing_license_id,
-        version = version + 1
-    where id = p_application_id
+        version = target.version + 1
+    where target.id = p_application_id
     returning * into application;
   end if;
 
