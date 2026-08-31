@@ -716,25 +716,48 @@ No workflow-dependent implementation should guess these decisions. A decision re
 4. Optional critical, minimum, target, and surplus thresholds remain Owner system policy. They are not required to record a buying price.
 5. Publishing a buying price does not create stock.
 
-### Register a producer
+### Optional named producer record
 
-1. An EEC agent identifies the player character or organization selling material.
-2. If the seller is not listed, the operator enters the seller name on **Buy materials**. The configured default party type and jurisdiction are derived, and the private supplier receives an `EEC-SUP-*` reference.
-3. The supplier remains distinct from licensed dealers. Selling material to the Company grants no authority to buy wholesale goods.
+1. Routine aggregate purchases do not require a seller record.
+2. When a significant counterparty, delayed settlement, or specific evidence requires identity, an EEC agent may register the player character or organization as a named supplier.
+3. The configured default party type and jurisdiction are derived, and the private supplier receives an `EEC-SUP-*` reference.
+4. The supplier remains distinct from licensed businesses. Selling material to the Company grants no authority to buy wholesale goods.
 
-### Accept a delivery
+### Record an ordinary aggregate purchase
 
-1. The supplier brings gathered material to an authorized EEC agent or warehouse interaction.
-2. The agent selects the seller, material, and inspected accepted quantity. The current offer and ordinary receiving location are derived.
-3. Supabase revalidates the current offer, minimum, supply policy, supplier standing, fungible item, warehouse scope, and request ID.
-4. One transaction creates the `EEC-PRC-*` delivery, snapshotted payment obligation, balanced external-to-physical ledger receipt, audit record, and outbox event.
-5. The reserve quantity becomes visible from ledger-derived stock. The delivery remains `pending` for settlement.
+1. Material is bought through an authorized EEC interaction.
+2. The Agent opens **Record activity → Bought materials** and chooses material, quantity, and date. Seller identity is not required.
+3. Supabase revalidates the player-sourced policy, fungible item, warehouse scope, actor, business date, and request ID, then derives the authorized available location.
+4. If a guaranteed offer was effective on that date, Supabase snapshots the unit rate and total. If no rate existed, the activity is explicitly unpriced and no money value is invented.
+5. One transaction creates the `EEC-ACT-*` activity, balanced external-to-physical receipt, audit record, and outbox event.
+6. A priced aggregate purchase is treated as paid at intake. Stock and Money update together from the committed database records.
+
+### Record a named delivery
+
+1. Staff uses the exceptional supplier workflow when counterparty evidence or separate settlement is required.
+2. Supabase revalidates the named supplier, current offer, minimum, policy, warehouse scope, and request ID.
+3. One transaction creates the `EEC-PRC-*` delivery, payment obligation, balanced receipt, audit record, and outbox event.
+4. The delivery remains pending until its payment evidence is recorded.
 
 ### Record payment
 
 1. Staff perform the in-character or administrative Septim payment through the server's approved mechanism.
 2. A procurement officer records its voucher, log, or payment reference and an audit reason.
 3. The delivery becomes paid. No second stock movement occurs.
+
+### Set a counted ordinary-stock total
+
+1. Owner opens **Record activity → Set a stock total** and chooses an ordinary fungible item, counted total, and date.
+2. Supabase rejects player-sourced-only or serialized goods and checks warehouse scope, active reservations, and current ledger-derived stock.
+3. If the total differs, one balanced `reconciliation` transaction posts only the difference. A lower total cannot reduce stock below active reservations or below zero.
+4. The stated total, prior total, difference, actor, occurrence date, recording timestamp, request, audit evidence, and outbox event are retained. No stock balance is overwritten.
+
+### Review purchase money
+
+1. **Money** sums known paid aggregate purchases and paid named deliveries by currency.
+2. Pending named deliveries appear as still owed.
+3. Purchases without an effective buying rate appear as unpriced and are excluded from monetary sums.
+4. The page does not claim a cash balance or sales revenue because those movements do not yet have an authoritative payment workflow.
 
 ### Supply pressure and resale
 

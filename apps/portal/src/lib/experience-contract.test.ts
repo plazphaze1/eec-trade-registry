@@ -25,14 +25,17 @@ describe("consumer experience contracts", () => {
     const staffShell = source("../components/staff-shell.tsx");
 
     expect(staffShell).toContain('label: "Stock & prices"');
+    expect(staffShell).toContain('label: "Record activity"');
+    expect(staffShell).toContain('label: "Money"');
     expect(staffShell).not.toContain('label: "Buy from a player"');
     expect(stockWorkspace).toContain('className="stock-sheet-table"');
     expect(stockWorkspace).toContain("Add stock");
-    expect(stockWorkspace).toContain("Buy + add");
+    expect(stockWorkspace).toContain("Record purchase");
+    expect(stockWorkspace).not.toContain("Add your first seller");
     expect(stockWorkspace).toContain("Selling price");
     expect(stockWorkspace).toContain("Company pays");
     expect(stockWorkspace).not.toContain(">Manage<");
-    expect(stockWorkspace).toContain('value="/staff/inventory"');
+    expect(stockWorkspace).toContain("/staff/activity?mode=purchase");
     expect(inventoryActions).toContain('client.rpc("staff_set_item_public_terms"');
     expect(economyActions).toContain('candidate === "/staff/inventory"');
     const stockSheetRule = experienceStyles.slice(

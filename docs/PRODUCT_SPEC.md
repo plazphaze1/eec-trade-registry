@@ -22,13 +22,14 @@ Implementation proceeds through the policy-gated vertical slices in `ROADMAP.md`
 6. **Public access is deliberately narrow.** Public catalogue and verification features require no login, but expose only approved projection fields.
 7. **Routine work is fast; exceptional work is explicit.** Ordinary transactions should be simple. Restricted or unique goods introduce review, approval, and custody controls in proportion to risk.
 8. **History is preserved.** Consequential actions are attributable and corrections use reversing or superseding records instead of destructive edits.
-9. **Keystone reserves come from production.** Configured baseline materials enter Company stock through accepted supplier deliveries, not administrative spawning. Guaranteed purchase floors and high reserve resale terms form an economic corridor without replacing player trade.
+9. **Keystone reserves come from production.** Configured baseline materials enter Company stock through recorded purchases, not administrative spawning. Routine aggregate buys may omit seller identity; named supplier deliveries remain available when counterparty evidence matters. Guaranteed purchase floors and high reserve resale terms form an economic corridor without replacing player trade.
 10. **Routine administration beats spreadsheet work.** Once policy inputs exist, creating an ordinary item or posting an ordinary stock receipt should take no more than approximately 30 seconds without sacrificing permission checks, audit history, or ledger provenance.
 11. **The interface is smaller than the domain.** Ordinary staff describe the buyer, goods, quantity, and handoff; Supabase derives classifications and carries references. Advanced systems remain available in one explained Staff tools panel and on the records to which they apply, not in primary navigation.
 12. **Setup belongs inside the task.** A player applies with plain business questions, Stock shows every item even at zero, and guaranteed buying prices are set where staff buy materials. Separate setup desks must not block a routine action.
 13. **The experience is consumer-grade.** Public and routine staff surfaces use familiar shopping patterns, readable type, generous targets, and one dominant next action. Registry evidence and policy machinery remain available without visually competing with the task.
 14. **One item has one routine workspace.** Stock, ordinary intake, player-sourced intake, and normal price changes are presented on the same item card. Separate ledger, procurement, publication, and pricing commands remain authoritative underneath without becoming separate navigation chores.
 15. **One approval completes ordinary business onboarding.** A new public license request is not a scavenger hunt between business and license registries. Owner approval creates the configured business, dealer authorization, and linked license atomically; the separate records remain visible only where their distinct legal or audit meaning matters.
+16. **Staff record events, not database machinery.** Ordinary intake asks whether materials were bought or a stock total was counted, then asks for item, amount, and date. Supabase derives location, ledger movement, effective rate, known spend, and audit provenance.
 
 ## 3. Users and actors
 
@@ -288,7 +289,7 @@ Frontend code may display estimates for usability only when clearly labeled and 
 - Staff-visible stock is presented by item as one available quantity. Reservation, account, location-state, version, and ledger evidence are absent from ordinary stock checking.
 - Stock includes ordinary, player-sourced, and unique catalogue items even when their available quantity is zero. The item card routes the operator to the correct intake method instead of omitting the item.
 - Ordinary order progress uses no more than Open, Ready, Completed, and Closed; a restricted-good approval is an explicit exception rather than a routine state.
-- A prepared player-material purchase can be recorded from supplier, material, and quantity in approximately 30 seconds.
+- A player-material purchase can be recorded from material, quantity, and date without naming an incidental seller. An effective buying rate is snapshotted automatically; an absent rate remains explicitly unpriced.
 - A first buying price is entered on the Buy materials page as one amount per unit. Changing it creates a new authoritative offer and preserves the prior one as history.
 - A public business applicant chooses between new and renewal using ordinary links, then answers business name, Discord contact, trade categories, and purpose. Configured routine class and region selections are derived; exceptional endorsements are optional.
 - An Owner approves an ordinary new license request with one **Approve business** action. The application name and configured onboarding profile create the canonical business, current dealer authorization, and public license together; manual onboarding remains an exceptional Staff tool.
@@ -297,6 +298,8 @@ Frontend code may display estimates for usability only when clearly labeled and 
 - Work queues identify ownership, age, blocking reason, and next permitted actions.
 - The interface never presents raw Booleans, enum codes, or database identifiers when plain language is appropriate.
 - Routine forms never ask staff to choose a sales channel, price schedule, license reference, warehouse, ledger account, reservation record, or audit reference when the authoritative service can derive it.
+- A counted ordinary-stock total posts only the ledger difference. The interface may say “set total,” but no current-stock field is overwritten.
+- The Money page distinguishes known paid procurement, unpaid named-supplier obligations, and unpriced purchases. It must not imply a treasury balance until sales receipts and other cash movements are recorded.
 - A first-time player or Agent can identify the next button from the screen itself. If an ordinary task needs a guide to explain the interface, the interface has failed this requirement.
 - Dates, currency labels, organizational titles, and setting-specific vocabulary are configuration-driven.
 - Accessibility, mobile behavior, and localization expectations must be defined before interface implementation.

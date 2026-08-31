@@ -1020,6 +1020,54 @@ body > main { width: min(1240px, calc(100% - 48px)); }
 .business-access-disable { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 16px; border-top: 1px solid var(--xp-line); }
 .business-access-disable p { margin: 0; color: var(--muted); }
 
+/* Activity journal and operational cashbook */
+.activity-mode-tabs { display: inline-flex; gap: 5px; margin: 0 0 16px; padding: 5px; border: 1px solid var(--line); border-radius: 12px; background: #ebeef3; }
+.activity-mode-tabs a { min-height: 38px; padding: 9px 16px; border-radius: 8px; color: var(--muted); font-size: .76rem; font-weight: 800; text-decoration: none; }
+.activity-mode-tabs a.is-active { background: #fff; color: var(--blue); box-shadow: var(--shadow-sm); }
+.activity-entry-card,.activity-history-card,.money-ledger-card { overflow: hidden; border: 1px solid var(--line); border-radius: 15px; background: #fff; box-shadow: var(--shadow-sm); }
+.activity-card-title { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 24px 10px; }
+.activity-card-title > div { display: grid; gap: 4px; }
+.activity-card-title span { color: var(--blue); font-size: .66rem; font-weight: 850; letter-spacing: .09em; text-transform: uppercase; }
+.activity-card-title h2,.activity-history-heading h2 { margin: 0; color: var(--ink); font-size: 1.35rem; letter-spacing: -.02em; }
+.activity-card-title p { margin: 0; color: var(--muted); font-size: .74rem; }
+.activity-quick-form { display: grid; grid-template-columns: minmax(260px,2fr) minmax(150px,.8fr) minmax(155px,.8fr) auto; align-items: end; gap: 12px; padding: 16px 24px 22px; }
+.activity-quick-form > label,.activity-note label { display: grid; gap: 6px; }
+.activity-quick-form label > span,.activity-note label > span { color: var(--muted-strong); font-size: .66rem; font-weight: 800; letter-spacing: .045em; text-transform: uppercase; }
+.activity-quick-form select,.activity-quick-form input { min-height: 46px; }
+.activity-quick-form > .button { min-height: 46px; padding-inline: 22px; }
+.activity-note { grid-column: 1 / -1; margin-top: 2px; }
+.activity-note summary { width: fit-content; cursor: pointer; color: var(--blue); font-size: .72rem; font-weight: 750; }
+.activity-note[open] label { margin-top: 10px; }
+.activity-form-footnote { margin: 0; padding: 12px 24px; border-top: 1px solid var(--line); background: #f8f9fb; color: var(--muted); font-size: .71rem; }
+.activity-history-card,.money-ledger-card { margin-top: 20px; }
+.activity-history-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 19px 22px; border-bottom: 1px solid var(--line); }
+.activity-history-heading > div { display: grid; gap: 3px; }
+.activity-history-heading p { margin: 0; }
+.activity-history-heading > span { color: var(--muted); font-size: .69rem; }
+.activity-history-list article { display: grid; grid-template-columns: 62px minmax(0,1fr) auto; align-items: center; gap: 14px; min-height: 68px; padding: 11px 22px; border-bottom: 1px solid var(--line); }
+.activity-history-list article:last-child { border-bottom: 0; }
+.activity-history-icon { display: grid; place-items: center; min-height: 38px; border-radius: 9px; background: #eef1f5; color: var(--ink); font-size: .75rem; font-weight: 850; }
+.activity-history-icon.is-purchase { background: #e9f7ef; color: #17764a; }
+.activity-history-list article > div:nth-child(2),.activity-history-result { display: grid; gap: 3px; }
+.activity-history-list strong { color: var(--ink); font-size: .78rem; }
+.activity-history-list span { color: var(--muted); font-size: .66rem; }
+.activity-history-result { justify-items: end; text-align: right; }
+.money-summary-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+.money-summary-grid article { display: grid; gap: 6px; min-height: 126px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: #fff; box-shadow: var(--shadow-sm); }
+.money-summary-grid article.needs-attention { border-color: #e6b85c; background: #fffaf0; }
+.money-summary-grid span { color: var(--muted); font-size: .68rem; font-weight: 800; text-transform: uppercase; }
+.money-summary-grid strong { align-self: center; color: var(--ink); font-size: clamp(1.35rem,2.2vw,2rem); letter-spacing: -.035em; }
+.money-summary-grid small { color: var(--muted); font-size: .65rem; }
+.money-ledger-table { min-width: 840px; overflow-x: auto; }
+.money-ledger-header,.money-ledger-table article { display: grid; grid-template-columns: 110px minmax(180px,1.3fr) minmax(130px,.8fr) minmax(140px,1fr) 100px 120px; align-items: center; gap: 12px; padding: 12px 20px; }
+.money-ledger-header { background: #f8f9fb; color: var(--muted); font-size: .62rem; font-weight: 850; letter-spacing: .05em; text-transform: uppercase; }
+.money-ledger-table article { min-height: 56px; border-top: 1px solid var(--line); color: var(--muted-strong); font-size: .72rem; }
+.money-ledger-table article > :last-child { text-align: right; }
+.money-status { width: fit-content; padding: 5px 8px; border-radius: 999px; background: #edf0f4; color: var(--muted-strong); font-size: .62rem; font-weight: 850; }
+.money-status.is-paid { background: #e9f7ef; color: #17764a; }
+.money-status.is-pending,.money-status.is-unpriced { background: #fff1d4; color: #895b00; }
+.money-scope-note { margin: 16px 2px 0; color: var(--muted); font-size: .68rem; }
+
 @media (max-width: 1050px) {
   .dashboard-quick-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .staff-tools-groups { grid-template-columns: 1fr; }
@@ -1048,4 +1096,19 @@ body > main { width: min(1240px, calc(100% - 48px)); }
   .stock-card > .button { grid-column: 1/-1; }
   .dealer-account-grid,.dealer-account-card dl,.business-access-grid,.business-access-form { grid-template-columns: 1fr; }
   .business-access-disable { align-items: stretch; flex-direction: column; }
+  .activity-quick-form { grid-template-columns: 1fr 1fr; }
+  .activity-quick-form > label:first-child { grid-column: 1 / -1; }
+  .activity-quick-form > .button { grid-column: 1 / -1; }
+  .money-summary-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 620px) {
+  .activity-mode-tabs { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  .activity-mode-tabs a { text-align: center; }
+  .activity-card-title { align-items: flex-start; flex-direction: column; }
+  .activity-quick-form { grid-template-columns: 1fr; }
+  .activity-quick-form > label:first-child,.activity-quick-form > .button { grid-column: auto; }
+  .activity-history-list article { grid-template-columns: 52px minmax(0,1fr); }
+  .activity-history-result { grid-column: 2; justify-items: start; text-align: left; }
+  .money-summary-grid { grid-template-columns: 1fr; }
 }

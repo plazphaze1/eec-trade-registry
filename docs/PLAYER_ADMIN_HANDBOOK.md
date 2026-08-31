@@ -812,12 +812,13 @@ This table is generated from the same manifest used by the application. Do not e
 | License renewal requests | Live | `/apply` |
 | Staff-assisted and direct order entry | Live | `/staff/orders/new` |
 | Ledger inventory and reservations | Live | `/staff/inventory` |
-| Keystone material procurement | Live | `/staff/economy` |
+| Keystone material procurement | Live | `/staff/activity` |
+| Procurement money summary | Live | `/staff/money` |
 | Unique-asset fulfillment | Live | `/staff/assets/fulfillment` |
 | Consignment settlement | Live | `/staff/consignments/finance` |
 | Official document generation | Live | `/staff/documents/new` |
 | Effective price rules | Live | `/staff/pricing` |
 | Google Sheets and Discord projections | Built; external setup required | `/staff/integrations` |
-| Stock-count reconciliation | Policy-gated | — |
+| Rapid counted-total reconciliation | Live | `/staff/activity?mode=count` |
 | Compliance evidence file storage | Policy-gated | — |
 <!-- FEATURE_STATUS:END -->

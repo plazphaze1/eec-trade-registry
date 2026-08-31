@@ -103,17 +103,6 @@ export default async function StaffInventoryPage({ searchParams }: StaffInventor
   const defaultReceiptLocationId = locations.find((location) => location.location_type === "available")?.id
     ?? locations.find((location) => location.location_type === "receiving")?.id
     ?? null;
-  const defaultPurchaseLocationId = economyData?.warehouses.flatMap((warehouse) => warehouse.locations)
-    .find((location) => location.location_type === "receiving")?.id ?? null;
-  const suppliers = economyData?.suppliers.filter((supplier) => supplier.status === "active")
-    .map((supplier) => ({ id: supplier.id, name: supplier.display_name })) ?? [];
-  const defaultSupplierPartyType = economyData?.party_types.find((type) => type.code === REGISTRY_CONFIG.procurement.defaultSupplierPartyTypeCode)
-    ?? economyData?.party_types[0];
-  const defaultSupplierSetup = economyData?.jurisdictions[0] && defaultSupplierPartyType ? {
-    jurisdictionId: economyData.jurisdictions[0].id,
-    partyTypeCode: defaultSupplierPartyType.code,
-  } : null;
-
   return (
     <main className="staff-main">
       <header className="staff-page-header">
@@ -125,13 +114,13 @@ export default async function StaffInventoryPage({ searchParams }: StaffInventor
         <div className="staff-button-row">
           {showSystemRecords
             ? <Link className="button button-secondary" href="/staff/inventory">Back to stock</Link>
-            : <>{isOwner && <Link className="button button-secondary" href="/staff/inventory?view=system">Corrections &amp; history</Link>}<Link className="button button-primary" href="/staff/configuration">Add item</Link></>}
+            : <>{isOwner && <Link className="button button-secondary" href="/staff/inventory?view=system">Corrections &amp; history</Link>}<Link className="button button-secondary" href="/staff/configuration">Add item</Link><Link className="button button-primary" href="/staff/activity">Record activity</Link></>}
         </div>
       </header>
 
       <InventoryNotice error={parameters.error} notice={parameters.notice} />
 
-      {!showSystemRecords && <SimpleStockWorkspace defaultPurchaseLocationId={defaultPurchaseLocationId} defaultReceiptLocationId={defaultReceiptLocationId} defaultSupplierSetup={defaultSupplierSetup} items={stockItems} suppliers={suppliers} />}
+      {!showSystemRecords && <SimpleStockWorkspace defaultReceiptLocationId={defaultReceiptLocationId} items={stockItems} />}
 
       {showSystemRecords && <div className="staff-tools-panel stock-tools-panel is-system-records"><div className="staff-tools-content">
       <section className="inventory-section embedded-inventory-section">
