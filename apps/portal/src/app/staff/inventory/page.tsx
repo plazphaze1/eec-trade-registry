@@ -123,7 +123,9 @@ export default async function StaffInventoryPage({ searchParams }: StaffInventor
           <p>{showSystemRecords ? "Corrections and historical evidence for exceptional work." : "Search an item, add stock, or change its normal prices without leaving this page."}</p>
         </div>
         <div className="staff-button-row">
-          {showSystemRecords ? <Link className="button button-secondary" href="/staff/inventory">Back to stock</Link> : <Link className="button button-secondary" href="/staff/configuration">Add a new item</Link>}
+          {showSystemRecords
+            ? <Link className="button button-secondary" href="/staff/inventory">Back to stock</Link>
+            : <>{isOwner && <Link className="button button-secondary" href="/staff/inventory?view=system">Corrections &amp; history</Link>}<Link className="button button-primary" href="/staff/configuration">Add item</Link></>}
         </div>
       </header>
 
