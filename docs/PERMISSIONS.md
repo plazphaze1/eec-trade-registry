@@ -576,7 +576,7 @@ ADR 0025 changes presentation, not authority. Agents use **Buy materials** for o
 | `dashboard.read` | Read cross-domain counts and safe recent work summaries. |
 | `order.assisted.create` | Create verified-business or direct-individual orders as a recorded EEC agent. |
 | `pricing.binding.manage` | Create effective-dated price precedence bindings. |
-| `license.application.review` | Decide public applications and issue or renew authority. |
+| `license.application.review` | Decide public applications. A new-business approval also rechecks `dealer.create` and `license.issue` through the coupled authoritative commands before creating any record. |
 | `consignment.finance.manage` | Set commissions, calculate settlements, and record payment evidence. |
 | `asset.fulfill` | Consume an exact asset reservation and transfer custody. |
 | `compliance.effect.apply` | Apply a configured effect during action review. |
@@ -584,4 +584,6 @@ ADR 0025 changes presentation, not authority. Agents use **Buy materials** for o
 | `document.private.read` | List snapshots and download private PDF projections. |
 
 Anonymous callers may execute only constrained application option, submission, and token-status functions and receive no direct table access. Discord authentication still grants identity only; every command re-resolves an effective database assignment.
+
+The ordinary **Approve business** button does not merge dealer and license authority. It invokes one transaction that separately permission-checks and records the party, dealer authorization, license, endorsements, application decision, audit history, and outbox events. Failure of any required permission or invariant rolls back the entire onboarding action.
 

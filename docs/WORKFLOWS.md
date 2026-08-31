@@ -205,26 +205,25 @@ submitted / under_review / awaiting_information -> withdrawn
 ### Staff review flow
 
 1. An authorized Agent opens the dedicated `/staff/applications` queue from the dashboard.
-2. The officer reviews submitted answers, dealer authorization, existing licenses, standing, debts if relevant, prior actions, and requested endorsements.
-3. The officer may request information, record an interview, add a recommendation, approve with conditions, deny, or escalate.
+2. The officer reviews the submitted business name, contact, purpose, requested categories, existing license for a renewal, standing, prior actions, and requested endorsements.
+3. For an ordinary new request, the officer chooses **Approve business** or declines with a reason. Advanced issuance remains available only in manual licensing tools.
 4. Required secondary approvals are collected according to the approval policy.
 5. The decision function validates actor authority and current application state.
 
 ### Issuance transaction
 
-One authoritative issuance command:
+One authoritative new-business approval command:
 
 1. Locks the approved application.
-2. Revalidates approval, applicant, dealer, dates, policy version, and non-duplication rules.
-3. Allocates an immutable public license reference.
-4. Creates the license, endorsements, and structured conditions.
-5. Creates initial license status events.
+2. Revalidates the reviewer, application version, requested class and jurisdiction, configured onboarding profile, dates, and non-duplication rules.
+3. Creates the canonical business party and active dealer authorization from the approved application and configured mapping.
+4. Allocates an immutable public license reference and links the license to that dealer authorization.
+5. Creates the requested endorsements and initial license status events.
 6. Marks the application `issued`.
-7. Writes audit entries.
-8. Writes outbox events for documents and notifications.
-9. Commits or rolls back as a unit.
+7. Writes dealer, license, application, audit, and outbox evidence.
+8. Commits every coupled record or rolls the entire approval back.
 
-Implementation note: direct staff issuance and issuance/renewal from a public application are implemented. The review workspace shows requested endorsements and requires an existing canonical holder for a new application. Approval atomically issues or renews, links the application, records history/audit, and emits outbox work. The UI leaves the term open because duration policy remains unresolved.
+Implementation note: direct staff issuance and issuance/renewal from a public application are implemented. An ordinary new approval no longer requires staff to leave the queue and manually create a holder. It atomically creates the configured party and dealer authorization, issues the linked license, records history/audit, and emits outbox work. Renewal extends the existing license and still asks for an explicit new expiration because duration policy remains unresolved.
 
 ### License states
 

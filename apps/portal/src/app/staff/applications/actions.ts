@@ -36,6 +36,7 @@ export async function reviewLicenseApplicationAction(formData: FormData) {
     if (error.code === "40001") redirect(destination("error", "conflict"));
     if (error.code === "42501") redirect(destination("error", "access_denied"));
     if (error.code === "P0002") redirect(destination("error", "not_found"));
+    if (error.message.includes("onboarding_profile")) redirect(destination("error", "onboarding_unavailable"));
     if (error.code === "22023") redirect(destination("error", "invalid_input"));
     redirect(destination("error", "save_failed"));
   }
@@ -44,5 +45,10 @@ export async function reviewLicenseApplicationAction(formData: FormData) {
   revalidatePath("/staff/dashboard");
   revalidatePath("/staff/licensing");
   revalidatePath("/staff/launch");
-  redirect(destination("notice", "application_decided"));
+  const notice = input.decision === "deny"
+    ? "application_denied"
+    : input.expires_at
+      ? "application_renewed"
+      : "application_approved";
+  redirect(destination("notice", notice));
 }

@@ -446,6 +446,33 @@ values
     false
   );
 
+insert into public.license_application_onboarding_profiles (
+  license_class_id,
+  party_type_id,
+  dealer_type_id,
+  dealer_status_definition_id,
+  public_disclosure_enabled
+)
+select
+  license_class.id,
+  party_type.id,
+  dealer_type.id,
+  dealer_status.id,
+  true
+from public.license_classes as license_class
+join public.party_types as party_type
+  on party_type.code = 'organization' and party_type.active
+join public.dealer_types as dealer_type
+  on dealer_type.code = 'wholesale-counterparty' and dealer_type.active
+join public.dealer_status_definitions as dealer_status
+  on dealer_status.code = 'active' and dealer_status.active
+where license_class.active
+on conflict (license_class_id) do update
+set party_type_id = excluded.party_type_id,
+    dealer_type_id = excluded.dealer_type_id,
+    dealer_status_definition_id = excluded.dealer_status_definition_id,
+    public_disclosure_enabled = excluded.public_disclosure_enabled;
+
 insert into public.dealer_authorizations (
   id,
   dealer_party_id,

@@ -17,7 +17,7 @@ Discord OAuth proved a staff user's identity but an unassigned successful login 
 - Owner receives all current permission scopes. Agent receives current day-to-day scopes but cannot administer staff access or read restricted audit history. Future permission migrations must deliberately decide whether a new scope belongs to Owner, Agent, or both.
 - **Business** is not a global staff role. Business access remains bound to a specific party, dealer authorization, license, and representative grant through the Business portal. ADR 0028 defines its license-number and private-code login. The public remains unauthenticated.
 - New access requests and decisions create durable outbox events. Discord delivery is only a notification projection and depends on a configured staff-alert destination.
-- License applications receive a dedicated staff review workspace showing requested endorsements, canonical-holder selection, approval or denial controls, and recent decision history. The existing authoritative application decision function remains the only mutation path.
+- License applications receive a dedicated staff review workspace showing requested endorsements, approval or denial controls, and recent decision history. ADR 0029 supersedes the original canonical-holder picker for ordinary new requests; the authoritative application decision function remains the only mutation path.
 
 ## Consequences
 
@@ -26,7 +26,7 @@ Discord OAuth proved a staff user's identity but an unassigned successful login 
 - Display-name changes never identify authority. Immutable provider and Auth identifiers remain the binding keys.
 - The final owner cannot be blocked from the Agent review queue. Owner succession and emergency recovery remain explicit operational-policy decisions.
 - The simplified Agent bundle is intentionally broad for the approved small-server operating model. Database functions still check the exact permission, scope, record state, version, and business invariant for every command.
-- Application approval still requires an existing canonical holder for a new license. The reviewer onboards the business/party first rather than silently creating an ambiguous legal party from free text.
+- Superseded by ADR 0029 for ordinary public applications: a reviewed new request uses an explicit configured onboarding profile to create the canonical business and dealer authorization in the same transaction as license issuance. Manual holder selection remains an exceptional registry tool, not the normal queue.
 
 ## Unresolved policy
 
