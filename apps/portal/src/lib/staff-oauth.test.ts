@@ -5,6 +5,7 @@ import {
   getStaffAccessPendingUrl,
   getStaffOAuthCallbackUrl,
   getStaffOAuthFailureUrl,
+  getStaffOAuthProviderFailureReason,
   getStaffOAuthSuccessUrl,
 } from "@/lib/staff-oauth";
 
@@ -58,6 +59,18 @@ describe("staff OAuth destinations", () => {
   it("uses the local portal origin outside production", () => {
     expect(getSiteOrigin({ NODE_ENV: "test" } as NodeJS.ProcessEnv)).toBe(
       "http://127.0.0.1:3000",
+    );
+  });
+
+  it("distinguishes a blocked first-time identity from a cancelled prompt", () => {
+    expect(
+      getStaffOAuthProviderFailureReason("access_denied", "signup_disabled"),
+    ).toBe("signup_disabled");
+    expect(getStaffOAuthProviderFailureReason("access_denied", null)).toBe(
+      "cancelled",
+    );
+    expect(getStaffOAuthProviderFailureReason("server_error", null)).toBe(
+      "provider_error",
     );
   });
 });

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   getStaffAccessPendingUrl,
   getStaffOAuthFailureUrl,
+  getStaffOAuthProviderFailureReason,
   getStaffOAuthSuccessUrl,
 } from "@/lib/staff-oauth";
 import { registerStaffAccessRequest } from "@/lib/staff-access";
@@ -12,10 +13,16 @@ export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const providerError = requestUrl.searchParams.get("error");
+  const providerErrorCode = requestUrl.searchParams.get("error_code");
 
   if (providerError) {
-    const reason = providerError === "access_denied" ? "cancelled" : "provider_error";
-    console.error(`[staff-auth:provider] ${providerError}`);
+    const reason = getStaffOAuthProviderFailureReason(
+      providerError,
+      providerErrorCode,
+    );
+    console.error(
+      `[staff-auth:provider] ${providerErrorCode ?? providerError}`,
+    );
     return NextResponse.redirect(getStaffOAuthFailureUrl(reason));
   }
   if (!code) {
