@@ -7,11 +7,11 @@ export function CatalogueUnavailable({
 }: CatalogueUnavailableProps) {
   return (
     <section className="notice-panel" role="status">
-      <p className="eyebrow">Registry notice</p>
+      <p className="eyebrow">Please try again</p>
       <h2>The public catalogue is temporarily unavailable.</h2>
       <p>
-        The authoritative registry could not be reached. No spreadsheet or
-        cached copy has been substituted.
+        We could not load the latest catalogue. Refresh this page in a few
+        minutes.
       </p>
       {notConfigured && process.env.NODE_ENV === "development" && (
         <p className="development-note">

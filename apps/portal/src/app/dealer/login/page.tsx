@@ -32,8 +32,7 @@ export default async function DealerLoginPage({
 
         {!configured ? (
           <div className="staff-flash staff-flash-error" role="alert">
-            Supabase is not configured for this deployment. No fallback data
-            source is available.
+            Business sign-in is not available right now. Try again later.
           </div>
         ) : (
           <form action={signInDealerAction} className="staff-login-form">

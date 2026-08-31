@@ -19,10 +19,10 @@ export const metadata: Metadata = {
     template: `%s | ${institutionName}`,
   },
   description:
-    "Public trade catalogue and verification registry for authorized goods and counterparties.",
+    "Browse East Empire Company goods, apply for a business license, or verify a business or license.",
   openGraph: {
     description:
-      "Official catalogue, dealer authorizations, and license verification for East Empire Company trade.",
+      "Official catalogue, business authorizations, and license verification for East Empire Company trade.",
     siteName: institutionName,
     title: institutionName,
     type: "website",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     description:
-      "Official catalogue, dealer authorizations, and license verification for East Empire Company trade.",
+      "Official catalogue, business authorizations, and license verification for East Empire Company trade.",
     title: institutionName,
   },
 };

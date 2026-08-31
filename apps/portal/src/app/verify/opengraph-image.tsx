@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Verify an East Empire Company dealer or license";
+export const alt = "Verify an East Empire Company business or license";
 export const size = { height: 630, width: 1200 };
 export const contentType = "image/png";
 
@@ -23,7 +23,7 @@ export default function VerificationOpenGraphImage() {
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", fontFamily: "sans-serif", fontSize: 78, fontWeight: 800 }}>
-          Verify a dealer or license
+          Verify a business or license
         </div>
         <div style={{ color: "#33414A", display: "flex", fontFamily: "monospace", fontSize: 34, marginTop: 30 }}>
           EEC-DLR-… / EEC-LIC-…

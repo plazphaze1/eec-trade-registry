@@ -4,14 +4,13 @@ export default function NotFound() {
   return (
     <main className="detail-main">
       <section className="notice-panel">
-        <p className="eyebrow">Registry notice</p>
-        <h1>That catalogue entry is not publicly verifiable.</h1>
+        <p className="eyebrow">Nothing here</p>
+        <h1>Page not found.</h1>
         <p>
-          The reference may be invalid, unpublished, withdrawn, or outside its
-          effective publication dates.
+          The address may be incorrect, or the page may have moved.
         </p>
         <Link className="button button-primary" href="/">
-          Return to catalogue
+          Go to the catalogue
         </Link>
       </section>
     </main>

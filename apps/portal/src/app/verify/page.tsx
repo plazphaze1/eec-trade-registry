@@ -24,7 +24,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Public verification",
   description:
-    "Verify a published East Empire Company dealer authorization or license by its exact DLR or LIC reference.",
+    "Verify a published East Empire Company business authorization or license by its exact DLR or LIC reference.",
 };
 
 interface VerificationPageProps {
@@ -53,10 +53,10 @@ export default async function VerificationPage({
     <main className="verification-main">
       <section className="verification-hero">
         <p className="eyebrow">Official public registry</p>
-        <h1>Verify a dealer or license.</h1>
+        <h1>Verify a business or license.</h1>
         <p>
-          Enter the exact DLR or LIC reference. The prefix tells the registry
-          which record to check; no separate lookup screen is required.
+          Enter the number printed on the business authorization or license.
+          DLR identifies a business and LIC identifies a license.
         </p>
       </section>
       <section className="verification-choices verification-lookup-shell">

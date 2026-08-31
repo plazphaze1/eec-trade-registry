@@ -89,7 +89,7 @@ export default async function CatalogueItemPage({
       <article className="registry-entry">
         <header>
           <p className="eyebrow">
-            {item.category_name} · {item.item_code}
+            {item.category_name}
           </p>
           <h1>{item.display_name}</h1>
           <p className="registry-description">{item.description}</p>
@@ -97,25 +97,25 @@ export default async function CatalogueItemPage({
 
         <section className="entry-status" aria-label="Catalogue status">
           <div>
+            <span>Price</span>
+            <strong>{price ?? "Ask when ordering"}</strong>
+            <p>The final total is shown before the order is submitted.</p>
+          </div>
+          <div>
             <span>Availability</span>
             <strong>{item.availability_label}</strong>
             <p>{item.availability_description}</p>
           </div>
-          <div>
-            <span>Control</span>
+          {item.control_code !== "ordinary-economic" && <div>
+            <span>Additional requirements</span>
             <strong>{item.control_label}</strong>
             <p>{item.control_description}</p>
-          </div>
-          <div>
-            <span>Public price</span>
-            <strong>{price ?? "By request"}</strong>
-            <p>Final eligibility and terms are confirmed when ordering.</p>
-          </div>
+          </div>}
         </section>
 
         <section className="entry-requirements">
           <div>
-            <p className="eyebrow">Purchasing requirements</p>
+            <p className="eyebrow">How to order</p>
             <h2>{item.requirement_summary}</h2>
           </div>
           <dl>
@@ -125,15 +125,26 @@ export default async function CatalogueItemPage({
                 <dd>{minimum}</dd>
               </div>
             )}
-            <div>
-              <dt>Order increment</dt>
+            {item.order_increment !== 1 && <div>
+              <dt>Sold in amounts of</dt>
               <dd>{increment}</dd>
-            </div>
+            </div>}
             <div>
-              <dt>Unit</dt>
+              <dt>Sold as</dt>
               <dd>{item.unit_name}</dd>
             </div>
           </dl>
+        </section>
+
+        <section className="public-detail-actions" aria-label="Ordering options">
+          <div>
+            <h2>Ready to order?</h2>
+            <p>Licensed businesses can sign in and order. New businesses can apply for a license.</p>
+          </div>
+          <div>
+            <Link className="button button-primary" href="/dealer/login">Business sign in</Link>
+            <Link className="button button-secondary" href="/apply">Get a trade license</Link>
+          </div>
         </section>
 
         {item.tags.length > 0 && (
@@ -146,8 +157,8 @@ export default async function CatalogueItemPage({
 
         <footer>
           <p>
-            Registry terms refreshed <RelativeTime value={item.generated_at} />.
-            This entry does not expose exact stock or establish purchase eligibility.
+            Updated <RelativeTime value={item.generated_at} />. Price and
+            availability are confirmed when the order is placed.
           </p>
         </footer>
       </article>

@@ -32,7 +32,7 @@ export default function OpenGraphImage() {
           East Empire Company
         </div>
         <div style={{ color: "#33414A", display: "flex", fontSize: 32, marginTop: 22 }}>
-          Catalogue · dealer verification · licensing
+          Catalogue · business verification · licensing
         </div>
       </div>
       <div style={{ background: "#C6BFB0", display: "flex", height: 3, width: "100%" }} />

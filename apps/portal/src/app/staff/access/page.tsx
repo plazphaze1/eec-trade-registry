@@ -65,7 +65,7 @@ export default async function StaffAccessPage({ searchParams }: AccessPageProps)
     <section className="integration-section"><div className="inventory-section-heading"><div><p className="eyebrow">Simple public model</p><h2>Who gets what</h2></div></div><div className="integration-grid">
       <article className="integration-card"><h3>Owner</h3><p>You. Full platform authority, staff approvals, audit, configuration, and operations.</p></article>
       <article className="integration-card"><h3>Agent</h3><p>Authorized EEC staff. Handles day-to-day orders, stock, licensing, dealers, finance, and compliance.</p></article>
-      <article className="integration-card"><h3>Business</h3><p>Not a staff role. Business access is restricted to a specific dealer/business relationship through the Dealer portal.</p></article>
+      <article className="integration-card"><h3>Business</h3><p>Not a staff role. Each licensed business uses its own access code in the Business portal.</p></article>
       <article className="integration-card"><h3>Public</h3><p>No login. Catalogue, verification, application intake, and public projections only.</p></article>
     </div></section>
 

@@ -64,9 +64,9 @@ export function UnsupportedVerificationReference({
     <section className="verification-result" aria-live="polite">
       <div className="verification-generic-miss">
         <p className="eyebrow">Reference not recognized</p>
-        <h2>Use a dealer or license reference.</h2>
+        <h2>Use a business or license number.</h2>
         <p>
-          Current dealer references begin with EEC-DLR- and license references
+          Current business numbers begin with EEC-DLR- and license numbers
           begin with EEC-LIC-. Earlier DLR- and LIC- records remain valid. Order, fulfillment, and private application references
           are not public verification records.
         </p>
@@ -134,13 +134,13 @@ export function DealerVerificationResult({
         locale={locale}
       />
       <div className="verification-record-heading">
-        <p className="eyebrow">Public dealer record</p>
+        <p className="eyebrow">Public business record</p>
         <h3>{result.public_name ?? "Public name unavailable"}</h3>
         {result.public_notice && <p>{result.public_notice}</p>}
       </div>
       <dl className="verification-facts">
         <div>
-          <dt>Dealer type</dt>
+          <dt>Business type</dt>
           <dd>{result.dealer_type_label ?? "Not published"}</dd>
         </div>
         <div>
@@ -175,8 +175,8 @@ export function DealerVerificationResult({
       <div className="verification-authority-note">
         <strong>
           {result.is_currently_authorized
-            ? "This dealer authorization is currently in force."
-            : "This dealer authorization does not currently confer authority."}
+            ? "This business is currently authorized."
+            : "This business is not currently authorized."}
         </strong>
         <p>
           Item eligibility, licensing, stock, pricing, and transaction approval
@@ -271,7 +271,7 @@ export function LicenseVerificationResult({
             : "This license does not currently confer authority."}
         </strong>
         <p>
-          Dealer status, item eligibility, allocation, stock, and transaction
+          Business status, item eligibility, allocation, stock, and transaction
           approval are evaluated separately.
         </p>
       </div>
@@ -311,8 +311,8 @@ export function VerificationUnavailable({
       <p className="eyebrow">Registry notice</p>
       <h2>Public verification is temporarily unavailable.</h2>
       <p>
-        The authoritative registry could not be reached. No cached document,
-        message, or spreadsheet has been substituted.
+        We could not check the latest record. Wait a few minutes, then try
+        again.
       </p>
       {notConfigured && process.env.NODE_ENV === "development" && (
         <p className="development-note">

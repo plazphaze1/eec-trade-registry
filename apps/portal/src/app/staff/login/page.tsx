@@ -30,18 +30,16 @@ export default async function StaffLoginPage({
       <section className="staff-login-card">
         <div>
           <p className="eyebrow">Restricted staff surface</p>
-          <h1>Catalogue operations</h1>
+          <h1>Staff sign in</h1>
           <p>
-            Continue with your individually approved Discord identity. Discord
-            proves who you are; Supabase role assignments still authorize every
-            staff read and write.
+            Continue with Discord. It confirms who you are, and the Owner decides
+            whether you can access staff tools.
           </p>
         </div>
 
         {!configured ? (
           <div className="staff-flash staff-flash-error" role="alert">
-            Supabase is not configured for this deployment. No fallback data
-            source is available.
+            Staff sign-in is not available right now. Try again later.
           </div>
         ) : (
           <form action={signInWithDiscordAction} className="staff-login-form">
@@ -84,9 +82,8 @@ export default async function StaffLoginPage({
             ← Return to the public catalogue
           </Link>
           <p>
-            There is no staff email/password form. First-time Discord users enter
-            an owner review queue. Approval as an Agent is still required before
-            any staff data or command becomes available.
+            First-time staff enter the Owner&apos;s review queue. Nothing becomes
+            available until the Owner approves access as an Agent.
           </p>
         </footer>
       </section>
