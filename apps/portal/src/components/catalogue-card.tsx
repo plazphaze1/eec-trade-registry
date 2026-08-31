@@ -23,44 +23,29 @@ export function CatalogueCard({ item, locale }: CatalogueCardProps) {
   );
 
   return (
-    <article className="catalogue-card storefront-product-card">
-      <div className="card-topline">
+    <article className="catalogue-list-item">
+      <div className="catalogue-list-product">
         <span className="product-category">{item.category_name}</span>
-        <span className="product-code">{item.item_code}</span>
+        <h2 className="product-name">
+          <Link href={`/catalogue/${item.slug}`}>{item.display_name}</Link>
+        </h2>
+        <p>{item.description}</p>
       </div>
 
-      <div className="card-body">
-        <div>
-          <h2 className="product-name">
-            <Link href={`/catalogue/${item.slug}`}>{item.display_name}</Link>
-          </h2>
-          <p>{item.description}</p>
-        </div>
-
-        <dl className="card-facts">
-          <div>
-            <dt>Price</dt>
-            <dd>{price ?? "Price by request"}</dd>
-          </div>
-          <div>
-            <dt>Availability</dt>
-            <dd>{item.availability_label}</dd>
-          </div>
-          {minimum && (
-            <div>
-              <dt>Minimum order</dt>
-              <dd>{minimum}</dd>
-            </div>
-          )}
-        </dl>
+      <div className="catalogue-list-fact">
+        <span>Price</span>
+        <strong>{price ?? "By request"}</strong>
+        {minimum && <small>Minimum {minimum}</small>}
       </div>
 
-      <div className="card-footer">
-        <p><strong>How to buy:</strong> {item.requirement_summary}</p>
-        <Link className="button button-secondary button-compact" href={`/catalogue/${item.slug}`}>
-          View item <span aria-hidden="true">→</span>
-        </Link>
+      <div className="catalogue-list-fact">
+        <span>Availability</span>
+        <strong>{item.availability_label}</strong>
       </div>
+
+      <Link aria-label={`View ${item.display_name}`} className="button button-secondary button-compact catalogue-list-action" href={`/catalogue/${item.slug}`}>
+        View <span aria-hidden="true">→</span>
+      </Link>
     </article>
   );
 }
