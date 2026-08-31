@@ -2094,6 +2094,379 @@ button:focus-visible {
   background: #eee;
 }
 
+/* Task-first license review */
+.license-review-page {
+  max-width: 1180px;
+}
+
+.license-review-queue {
+  display: grid;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.license-review-queue > header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.license-review-queue > header h2,
+.license-review-queue > header p {
+  margin: 0;
+}
+
+.license-review-queue > header p {
+  margin-top: 5px;
+  color: var(--muted);
+}
+
+.license-review-card {
+  overflow: hidden;
+  border: 1px solid #d7dde5;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(23, 42, 67, 0.07);
+}
+
+.license-review-card > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 26px 28px 20px;
+}
+
+.license-review-card > header h2 {
+  margin: 8px 0 5px;
+  color: #10233e;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.7rem, 3vw, 2.35rem);
+}
+
+.license-review-card > header p,
+.license-review-card > header small {
+  margin: 0;
+  color: #65738a;
+}
+
+.license-review-card > header small {
+  padding-top: 6px;
+  font-weight: 800;
+}
+
+.license-review-kind {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #eaf2ff;
+  color: #155ccb;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.license-review-body {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.85fr) minmax(300px, 1.4fr);
+  gap: 24px;
+  padding: 22px 28px;
+  border-block: 1px solid #e1e6ed;
+  background: #f8fafc;
+}
+
+.license-review-body > div {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+}
+
+.license-review-body span {
+  color: #65738a;
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.license-review-body p,
+.license-review-body strong {
+  margin: 0;
+  color: #172a43;
+  line-height: 1.55;
+}
+
+.license-review-primary-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 22px 28px;
+  background: #fff;
+}
+
+.license-review-primary-action > div p {
+  margin: 5px 0 0;
+  color: #65738a;
+}
+
+.license-review-primary-action .field {
+  flex: 1;
+}
+
+.license-review-primary-action .button {
+  min-width: 210px;
+}
+
+.license-review-secondary-action {
+  margin: 0 28px 24px;
+}
+
+.license-review-secondary-action > summary {
+  color: #65738a;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.license-review-secondary-action form {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+  padding: 18px;
+  border: 1px solid #ead4d1;
+  border-radius: 12px;
+  background: #fff8f7;
+}
+
+.license-review-secondary-action .button {
+  justify-self: start;
+}
+
+.license-review-empty {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 30px;
+  border: 1px solid #cfe3d6;
+  border-radius: 16px;
+  background: #f4fbf6;
+  color: #215f3b;
+}
+
+.license-review-empty p {
+  margin: 4px 0 0;
+  color: #52725f;
+}
+
+.license-review-history,
+.license-manual-tools {
+  margin-top: 24px;
+}
+
+.license-review-history > div {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.license-review-history article {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.license-review-history article small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+}
+
+/* Compact object-centred order work */
+.order-workspace {
+  max-width: 1240px;
+}
+
+.order-workspace-header {
+  align-items: end;
+  margin-top: 18px;
+  padding-bottom: 24px;
+}
+
+.order-workspace-header h1 {
+  margin: 5px 0 8px;
+  color: #10233e;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(2.5rem, 5vw, 4.2rem);
+}
+
+.order-workspace-header > div > p:last-child {
+  margin: 0;
+  color: #65738a;
+  font-size: 0.92rem;
+}
+
+.order-workspace-header .order-status {
+  margin-bottom: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: #edf3fb;
+  color: #315b8a;
+}
+
+.order-detail-lines {
+  overflow: hidden;
+  margin-top: 24px;
+  border: 1px solid #d7dde5;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(23, 42, 67, 0.07);
+}
+
+.order-items-heading {
+  padding: 22px 26px;
+  border-bottom: 1px solid #dfe5ec;
+  background: #f8fafc;
+}
+
+.order-items-heading h2,
+.order-items-heading p {
+  margin: 0;
+}
+
+.order-items-heading h2 {
+  color: #10233e;
+  font-size: 1.25rem;
+}
+
+.order-items-heading p {
+  margin-top: 4px;
+  color: #65738a;
+  font-size: 0.84rem;
+}
+
+.order-line-row + .order-line-row {
+  border-top: 1px solid #dfe5ec;
+}
+
+.order-line-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 22px 26px 10px;
+}
+
+.order-line-row-header h2 {
+  margin: 6px 0 0;
+  color: #10233e;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.45rem;
+}
+
+.order-line-row-header p {
+  margin: 5px 0 0;
+  color: #65738a;
+  font-size: 0.8rem;
+}
+
+.order-line-row-header > strong {
+  color: #10233e;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.order-line-state {
+  color: #9a6610;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.order-line-state-fulfilled,
+.order-line-state-reserved,
+.order-line-state-processing {
+  color: #267449;
+}
+
+.order-line-quick-facts {
+  display: flex;
+  gap: 10px 24px;
+  padding: 0 26px 20px;
+  color: #65738a;
+  font-size: 0.84rem;
+}
+
+.order-line-quick-facts span + span::before {
+  margin-right: 24px;
+  color: #b8c1cd;
+  content: "•";
+}
+
+.order-line-row > .order-next-action {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  padding: 18px 26px;
+  border-top: 1px solid #d9e5f4;
+  background: #f3f7fc;
+}
+
+.order-next-action-copy h3,
+.order-next-action-copy p {
+  margin: 0;
+}
+
+.order-next-action-copy h3 {
+  color: #10233e;
+  font-size: 1rem;
+}
+
+.order-next-action-copy p {
+  margin-top: 5px;
+  color: #65738a;
+  font-size: 0.84rem;
+}
+
+.order-line-row .order-guided-form {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+}
+
+.order-line-row .order-guided-form .derived-choice {
+  margin: 0;
+}
+
+.order-line-row > .order-secondary-actions,
+.order-line-row > .order-action-note,
+.order-line-row > .order-completion-note {
+  margin: 0 26px 18px;
+}
+
+.order-line-row > .order-secondary-actions {
+  padding-top: 14px;
+  border-top: 1px solid #edf0f4;
+}
+
+.order-line-row > .order-secondary-actions > summary {
+  color: #65738a;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+.order-cancel-zone {
+  margin-top: 24px;
+  border-color: #e7d5d2;
+  border-radius: 12px;
+}
+
 @media (max-width: 900px) {
   .hero,
   .card-body,
@@ -2165,6 +2538,24 @@ button:focus-visible {
 
   .entry-status > div:last-child {
     border-bottom: 0;
+  }
+
+  .license-review-body {
+    grid-template-columns: 1fr;
+  }
+
+  .license-review-primary-action,
+  .order-line-row > .order-next-action {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .license-review-primary-action {
+    flex-direction: column;
+  }
+
+  .license-review-primary-action .button {
+    width: 100%;
   }
 }
 
@@ -2300,5 +2691,41 @@ input[aria-hidden="true"][name="website"] {
 
   .staff-readonly-grid div:last-child {
     border-bottom: 0;
+  }
+
+  .license-review-card > header,
+  .order-line-row-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .license-review-card > header,
+  .license-review-body,
+  .license-review-primary-action,
+  .order-items-heading,
+  .order-line-row-header,
+  .order-line-row > .order-next-action {
+    padding-inline: 20px;
+  }
+
+  .license-review-secondary-action,
+  .order-line-row > .order-secondary-actions,
+  .order-line-row > .order-action-note,
+  .order-line-row > .order-completion-note {
+    margin-inline: 20px;
+  }
+
+  .order-line-quick-facts {
+    flex-direction: column;
+    padding-inline: 20px;
+  }
+
+  .order-line-quick-facts span + span::before {
+    display: none;
+  }
+
+  .order-line-row .order-guided-form {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

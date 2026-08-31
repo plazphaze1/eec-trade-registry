@@ -18,6 +18,9 @@ const notices: Record<string, string> = {
   role_revoked: "The staff role was revoked without deleting its assignment history.",
   saved: "The catalogue record was saved.",
   application_decided: "The application decision and resulting license change were recorded.",
+  application_approved: "The business, trading authorization, and license were created together.",
+  application_denied: "The request was declined. No business or license was created.",
+  application_renewed: "The existing business license was renewed.",
   asset_fulfilled: "The reservation was consumed and unique asset custody was transferred.",
   generated: "The official document snapshot was generated and is ready to download.",
   order_created: "The assisted order was priced, quota-checked, and submitted.",
@@ -46,6 +49,7 @@ const errors: Record<string, string> = {
   weekly_limit: "That quantity would exceed the customer’s current weekly personal limit.",
   invalid_access_code: "Use a private access code between 8 and 128 characters.",
   business_license_required: "Issue or reactivate a business license before enabling portal access.",
+  onboarding_unavailable: "This license type is missing its business-onboarding setup. No record was created.",
 };
 
 export function StaffNotice({

@@ -388,7 +388,13 @@ Key fields:
 
 Application status is not license status.
 
-Implementation note: the current constrained public intake stores applicant/contact text, requested class, jurisdiction, renewal target, statement, status-token digest, requested endorsements, review evidence, and the resulting license link. The dedicated staff review projection returns pending work and 90 days of decision history without granting direct table access.
+Implementation note: the current constrained public intake stores applicant/contact text, requested class, jurisdiction, renewal target, statement, status-token digest, requested endorsements, review evidence, and the resulting license link. The dedicated staff review projection returns pending work and 90 days of decision history without granting direct table access. For a new request without an existing holder, the authoritative approval command uses the class onboarding profile to create the canonical business party, dealer authorization, and linked license in one transaction.
+
+### `license_application_onboarding_profiles`
+
+Configures how an approved new public application becomes a licensed business. One profile per license class selects the party type, dealer type, initial dealer status, and public-disclosure default. This mapping prevents application code from inferring authority from display labels or hard-coded setting terminology.
+
+The profile is restricted configuration. Approval still revalidates each referenced definition, the requested class and jurisdiction, reviewer permissions, current application version, and the downstream dealer/license commands.
 
 ### `application_endorsement_requests`
 

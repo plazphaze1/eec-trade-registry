@@ -28,6 +28,7 @@ Implementation proceeds through the policy-gated vertical slices in `ROADMAP.md`
 12. **Setup belongs inside the task.** A player applies with plain business questions, Stock shows every item even at zero, and guaranteed buying prices are set where staff buy materials. Separate setup desks must not block a routine action.
 13. **The experience is consumer-grade.** Public and routine staff surfaces use familiar shopping patterns, readable type, generous targets, and one dominant next action. Registry evidence and policy machinery remain available without visually competing with the task.
 14. **One item has one routine workspace.** Stock, ordinary intake, player-sourced intake, and normal price changes are presented on the same item card. Separate ledger, procurement, publication, and pricing commands remain authoritative underneath without becoming separate navigation chores.
+15. **One approval completes ordinary business onboarding.** A new public license request is not a scavenger hunt between business and license registries. Owner approval creates the configured business, dealer authorization, and linked license atomically; the separate records remain visible only where their distinct legal or audit meaning matters.
 
 ## 3. Users and actors
 
@@ -290,6 +291,8 @@ Frontend code may display estimates for usability only when clearly labeled and 
 - A prepared player-material purchase can be recorded from supplier, material, and quantity in approximately 30 seconds.
 - A first buying price is entered on the Buy materials page as one amount per unit. Changing it creates a new authoritative offer and preserves the prior one as history.
 - A public business applicant chooses between new and renewal using ordinary links, then answers business name, Discord contact, trade categories, and purpose. Configured routine class and region selections are derived; exceptional endorsements are optional.
+- An Owner approves an ordinary new license request with one **Approve business** action. The application name and configured onboarding profile create the canonical business, current dealer authorization, and public license together; manual onboarding remains an exceptional Staff tool.
+- An order with several lines is presented as one compact item list. Status, quantity, price, and the next permitted action appear once per item; repeated progress diagrams, technical unit codes, database versions, and duplicated order-state labels stay out of the ordinary view.
 - A prepared ordinary item can be onboarded and an ordinary inventory receipt can be posted in approximately 30 seconds through the rapid-operations workspace.
 - Work queues identify ownership, age, blocking reason, and next permitted actions.
 - The interface never presents raw Booleans, enum codes, or database identifiers when plain language is appropriate.
