@@ -17,7 +17,7 @@ describe("consumer experience contracts", () => {
     expect(experienceStyles).toContain(".shop-hidden-cart-line { display: none; }");
   });
 
-  it("keeps routine stock and price work on one item card", () => {
+  it("keeps routine stock and price work directly editable in one item row", () => {
     const stockWorkspace = source("../components/simple-stock-workspace.tsx");
     const inventoryActions = source("../app/staff/inventory/actions.ts");
     const economyActions = source("../app/staff/economy/actions.ts");
@@ -26,17 +26,19 @@ describe("consumer experience contracts", () => {
 
     expect(staffShell).toContain('label: "Stock & prices"');
     expect(staffShell).not.toContain('label: "Buy from a player"');
+    expect(stockWorkspace).toContain('className="stock-sheet-table"');
     expect(stockWorkspace).toContain("Add stock");
-    expect(stockWorkspace).toContain("Buy &amp; add");
-    expect(stockWorkspace).toContain("Base selling price");
-    expect(stockWorkspace).toContain("Company buying price");
+    expect(stockWorkspace).toContain("Buy + add");
+    expect(stockWorkspace).toContain("Selling price");
+    expect(stockWorkspace).toContain("Company pays");
+    expect(stockWorkspace).not.toContain(">Manage<");
     expect(stockWorkspace).toContain('value="/staff/inventory"');
     expect(inventoryActions).toContain('client.rpc("staff_set_item_public_terms"');
     expect(economyActions).toContain('candidate === "/staff/inventory"');
-    const stockGridRule = experienceStyles.slice(
-      experienceStyles.indexOf(".stock-card-grid"),
-      experienceStyles.indexOf(".stock-card-grid") + 240,
+    const stockSheetRule = experienceStyles.slice(
+      experienceStyles.indexOf(".stock-sheet-header"),
+      experienceStyles.indexOf(".stock-sheet-header") + 420,
     );
-    expect(stockGridRule).toContain("align-items: start;");
+    expect(stockSheetRule).toContain("grid-template-columns:");
   });
 });
