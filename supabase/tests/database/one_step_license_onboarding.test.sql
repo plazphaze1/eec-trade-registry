@@ -68,6 +68,16 @@ select lives_ok(
 );
 reset role;
 
+select set_config(
+  'test.one_step_application_id',
+  (
+    select id::text
+    from public.license_applications
+    where source_request_id = 'fc300000-0000-4000-8000-000000000001'
+  ),
+  false
+);
+
 set local role authenticated;
 select set_config(
   'request.jwt.claims',
@@ -77,8 +87,7 @@ select set_config(
 select lives_ok(
   $test$
     select * from public.staff_decide_license_application(
-      (select id from public.license_applications
-        where source_request_id = 'fc300000-0000-4000-8000-000000000001'),
+      current_setting('test.one_step_application_id')::uuid,
       1,
       'approve',
       null,
@@ -176,8 +185,7 @@ select set_config(
 select lives_ok(
   $test$
     select * from public.staff_decide_license_application(
-      (select id from public.license_applications
-        where source_request_id = 'fc300000-0000-4000-8000-000000000001'),
+      current_setting('test.one_step_application_id')::uuid,
       2,
       'approve',
       null,
