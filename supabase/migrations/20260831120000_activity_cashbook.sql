@@ -609,7 +609,7 @@ begin
 
   -- A downward reconciliation can span more than one physical account. Delay
   -- the row-level balance assertion until every matching line has been posted.
-  set constraints inventory_ledger_state_check deferred;
+  set constraints public.inventory_ledger_state_check deferred;
 
   insert into public.inventory_ledger_entries (
     inventory_transaction_id, line_number, inventory_account_id, item_id, quantity_delta
@@ -653,7 +653,7 @@ begin
     end if;
   end if;
 
-  set constraints inventory_ledger_state_check immediate;
+  set constraints public.inventory_ledger_state_check immediate;
 
   insert into public.stock_activity_entries (
     public_reference, activity_type, item_id, warehouse_id, stock_location_id,
