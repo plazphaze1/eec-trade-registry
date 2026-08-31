@@ -214,6 +214,7 @@ export function SimpleStockWorkspace({
         </div>
       )}
 
+      <p className="stock-sheet-mobile-hint">Swipe sideways to edit stock and prices →</p>
       <div className="stock-sheet-scroll">
         <div aria-label="Stock and prices" className="stock-sheet-table" role="table">
           <div className="stock-sheet-header" role="row">

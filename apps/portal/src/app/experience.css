@@ -792,7 +792,8 @@ body > main { width: min(1440px, calc(100% - 48px)); }
   box-shadow: var(--xp-shadow-sm);
 }
 
-.stock-sheet-table { min-width: 1140px; }
+.stock-sheet-mobile-hint { display: none; }
+.stock-sheet-table { min-width: 1080px; }
 
 .stock-sheet-header,
 .stock-sheet-row {
@@ -1134,6 +1135,8 @@ body > main { width: min(1440px, calc(100% - 48px)); }
   .stock-search { width: 100%; }
   .stock-sheet-setup { align-items: stretch; flex-direction: column; }
   .stock-sheet-setup form { grid-template-columns: minmax(0, 1fr) auto; }
+  .stock-sheet-mobile-hint { display: block; margin: 14px 2px -4px; color: var(--xp-muted); font-size: .68rem; font-weight: 700; }
+  .stock-sheet-mobile-hint + .stock-sheet-scroll { margin-top: 10px; }
   .stock-quick-add { grid-template-columns: 1fr; }
 
   .buying-price-card,
