@@ -487,6 +487,13 @@ button:focus-visible {
   font-size: 2rem;
 }
 
+.registry-order-note {
+  max-width: 620px;
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
 .entry-requirements dl {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

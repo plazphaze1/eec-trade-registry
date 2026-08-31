@@ -99,7 +99,11 @@ export default async function CatalogueItemPage({
           <div>
             <span>Price</span>
             <strong>{price ?? "Ask when ordering"}</strong>
-            <p>The final total is shown before the order is submitted.</p>
+            <p>
+              {price
+                ? "The final total is confirmed when ordering."
+                : "An EEC Agent will confirm the price after reviewing the request."}
+            </p>
           </div>
           <div>
             <span>Availability</span>
@@ -116,7 +120,8 @@ export default async function CatalogueItemPage({
         <section className="entry-requirements">
           <div>
             <p className="eyebrow">How to order</p>
-            <h2>{item.requirement_summary}</h2>
+            <h2>Ordering details</h2>
+            <p className="registry-order-note">{item.requirement_summary}</p>
           </div>
           <dl>
             {minimum && (
