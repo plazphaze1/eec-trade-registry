@@ -1,5 +1,22 @@
 import { getSiteOrigin } from "@/lib/env";
 
+export type StaffOAuthFailureReason =
+  | "cancelled"
+  | "exchange_failed"
+  | "missing_code"
+  | "provider_error"
+  | "request_failed"
+  | "signup_disabled";
+
+export function getStaffOAuthProviderFailureReason(
+  providerError: string,
+  providerErrorCode: string | null,
+): StaffOAuthFailureReason {
+  if (providerErrorCode === "signup_disabled") return "signup_disabled";
+  if (providerError === "access_denied") return "cancelled";
+  return "provider_error";
+}
+
 export function getStaffOAuthCallbackUrl(
   environment: NodeJS.ProcessEnv = process.env,
 ): string {
@@ -22,12 +39,7 @@ export function getStaffAccessPendingUrl(
 }
 
 export function getStaffOAuthFailureUrl(
-  reason:
-    | "cancelled"
-    | "exchange_failed"
-    | "missing_code"
-    | "provider_error"
-    | "request_failed",
+  reason: StaffOAuthFailureReason,
   environment: NodeJS.ProcessEnv = process.env,
 ): URL {
   const target = new URL("/staff/login", getSiteOrigin(environment));

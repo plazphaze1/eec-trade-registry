@@ -66,6 +66,13 @@ export default async function StaffLoginPage({
                 not be recorded. The session was closed and no authority was granted.
               </div>
             )}
+            {error === "signup_disabled" && (
+              <div className="staff-flash staff-flash-error" role="alert">
+                First-time Discord sign-in is currently disabled by the authentication
+                service. The owner must enable new user signups before this identity can
+                enter the approval queue.
+              </div>
+            )}
             <button className="button button-primary" type="submit">
               Continue with Discord
             </button>
