@@ -90,7 +90,13 @@ export default async function CataloguePage({
               {catalogueResult.data.length} published
               {catalogueResult.data.length === 1 ? " entry" : " entries"}
             </p>
-            <div className="catalogue-grid">
+            <div className="catalogue-list">
+              <div className="catalogue-list-heading">
+                <span>Product</span>
+                <span>Price</span>
+                <span>Availability</span>
+                <span />
+              </div>
               {catalogueResult.data.map((item) => (
                 <CatalogueCard key={item.item_code} item={item} locale={locale} />
               ))}
