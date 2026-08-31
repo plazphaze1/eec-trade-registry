@@ -562,12 +562,14 @@ The implemented economic permissions intentionally separate policy from routine 
 | `procurement.offer.manage` | Publish effective-dated guaranteed purchase offers. |
 | `procurement.delivery.receive` | Accept a delivery and create its balanced receipt in an assigned warehouse. |
 | `procurement.delivery.settle` | Record external payment evidence against an accepted delivery. |
+| `finance.cashbook.read` | View known procurement spend, pending named-supplier obligations, and unpriced purchase exceptions. |
+| `inventory.count.reconcile` | Post the difference between ledger stock and an Owner-recorded counted total for eligible ordinary goods. |
 
 `procurement_officer` receives routine supplier, delivery, settlement, dashboard, and inventory-read powers. `economic_steward` receives policy, offer, supplier, and dashboard powers. Warehouse scope is still enforced when receiving. Neither role receives dealer, licensing, compliance, platform-administration, or unrestricted inventory-correction authority merely because it can operate the economy desk.
 
 The generic `inventory.receipt.post` permission cannot bypass a player-sourced-only policy. This is a database invariant, not a hidden UI convention.
 
-ADR 0025 changes presentation, not authority. Agents use **Buy materials** for ordinary seller registration, price-controlled receipt, and settlement evidence when their effective scopes permit those commands. The full reserve-economy and per-material policy records are linked only to Owner at `/staff/economy?view=system`; direct navigation also checks Owner access. The one-field buying-price form still invokes `procurement.offer.manage`, records the actor and reason, and fails closed for an unauthorized Agent.
+ADR 0030 lets an Agent with `procurement.delivery.receive` record an aggregate purchase without supplier identity. Warehouse scope, player-sourced policy, item type, occurrence date, and request identity are still revalidated in PostgreSQL. Owner and Agent receive `finance.cashbook.read`. Only Owner receives `inventory.count.reconcile`; the command additionally rejects player-sourced-only and serialized goods and a total below active reservations. The full reserve-economy and per-material policy records remain Owner-only system records.
 
 ## 18. Launch command permissions
 

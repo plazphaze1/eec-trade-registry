@@ -4,8 +4,6 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import {
-  recordDeliveryAction,
-  registerSupplierAction,
   setBuyingPriceAction,
 } from "@/app/staff/economy/actions";
 import {
@@ -40,8 +38,6 @@ type StockItem = {
   } | null;
   unit: string;
 };
-
-type Supplier = { id: string; name: string };
 
 function number(value: number) {
   return new Intl.NumberFormat(undefined, { maximumFractionDigits: 3 }).format(value);
@@ -113,15 +109,11 @@ function BuyingPriceCell({ item }: { item: StockItem }) {
 }
 
 function StockIntakeCell({
-  defaultPurchaseLocationId,
   defaultReceiptLocationId,
   item,
-  suppliers,
 }: {
-  defaultPurchaseLocationId: string | null;
   defaultReceiptLocationId: string | null;
   item: StockItem;
-  suppliers: Supplier[];
 }) {
   if (item.action === "asset") {
     return <Link className="stock-sheet-text-link" href="/staff/assets">Open unique goods</Link>;
@@ -142,42 +134,15 @@ function StockIntakeCell({
       </form>
     );
   }
-  if (!item.buyingPrice?.offerId) return <span className="stock-sheet-muted">Set buying price first</span>;
-  if (suppliers.length === 0) return <span className="stock-sheet-muted">Add the first seller above</span>;
-  if (!defaultPurchaseLocationId) return <span className="stock-sheet-muted">Receiving location needed</span>;
-  return (
-    <form action={recordDeliveryAction} className={`stock-sheet-intake-form ${suppliers.length > 1 ? "has-seller" : ""}`}>
-      <input name="return_to" type="hidden" value="/staff/inventory" />
-      <input name="offer_id" type="hidden" value={item.buyingPrice.offerId} />
-      <input name="stock_location_id" type="hidden" value={defaultPurchaseLocationId} />
-      <input name="reason" type="hidden" value="Player-supplied material counted and accepted from Stock and prices." />
-      {suppliers.length === 1
-        ? <input name="supplier_id" type="hidden" value={suppliers[0].id} />
-        : <select aria-label={`Seller of ${item.name}`} defaultValue="" name="supplier_id" required><option disabled value="">Seller</option>{suppliers.map((supplier) => <option key={supplier.id} value={supplier.id}>{supplier.name}</option>)}</select>}
-      <div className="stock-sheet-input-unit">
-        <input aria-label={`Quantity of ${item.name} purchased`} min="0.001" name="quantity" placeholder="0" required step="0.001" type="number" />
-        <span>{item.unit}</span>
-      </div>
-      <button className="button button-primary button-compact" type="submit">Buy + add</button>
-    </form>
-  );
+  return <Link className="button button-primary button-compact" href={`/staff/activity?mode=purchase&item=${item.id}`}>Record purchase</Link>;
 }
 
 export function SimpleStockWorkspace({
-  defaultPurchaseLocationId,
   defaultReceiptLocationId,
-  defaultSupplierSetup,
   items,
-  suppliers,
 }: {
-  defaultPurchaseLocationId: string | null;
   defaultReceiptLocationId: string | null;
-  defaultSupplierSetup: {
-    jurisdictionId: string;
-    partyTypeCode: string;
-  } | null;
   items: StockItem[];
-  suppliers: Supplier[];
 }) {
   const [search, setSearch] = useState("");
   const filtered = useMemo(() => {
@@ -185,8 +150,6 @@ export function SimpleStockWorkspace({
     return query ? items.filter((item) => item.name.toLocaleLowerCase().includes(query)) : items;
   }, [items, search]);
   const readyCount = items.filter((item) => item.available > 0).length;
-  const needsFirstSeller = suppliers.length === 0 && items.some((item) => item.action === "purchase");
-
   return (
     <section className="stock-storefront">
       <div className="stock-storefront-bar">
@@ -197,22 +160,6 @@ export function SimpleStockWorkspace({
         </div>
         <label className="stock-search"><UiIcon name="search" size={19} /><span className="sr-only">Search stock</span><input onChange={(event) => setSearch(event.target.value)} placeholder="Find an item…" type="search" value={search} /></label>
       </div>
-
-      {needsFirstSeller && defaultSupplierSetup && (
-        <div className="stock-sheet-setup">
-          <div><strong>Add your first seller</strong><span>This is needed once before player materials can be received.</span></div>
-          <form action={registerSupplierAction}>
-            <input name="return_to" type="hidden" value="/staff/inventory" />
-            <input name="jurisdiction_id" type="hidden" value={defaultSupplierSetup.jurisdictionId} />
-            <input name="party_type_code" type="hidden" value={defaultSupplierSetup.partyTypeCode} />
-            <input name="display_name" type="hidden" value="" />
-            <input name="notes" type="hidden" value="" />
-            <input name="reason" type="hidden" value="Seller added from Stock and prices." />
-            <input aria-label="First seller name" maxLength={300} name="legal_name" placeholder="Player or organization" required />
-            <button className="button button-secondary button-compact" type="submit">Add seller</button>
-          </form>
-        </div>
-      )}
 
       <p className="stock-sheet-mobile-hint">Swipe sideways to edit stock and prices →</p>
       <div className="stock-sheet-scroll">
@@ -233,7 +180,7 @@ export function SimpleStockWorkspace({
                   <span><strong>{item.name}</strong><small>{item.action === "asset" ? "Unique good" : item.action === "purchase" ? "Player supplied" : "Ordinary stock"}</small></span>
                 </div>
                 <div className="stock-sheet-available stock-sheet-cell" data-label="Available" role="cell"><strong>{number(item.available)}</strong><small>{item.unit}</small></div>
-                <div className="stock-sheet-cell stock-sheet-action-cell" data-label="Add stock" role="cell"><StockIntakeCell defaultPurchaseLocationId={defaultPurchaseLocationId} defaultReceiptLocationId={defaultReceiptLocationId} item={item} suppliers={suppliers} /></div>
+                <div className="stock-sheet-cell stock-sheet-action-cell" data-label="Add stock" role="cell"><StockIntakeCell defaultReceiptLocationId={defaultReceiptLocationId} item={item} /></div>
                 <div className="stock-sheet-cell stock-sheet-price-cell" data-label="Selling price" role="cell"><SalePriceCell item={item} /></div>
                 <div className="stock-sheet-cell stock-sheet-price-cell" data-label="Company pays" role="cell"><BuyingPriceCell item={item} /></div>
                 <div className="stock-sheet-cell stock-sheet-row-action" data-label="Settings" role="cell">

@@ -663,7 +663,7 @@ Key fields:
 
 ## 9. Warehouses, inventory, and transfers
 
-Implementation status: warehouse operations implement configurable warehouses and locations; physical, in-transit custody, and external accounts; immutable posted transaction headers; balanced signed ledger entries; derived on-hand/reserved/available projections; linked reversals; warehouse-scoped staff grants; effective-dated reservations; fungible fulfillment; and full-quantity warehouse transfer dispatch and receipt. Serialized assets use the dedicated event model in section 10 rather than fungible ledger quantities. Counts, reconciliation adjustments, returns, partial discrepancy resolution, and consignment custody remain future work.
+Implementation status: warehouse operations implement configurable warehouses and locations; physical, in-transit custody, and external accounts; immutable posted transaction headers; balanced signed ledger entries; derived on-hand/reserved/available projections; linked reversals; warehouse-scoped staff grants; effective-dated reservations; fungible fulfillment; full-quantity warehouse transfer dispatch and receipt; and Owner-only counted-total reconciliation for ordinary fungible goods. Serialized assets use the dedicated event model in section 10 rather than fungible ledger quantities. Formal count sessions, returns, partial discrepancy resolution, and additional reconciliation approval thresholds remain future work.
 
 ### `warehouses`
 
@@ -727,6 +727,8 @@ The fulfillment command creates the inverse balanced issue after marking its res
 ### `stock_counts` and `stock_count_lines`
 
 Physical reconciliation sessions and observations. Approval posts ledger adjustments; the count itself never overwrites a balance.
+
+The implemented rapid counted-total command is a deliberately smaller precursor to formal count sessions. It calculates the authorized warehouse total, rejects player-sourced-only and serialized goods, rejects a total below active reservations, and posts only the difference as a `reconciliation` transaction. `stock_activity_entries` retains the stated total, prior total, delta, business date, actor, request, and linked transaction.
 
 ### `transfers`
 
@@ -1067,15 +1069,25 @@ The simplified price command serializes changes by item and currency, retires ov
 
 Evidence that a registered supplier delivered an accepted quantity against a current offer. It snapshots the item, quantity, rate, rounded total, currency, warehouse/location, receiving actor, and immutable inventory transaction. Settlement status is pending until staff records an external payment or voucher reference. This operational status is not a treasury balance.
 
+### `stock_activity_entries`
+
+Immutable provenance for the simple activity journal. `anonymous_purchase` stores item, quantity, business occurrence date, derived warehouse/location, previous/resulting stock, ledger transaction, and the effective purchase-rate snapshot when one exists. Supplier is intentionally absent. A purchase without an effective rate is `unpriced` with null money fields, never zero. A priced aggregate purchase is treated as paid at intake.
+
+`count_reconciliation` stores the stated total and the calculated delta for an ordinary fungible good. It has no purchase money. Both activity types retain the exact recording actor, request identifier, creation timestamp, audit row, and durable outbox event.
+
+The **Money** projection combines paid aggregate purchases and named-supplier delivery settlement evidence. It is an operational procurement cashbook, not a general ledger or treasury balance.
+
 ### Coupled invariants
 
 1. Player-sourced-only goods reject positive physical ledger entries posted by the generic receipt permission.
 2. Receiving a procurement delivery and its balanced ledger receipt succeeds or fails as one transaction.
 3. The delivery item and rate come from the current effective offer, not browser calculations.
-4. Supplier, offer, policy, location, warehouse scope, minimum quantity, and actor permission are revalidated inside the command.
+4. Named deliveries revalidate supplier, offer, policy, location, warehouse scope, minimum quantity, and actor permission. Aggregate anonymous purchases revalidate item policy, warehouse scope, date, and actor permission but do not require a supplier or offer.
 5. Retrying with the same request ID returns the existing logical result.
 6. Settlement changes only the versioned delivery settlement fields and appends audit/outbox evidence; it does not move stock.
 7. Dashboard reserve positions derive from ledger entries and live reservations. Approved unfulfilled demand is shown separately as back-order pressure.
+8. Aggregate purchase money is calculated only from an offer effective on the occurrence date. No offer produces an explicit unpriced entry.
+9. Counted totals create a balanced reconciliation difference and never mutate a stored balance.
 
 ## 20. Rapid configuration transaction
 
