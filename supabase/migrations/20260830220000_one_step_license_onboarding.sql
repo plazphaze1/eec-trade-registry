@@ -1,5 +1,6 @@
 create table public.license_application_onboarding_profiles (
-  license_class_id uuid primary key references public.license_classes(id) on delete restrict,
+  id uuid primary key default extensions.gen_random_uuid(),
+  license_class_id uuid not null unique references public.license_classes(id) on delete restrict,
   party_type_id uuid not null references public.party_types(id) on delete restrict,
   dealer_type_id uuid not null references public.dealer_types(id) on delete restrict,
   dealer_status_definition_id uuid not null references public.dealer_status_definitions(id) on delete restrict,
