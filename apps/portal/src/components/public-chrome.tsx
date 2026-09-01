@@ -7,6 +7,7 @@ import { UiIcon } from "@/components/ui-icon";
 
 const links = [
   ["/", "Shop"],
+  ["/how-it-works", "How it works"],
   ["/verify", "Check a license"],
   ["/apply", "Get a trade license"],
 ] as const;
@@ -24,5 +25,5 @@ export function PublicHeader({ institutionName }: { institutionName: string }) {
 export function PublicFooter({ institutionName }: { institutionName: string }) {
   const pathname = usePathname();
   if (pathname.startsWith("/staff") || pathname.startsWith("/dealer")) return null;
-  return <footer className="site-footer"><div><strong>{institutionName}</strong><p>Goods, business licensing, and official verification in one place.</p></div><p>Catalogue information comes directly from the Company registry. Final price and availability are confirmed when an order is placed.</p></footer>;
+  return <footer className="site-footer"><div><strong>{institutionName}</strong><p>Goods, business licensing, and official verification in one place.</p><Link href="/how-it-works">How the system works</Link></div><p>Catalogue information comes directly from the Company registry. Final price and availability are confirmed when an order is placed.</p></footer>;
 }
