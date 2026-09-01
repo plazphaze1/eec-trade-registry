@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { EecHeroEmblem } from "@/components/eec-seal";
+import { EecHeroEmblem } from "@/components/eec-logo";
 import { VerificationForm } from "@/components/verification-form";
 import {
   DealerVerificationResult,
@@ -9,7 +9,7 @@ import {
   VerificationRateLimited,
   VerificationUnavailable,
 } from "@/components/verification-result";
-import { getDefaultLocale, getInstitutionName } from "@/lib/env";
+import { getDefaultLocale } from "@/lib/env";
 import {
   createPublicVerificationFingerprints,
   verifyPublicDealer,
@@ -38,7 +38,6 @@ export default async function VerificationPage({
   const reference = parseVerificationReference(await searchParams);
   const kind = reference ? inferVerificationKind(reference) : null;
   const locale = getDefaultLocale();
-  const institutionName = getInstitutionName();
   const fingerprints = reference
     ? await createPublicVerificationFingerprints(reference)
     : null;
@@ -62,7 +61,7 @@ export default async function VerificationPage({
             DLR identifies a business and LIC identifies a license.
           </p>
         </div>
-        <EecHeroEmblem institutionName={institutionName} />
+        <EecHeroEmblem />
       </section>
       <section className="verification-choices verification-lookup-shell">
         <VerificationForm reference={reference} />

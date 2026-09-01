@@ -4,7 +4,7 @@ import Link from "next/link";
 import { CatalogueCard } from "@/components/catalogue-card";
 import { CatalogueFilter } from "@/components/catalogue-filter";
 import { CatalogueUnavailable } from "@/components/catalogue-unavailable";
-import { EecHeroEmblem } from "@/components/eec-seal";
+import { EecHeroEmblem } from "@/components/eec-logo";
 import { RelativeTime } from "@/components/relative-time";
 import { UiIcon } from "@/components/ui-icon";
 import {
@@ -65,7 +65,7 @@ export default async function CataloguePage({
             </Link>
           </div>
         </div>
-        <EecHeroEmblem institutionName={institutionName} />
+        <EecHeroEmblem />
       </section>
 
       <section className="catalogue-shell" aria-labelledby="catalogue-title">

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { signInWithDiscordAction } from "@/app/staff/actions";
-import { EecSeal } from "@/components/eec-seal";
+import { EecLogo } from "@/components/eec-logo";
 import { readPublicSupabaseEnvironment } from "@/lib/env";
 import { getMyStaffAccessState } from "@/lib/staff-access";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
@@ -30,7 +30,7 @@ export default async function StaffLoginPage({
     <main className="staff-login-main">
       <section className="staff-login-card">
         <div className="login-card-intro">
-          <EecSeal className="login-card-seal" />
+          <EecLogo className="login-card-logo" priority sizes="150px" />
           <p className="eyebrow">Restricted staff surface</p>
           <h1>Staff sign in</h1>
           <p>
