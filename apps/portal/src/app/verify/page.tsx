@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { EecHeroEmblem } from "@/components/eec-seal";
 import { VerificationForm } from "@/components/verification-form";
 import {
   DealerVerificationResult,
@@ -8,7 +9,7 @@ import {
   VerificationRateLimited,
   VerificationUnavailable,
 } from "@/components/verification-result";
-import { getDefaultLocale } from "@/lib/env";
+import { getDefaultLocale, getInstitutionName } from "@/lib/env";
 import {
   createPublicVerificationFingerprints,
   verifyPublicDealer,
@@ -37,6 +38,7 @@ export default async function VerificationPage({
   const reference = parseVerificationReference(await searchParams);
   const kind = reference ? inferVerificationKind(reference) : null;
   const locale = getDefaultLocale();
+  const institutionName = getInstitutionName();
   const fingerprints = reference
     ? await createPublicVerificationFingerprints(reference)
     : null;
@@ -52,12 +54,15 @@ export default async function VerificationPage({
   return (
     <main className="verification-main">
       <section className="verification-hero">
-        <p className="eyebrow">Official public registry</p>
-        <h1>Verify a business or license.</h1>
-        <p>
-          Enter the number printed on the business authorization or license.
-          DLR identifies a business and LIC identifies a license.
-        </p>
+        <div>
+          <p className="eyebrow">Official public registry</p>
+          <h1>Verify a business or license.</h1>
+          <p>
+            Enter the number printed on the business authorization or license.
+            DLR identifies a business and LIC identifies a license.
+          </p>
+        </div>
+        <EecHeroEmblem institutionName={institutionName} />
       </section>
       <section className="verification-choices verification-lookup-shell">
         <VerificationForm reference={reference} />

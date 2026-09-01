@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 import { ApplicationForms } from "@/app/apply/application-forms";
+import { EecHeroEmblem } from "@/components/eec-seal";
+import { getInstitutionName } from "@/lib/env";
 import { getApplicationOptions } from "@/lib/license-application";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
@@ -20,6 +22,7 @@ export default async function ApplyPage({ searchParams }: ApplyPageProps) {
     getApplicationOptions(await createServerSupabaseClient()),
   ]);
   const mode = task === "renew" ? "renewal" : "new";
+  const institutionName = getInstitutionName();
   return (
     <main>
       <section className="hero">
@@ -31,6 +34,7 @@ export default async function ApplyPage({ searchParams }: ApplyPageProps) {
             and nothing is approved automatically.
           </p>
         </div>
+        <EecHeroEmblem institutionName={institutionName} />
       </section>
       {options ? (
         <ApplicationForms key={mode} mode={mode} options={options} />
