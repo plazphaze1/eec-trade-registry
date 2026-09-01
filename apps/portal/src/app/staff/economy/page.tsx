@@ -15,7 +15,7 @@ const money = (value: number, code = "SEP") => `${new Intl.NumberFormat().format
 
 export default async function EconomyPage({ searchParams }: PageProps) {
   const parameters = await searchParams;
-  if (parameters.view !== "system") redirect("/staff/buy");
+  if (parameters.view !== "system") redirect("/staff/activity?mode=purchase");
   const { client } = await requireStaffSession();
   const [result, access] = await Promise.all([
     getStaffEconomyWorkspace(client),
@@ -40,7 +40,7 @@ export default async function EconomyPage({ searchParams }: PageProps) {
   }), { backordered: 0, committed: 0, onHand: 0, paid: 0 });
 
   return <main className="staff-main">
-    <header className="staff-page-header"><div><p className="eyebrow">Owner · system records</p><h1>Material policy records</h1><p>Advanced reserve thresholds, offer history, and payment evidence. Ordinary work belongs on Buy materials.</p></div><div className="staff-button-row"><Link className="button button-primary" href="/staff/buy">Back to simple buying</Link></div></header>
+    <header className="staff-page-header"><div><p className="eyebrow">Owner · system records</p><h1>Material policy records</h1><p>Advanced reserve thresholds, offer history, and payment evidence. Routine purchases belong in Record activity.</p></div><div className="staff-button-row"><Link className="button button-primary" href="/staff/activity?mode=purchase">Record a purchase</Link><Link className="button button-secondary" href="/staff/inventory">Stock &amp; prices</Link></div></header>
     <EconomyNotice error={parameters.error} notice={parameters.notice} />
 
     {allUnconfigured && <section className="setup-callout"><div><p className="eyebrow">Setup required</p><h2>Reserve targets have not been set</h2><p>Choose the desired safety levels for each player-sourced material. Ledger quantities remain untouched.</p></div><Link className="button button-primary" href={`/staff/materials/${encodeURIComponent(materials[0].item_code)}`}>Set the first material</Link></section>}

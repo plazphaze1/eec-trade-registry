@@ -1431,22 +1431,18 @@ This operator guide summarizes the implemented behavior. When resolving a policy
 
 If this guide conflicts with a governing decision record or the authoritative database behavior, stop the operation and have the documentation corrected. Do not improvise a conflicting business rule.
 
-## 30. Launch desk: complete everyday workflow
+## 30. Complete everyday workflow
 
 ### 30.1 Where to start
 
 After Discord sign-in, staff land on `/staff/dashboard`. This is the full overview:
 
-- **Staff access** (Owner only) shows pending Discord identities and links directly to approval.
-- **Orders** shows submitted, review, awaiting-stock, processing, and recent direct demand.
-- **Inventory and assets** shows critical reserves, expired reservations, and custody exceptions.
-- **Licensing** shows pending applications, active licenses, and licenses expiring within 30 days.
-- **Finance** shows unpaid consignment settlements and player-supplier payments.
-- **Compliance** shows open cases and recommended actions awaiting review.
-- **Integrations** shows failed outbox, Discord delivery, or public Sheet work.
-- **Documents** shows recent official source snapshots.
+- Four everyday starting points: **Record an order**, **Record activity**, **Review applications**, and **Money**.
+- **Needs attention**, which lists only non-zero work such as a pending application, an order awaiting stock, an unpaid record, an access request, or a failed public projection.
+- **Recent orders**, which opens each order directly.
+- A compact Owner-only **Administration** row for staff access, reusable setup, Sheets and Discord, and system health.
 
-The dashboard is a monitor. It never changes a record merely because a count is red or nonzero. Use **Find or do anything** in the left sidebar (or press `Ctrl+K` / `⌘K`) and type what you mean: “order”, “stock”, “license”, “business”, or “access”. The launcher is the fastest route to everyday work; specialist desks remain available for queue-wide and exceptional processing.
+The dashboard is a monitor. It never changes a record merely because a count is red or nonzero. Use **Search or jump anywhere** in the left sidebar (or press `Ctrl+K` / `⌘K`) and type what you mean: “order”, “stock”, “license”, “business”, “consignment”, or “access”. With no search text, the launcher shows only common tasks. Specialist work appears only when its name is searched.
 
 For an existing order, open it once. Its page shows the requested lines, current progress, and exactly one sensible next step: review, reserve stock, assign a unique asset, or confirm handoff. An action you are not permitted to perform is not offered. You do not copy the order reference between desks.
 
@@ -1454,30 +1450,27 @@ For an existing order, open it once. Its page shows the requested lines, current
 
 Assume Aurelion Earandil asks the Solitude tailor for one Nocturnal Dress.
 
-1. The tailor confirms it is an EEC-authorized business and gives the EEC agent its dealer and license references.
-2. The EEC agent opens **Find or do anything → Create an order**.
-3. Choose **Staff-assisted verified business**.
-4. In **Licensed business and license**, select the single combined entry showing business name, dealer reference, license reference, and license class. This prevents accidentally combining one business with another business’s license.
-5. Select collection, delivery, or consignment; choose the dress; enter quantity `1`; add the in-character request and an audit reason.
-6. Choose **Price, quota-check, and submit order**.
-7. Supabase rechecks that the dealer and license currently confer authority, then resolves price by precedence: exact dealer party, license class, dealer type, region, business-channel default, then wholesale/dealer/public fallback.
-8. The line freezes the chosen price evidence. No stock is consumed and no reservation is created yet.
-9. Open the submitted order. Choose the review decision and quantity. The requested quantity is already filled in; price and notes are under the optional disclosure.
-10. After approval, the same page shows **Reserve stock**. When there is only one valid source, it is selected automatically; otherwise choose the correct source.
-11. After reservation, the same page shows **Confirm handoff**. That command posts the actual ledger movement and completes the line. The tailor charges only the commission allowed by server policy outside this registry unless that sale is a configured consignment settlement.
+1. The EEC Agent opens **Create an order**.
+2. Under **Who is buying?**, choose the licensed business. The active license and business pricing are carried automatically.
+3. Find **Nocturnal Dress**, choose **Add to order**, and leave quantity at `1`.
+4. Optionally enter Aurelion Earandil as the final recipient, then choose collection or delivery.
+5. Review the cart and place the order. Supabase rechecks authority and freezes the accepted price evidence.
+6. Open the order. Each item shows one current state and one next action.
+7. If stock is available, choose **Make ready**. If not, keep the order open for stock. The site handles the internal approval and stock hold without asking for warehouse or reservation records.
+8. After the physical handoff, choose **Confirm handoff**. That posts the stock movement and completes the item.
 
 The dealer reference identifies the business authority being used. The license identifies the licensed trade authority and endorsements. The EEC agent is the authenticated staff actor who entered the customer’s instruction. These are three different facts and all remain visible in audit history.
 
 ### 30.3 Aurelion buys directly instead
 
 1. The player approaches an EEC agent instead of a licensed tailor.
-2. The agent chooses **Direct individual**.
-3. Select Aurelion’s existing direct-customer record or create it with name, Discord/contact label, and region.
-4. Select the dress and quantity.
+2. The Agent opens **Create an order** and chooses **New individual** or an existing individual.
+3. For a new person, enter the character name and optional Discord/contact label.
+4. Add the dress, choose collection or delivery, review, and place the order.
 5. Submission succeeds only if the dress is enabled for direct sales, a current public base price exists, and the weekly limit is not exceeded.
 6. If the public price is `1,000 SEP`, the frozen direct price is `3,000 SEP`. Staff do not type or calculate the multiplier.
-7. The successful line holds one unit of the weekly allowance immediately. Denial/cancellation releases it; fulfillment consumes it.
-8. Inventory processing remains separate. A valid direct order may wait for stock or made-to-order production.
+7. Denial or cancellation releases the held weekly allowance; fulfillment consumes it.
+8. A valid order may wait for real stock or made-to-order production.
 
 This deliberate premium protects the licensed trade network while keeping a lawful direct path available.
 
@@ -1488,17 +1481,17 @@ This deliberate premium protects the licensed trade network while keeping a lawf
 3. Renewal requires the exact existing license reference.
 4. Submission returns an `EEC-LAP-*` reference and a private status token. The token is shown once; only its SHA-256 digest is stored.
 5. The player uses both values on the same page to check status. The public response does not reveal private review notes.
-6. An authorized Agent selects **Review applications** on the dashboard or opens `/staff/applications`. The dedicated queue shows the applicant statement, contact label, class, jurisdiction, every requested endorsement, and the exact renewal license when applicable.
-7. For a new business application, first use **Onboard a business** if the applicant does not yet have a canonical party/dealer record. Return to the application and choose that exact canonical holder. For renewal, the existing license already supplies the holder.
-8. Choose approve or deny, set the approved effective/expiration values, choose active or provisional where applicable, and enter a decision reason.
-9. Approval issues or extends the license atomically and records the application link. Denial records the decision without authority. The reviewed request then remains visible in the 90-day decision history.
-10. Generate a license certificate from **Official records** after issuance. The PDF is a projection of a frozen source snapshot.
+6. An authorized Agent opens **License requests**. The queue shows the applicant statement, contact label, requested trade categories, and renewal reference when applicable.
+7. For an ordinary new request, choose **Approve business** or decline with a reason. Approval creates the business, dealer authorization, linked license, requested endorsements, and application decision together.
+8. For renewal, enter the explicitly approved expiration and record the decision. The existing business and license remain linked automatically.
+9. The reviewed request remains visible in decision history; a pending or approved application is never mistaken for issued authority.
+10. Search **documents** and generate a license certificate after issuance if an official PDF is needed.
 
 There is no guessed universal license duration or renewal grace period. Staff enter the approved term for that decision.
 
 ### 30.5 Dealer-specific price precedence
 
-Use **Dealer-specific pricing** only after the price schedule and item rules exist in Configuration.
+Search **special pricing** only after the price schedule and item rules exist in Company setup.
 
 1. Select the schedule.
 2. Select exactly one binding level and a matching target: party, license class, dealer type, or jurisdiction. For a channel default, leave target blank and choose the channel.
@@ -1521,7 +1514,7 @@ This records what is owed and whether staff recorded payment. It does not mint S
 ### 30.7 Unique asset order delivery
 
 1. The unique line must be approved for quantity `1` and an exact serialized asset must have an active, unexpired reservation.
-2. Open **Launch desk → Unique-asset fulfillment** and confirm the asset, order, customer, and reservation expiry.
+2. Search **unique assets**, open the asset registry, and choose **Ready handoffs**. Confirm the asset, order, customer, and reservation expiry.
 3. Enter handoff evidence and choose **Fulfill and transfer custody**.
 4. One transaction consumes the reservation, transfers custody from EEC/warehouse to the ordering party, removes warehouse location, fulfills the order line, derives order status, records the asset event, and creates an `EEC-UFL-*` source.
 5. Generate the unique fulfillment receipt if needed.
@@ -1540,7 +1533,7 @@ The system does not infer guilt or issue sanctions from a Discord message. “Au
 
 ### 30.9 Official PDF records
 
-1. Choose a current license, order, unique fulfillment, or consignment settlement in **Generate official records**.
+1. Search **documents**, choose **Generate document**, and select a current license, order, unique fulfillment, or consignment settlement.
 2. Supabase freezes an allowlisted JSON snapshot, source version, checksum, generator, time, reason, and `EEC-DOC-*` reference.
 3. `/staff/documents` lists the archive. Download generates the PDF from that snapshot at request time.
 4. The PDF footer shows document reference, source type/version, and SHA-256 checksum.

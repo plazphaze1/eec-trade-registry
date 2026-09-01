@@ -11,24 +11,28 @@ type Command = {
   icon: IconName;
   keywords: string;
   label: string;
+  suggested?: boolean;
   ownerOnly?: boolean;
 };
 
 const commands: Command[] = [
-  { href: "/staff/orders/new", icon: "spark", label: "Shop / new order", description: "Add goods to a customer order", keywords: "new customer cart" },
-  { href: "/staff/orders", icon: "clipboard", label: "Find an order", description: "See what is open, ready, or completed", keywords: "customer collect deliver" },
-  { href: "/staff/configuration#quick-add-item", icon: "box", label: "Add a catalogue item", description: "Create and publish a new good", keywords: "new product material catalogue" },
-  { href: "/staff/activity", icon: "package", label: "Record activity", description: "Save a purchase or counted stock total", keywords: "buy bought receive inventory quantity ore leather count" },
-  { href: "/staff/inventory", icon: "box", label: "Stock & prices", description: "Check stock or update normal prices", keywords: "inventory quantity procurement floor bulk price" },
-  { href: "/staff/money", icon: "coins", label: "Money", description: "See spending, unpaid purchases, and unpriced stock", keywords: "cashbook expenses bills payment finance" },
-  { href: "/staff/economy?view=system", icon: "coins", label: "Material policy records", description: "Advanced reserve targets and buying-price history", keywords: "procurement policy floor reserve", ownerOnly: true },
+  { href: "/staff/orders/new", icon: "spark", label: "Create an order", description: "Add goods to a customer order", keywords: "new customer cart", suggested: true },
+  { href: "/staff/orders", icon: "clipboard", label: "Find an order", description: "See what is open, ready, or completed", keywords: "customer collect deliver", suggested: true },
+  { href: "/staff/activity", icon: "package", label: "Record activity", description: "Save a purchase or counted stock total", keywords: "buy bought receive inventory quantity ore leather count", suggested: true },
+  { href: "/staff/inventory", icon: "box", label: "Stock & prices", description: "Check stock or update normal prices", keywords: "inventory quantity procurement floor bulk price", suggested: true },
+  { href: "/staff/money", icon: "coins", label: "Money", description: "See spending, unpaid purchases, and unpriced stock", keywords: "cashbook expenses bills payment finance", suggested: true },
+  { href: "/staff/applications", icon: "license", label: "Review license requests", description: "Approve, renew, or decline a business application", keywords: "pending license renew application", suggested: true },
+  { href: "/staff/dealers", icon: "building", label: "Find a business", description: "Open a licensed business record", keywords: "dealer organization shop customer", suggested: true },
+  { href: "/staff", icon: "catalogue", label: "Find a product", description: "Open or edit a catalogue item", keywords: "product material catalogue" },
+  { href: "/staff/configuration#quick-add-item", icon: "box", label: "Add a product", description: "Create and optionally publish a new good", keywords: "new product material catalogue" },
+  { href: "/staff/economy?view=system", icon: "coins", label: "Reserve targets & history", description: "Inspect material thresholds and past buying rates", keywords: "procurement policy floor reserve", ownerOnly: true },
   { href: "/staff/pricing", icon: "coins", label: "Publish a price rule", description: "Bind a schedule to a business, class, region, or channel", keywords: "dealer pricing wholesale" },
   { href: "/staff/consignments", icon: "truck", label: "Open consignments", description: "Manage custody, reports, commission, and settlement", keywords: "consignment finance commission" },
   { href: "/staff/assets", icon: "key", label: "Open unique assets", description: "Manage serialized goods and ready handoffs", keywords: "unique custody reservation" },
+  { href: "/staff/transfers", icon: "transfer", label: "Transfer warehouse stock", description: "Record custody moving between Company locations", keywords: "warehouse transit custody" },
   { href: "/staff/documents", icon: "document", label: "Open documents", description: "Generate or download official PDF snapshots", keywords: "certificate receipt pdf" },
-  { href: "/staff/applications", icon: "document", label: "Review applications", description: "Approve or deny license intake", keywords: "pending renew application" },
-  { href: "/staff/licensing/new", icon: "license", label: "Issue a license", description: "Create configured trade authority", keywords: "permit endorsement" },
-  { href: "/staff/dealers/new", icon: "building", label: "Add a business", description: "Register an authorized dealer", keywords: "dealer organization shop" },
+  { href: "/staff/compliance", icon: "shield", label: "Open compliance cases", description: "Review investigations, findings, and appeals", keywords: "case action enforcement appeal" },
+  { href: "/staff/integrations", icon: "external", label: "Sheets & Discord", description: "Check public copies and delivery failures", keywords: "google export bot projection", ownerOnly: true },
   { href: "/staff/access", icon: "people", label: "Approve staff access", description: "Review a Discord identity", keywords: "agent permissions role", ownerOnly: true },
   { href: "/staff/operations", icon: "heart", label: "Check system health", description: "Inspect authoritative services and workers", keywords: "status cron export", ownerOnly: true },
 ];
@@ -54,7 +58,7 @@ export function StaffCommandPalette({ isOwner }: { isOwner: boolean }) {
   const available = useMemo(() => commands.filter((command) => !command.ownerOnly || isOwner), [isOwner]);
   const results = useMemo(() => {
     const term = query.trim().toLowerCase();
-    if (!term) return available;
+    if (!term) return available.filter((command) => command.suggested);
     return available.filter((command) => `${command.label} ${command.description} ${command.keywords}`.toLowerCase().includes(term));
   }, [available, query]);
 
@@ -94,7 +98,7 @@ export function StaffCommandPalette({ isOwner }: { isOwner: boolean }) {
           <input onChange={(event) => setQuery(event.target.value)} placeholder="What do you need to do?" ref={inputRef} value={query} />
           <kbd>Esc</kbd>
         </label>
-        <p className="command-palette-hint">Actions and places</p>
+        <p className="command-palette-hint">{query.trim() ? "Matching actions and places" : "Common tasks"}</p>
         <div className="command-palette-results">
           {results.map((command) => (
             <Link href={command.href} key={command.href} onClick={() => setOpen(false)}>

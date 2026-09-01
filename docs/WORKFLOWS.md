@@ -81,15 +81,15 @@ Let specifically assigned catalogue staff maintain canonical item source records
 
 ## 2.1.1 Simplified staff shell
 
-1. The primary navigation exposes only Today, New order, Buy materials, Orders, Stock, Applications, Customers, and Catalogue.
+1. The primary navigation exposes only Today, Create an order, Orders, Record activity, Stock & prices, Money, License requests, Businesses, and Products.
 2. Today offers the four routine starting actions and returns only non-zero exceptions requiring attention.
-3. Advanced pricing, licensing, reserve policy, queue-wide fulfillment, transfers, consignment, unique goods, documents, compliance, integrations, access, and health live in one explained collapsed Staff tools panel.
+3. Today does not enumerate specialist systems. Relevant exception counts link directly to their work; domain-specific tools are reached from the affected record or by task search. Owners receive one compact Administration strip for access, reusable setup, external projections, and system health.
 4. Moving a feature out of primary navigation changes no database permission, RLS policy, state transition, audit requirement, or integration behavior.
 5. `docs/OPERATOR_GUIDE.md` is the ordinary Agent guide. The governing technical documents remain the authority for invariants and policy gates.
 6. Public application task selection uses normal links rather than JavaScript-only tabs. Routine applications derive the configured standard class and jurisdiction, while special permissions remain optional.
 7. **Stock & prices** shows every active item. Each card shows available stock and the applicable normal prices; zero-stock items never disappear.
 8. Opening **Manage** on a card keeps ordinary receipt, player purchase, base selling price, and guaranteed buying-price work on that item. Only serialized assets leave for their required individual-custody workflow.
-9. The dedicated Buy materials route remains available for a focused purchasing session, while the advanced economy route is an Owner-only system-record view and is not part of ordinary navigation.
+9. **Record activity → Bought materials** is the only ordinary aggregate-purchase entry. The legacy Buy materials URL redirects there. The advanced economy route remains an Owner-only system-record view and is not part of ordinary navigation.
 
 ## 2.2 Rapid item onboarding and ordinary receipt
 
@@ -711,7 +711,7 @@ No workflow-dependent implementation should guess these decisions. A decision re
 ### Establish policy
 
 1. Player-sourced reserve mode is configured for each canonical material.
-2. An authorized operator opens **Buy materials** and enters the approved guaranteed amount per unit.
+2. An authorized operator opens **Stock & prices** and enters the approved Company buying amount beside the material.
 3. Supabase serializes the material/currency change, retires any overlapping current offer, and creates the replacement with actor, reason, request identifier, and effective time.
 4. Optional critical, minimum, target, and surplus thresholds remain Owner system policy. They are not required to record a buying price.
 5. Publishing a buying price does not create stock.

@@ -7,7 +7,7 @@ This is the everyday guide for Owners and Agents. It explains what to do in the 
 1. Start routine work from **Today**.
 2. Describe what happened; let the site choose the rules.
 3. Finish an order from that order’s page.
-4. Use **Staff tools** only when the task specifically involves an advanced subject.
+4. For rare work, search for the task instead of browsing technical menus.
 
 Supabase is the authoritative record. Google Sheets, Discord, and PDF documents copy approved information from it; editing those copies never changes the registry.
 
@@ -31,9 +31,9 @@ A business account is not a staff role. A public visitor has no staff access.
 The Today page has four routine starting points:
 
 - **Record an order**
-- **Buy materials**
+- **Record activity**
 - **Review applications**
-- **Receive stock**
+- **Money**
 
 Below them, **Needs attention** shows only real work: pending applications, orders awaiting review or stock, low reserves, unpaid purchases, access requests, or failed projections. Zero-value panels are omitted.
 
@@ -110,31 +110,22 @@ Never confirm handoff merely because an admin intends to spawn or deliver an ite
 
 Cancellation is at the bottom of the order page. It preserves history and releases eligible outstanding claims. Completed quantities are corrected through a linked reversal, not by editing or deleting the original transaction.
 
-## Buy player-supplied materials
+## Record player-supplied materials
 
-Use **Buy materials** when a miner, hunter, lumber worker, or other supplier sells naturally produced reserve materials to the Company.
+Use **Record activity → Bought materials** when the Company buys naturally produced reserve materials from a miner, hunter, lumber worker, or other player.
 
-If a material has no buying price yet, open **First, set what the Company pays**, enter the amount beside that material, and select **Save price**. This is a one-time setup. Use **Update** in the same panel whenever the future buying price changes; earlier purchases keep their original price.
+1. Choose the material.
+2. Enter the amount bought.
+3. Confirm the date.
+4. Select **Save purchase**.
 
-If no seller has been registered yet, enter the seller name and select **Add seller**. The seller stays in the list for future purchases. Registering a seller does not make them a licensed wholesale business.
+No seller name is required for ordinary aggregate buying. If a buying rate was active on that date, Supabase applies it and updates **Money** automatically. If no rate existed, stock still updates and the entry is clearly marked **Unpriced**; the site never invents a price.
 
-1. Choose the supplier.
-2. Choose the material.
-3. Enter the accepted quantity.
-4. Confirm the guaranteed rate and total shown in the summary.
-5. Select **Buy and add to stock**.
-
-The rate is read from the current effective offer. The command records the supplier purchase, freezes the amount owed, and posts the balanced stock receipt together.
-
-For another new seller, open **Add another seller** beneath the purchase form and enter the name.
-
-### Payment evidence
-
-A new purchase is awaiting payment evidence until an Agent records the in-character payment or voucher reference. Open **Payments still to record** beneath the purchase form and select **Mark paid**. This status is evidence of an external Septim payment, not a bank account.
+Set or change the normal Company buying rate directly in **Stock & prices**. Earlier purchases keep the rate recorded when they occurred. Named suppliers and separate payment evidence remain available only in the advanced material record for exceptional purchases that genuinely require counterparty evidence.
 
 ## Receive ordinary stock
 
-Open **Stock** for goods whose supply policy permits a normal receipt.
+Open **Stock & prices** for goods whose supply policy permits a normal receipt.
 
 1. Find the item and select **Add stock**.
 2. Enter the quantity physically received.
@@ -144,15 +135,15 @@ Every active catalogue item appears even when its quantity is zero. Player-sourc
 
 Each item shows **Available**, which already excludes goods held for existing orders. The number is calculated; staff never overwrite a current-stock cell.
 
-Owners reach hold history, corrections, and movement evidence through **Today → Staff tools → Stock records**. These records are not part of ordinary stock intake.
+Owners reach hold history, corrections, and movement evidence through **Stock & prices → Corrections & history**. These records are not part of ordinary stock intake.
 
-## Customers and licenses
+## Businesses and licenses
 
-Use **Customers** to find or add a licensed business. Open a business to see its current authorization and linked licenses.
+Use **Businesses** to find a licensed business. Open it to see its current authorization, linked licenses, and Business portal access.
 
 A license is separate from the business authorization. Both may be required for wholesale ordering. The license page records class, endorsements, dates, standing, conditions, and public verification reference.
 
-Use **Applications** for public requests:
+Use **License requests** for public requests:
 
 1. Open the pending application.
 2. Read the applicant statement and requested endorsements.
@@ -164,33 +155,31 @@ A pending application is never a valid license. Approval must finish the issuanc
 
 The public form deliberately asks only for the business name, Discord contact, ordinary trade categories, and a short description. The standard class and region are configured automatically. Unusual bulk, consignment, controlled, or serialized authority is available under **special permissions** rather than confronting every applicant.
 
-## Catalogue
+## Products
 
-Use **Catalogue** to find the goods and materials maintained by the Company. Select **Add item** for new ordinary configuration.
+Use **Products** to find the goods and materials maintained by the Company. Select **Add item** for new ordinary configuration.
 
 An item can exist without being public, without a price, and without stock. Blank pricing means unavailable or pending; it never means zero.
 
 The item’s name does not control its rules. Supply workflow, public availability, license requirements, control profile, and inventory mode are configured records.
 
-## Staff tools
+## Specialist work
 
-The bottom of Today contains a collapsed **Staff tools** panel. Every tool is explained there. Open a tool only when the task involves it:
+There is no second dashboard of technical tools. The ordinary routes remain the right place to work:
 
-- **Licenses:** issue or change institutional authority.
-- **Staff access:** approve Discord identities and manage Agents; Owner only.
-- **Reference setup:** add reusable categories, units, license types, endorsements, and control profiles.
-- **Material policy records:** inspect advanced reserve targets and offer history; Owner only. Routine prices and purchases stay on **Buy materials**.
-- **Advanced pricing:** create special business, license-class, regional, or channel pricing.
-- **Fulfillment queue:** inspect handoffs across many orders during exception work.
-- **Warehouse transfers:** record movement between configured locations and in-transit custody.
-- **Consignments:** track EEC-owned stock held by businesses and settle accepted reports.
-- **Unique goods:** register and transfer individually identified assets.
-- **Official documents:** generate immutable PDF snapshots from current authoritative records.
-- **Compliance:** record cases, evidence metadata, findings, appeals, and configured effects.
-- **Sheets and Discord:** open the public Sheet, check export freshness, and inspect notification delivery.
-- **System health:** inspect authoritative services, failures, access history, and operational audit; Owner only.
+- Open licenses from **License requests** or the relevant **Business**.
+- Open stock corrections and movement history from **Stock & prices**.
+- Finish routine stock handoff from the order itself; do not use a separate fulfillment queue.
+- Press `Ctrl+K` or `⌘K` and search for **special pricing**, **transfer**, **consignment**, **unique asset**, **document**, or **compliance** only when that exact situation exists.
 
-These tools are deliberately outside primary navigation. They remain available without making every Agent learn them before recording an order.
+The Owner sees a short **Administration** row on Today:
+
+- **Staff access** approves or blocks Discord identities.
+- **Company setup** manages reusable categories, units, license types, endorsements, and other choices.
+- **Sheets & Discord** opens the public Sheet and projection-delivery status.
+- **System health** shows failures and access evidence.
+
+These destinations do not grant permission. Supabase checks the current Owner or Agent authority again for every read and action.
 
 ## Google Sheets and Discord
 

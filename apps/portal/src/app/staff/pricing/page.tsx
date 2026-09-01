@@ -20,7 +20,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
   if (!preview.ok) return <main className="staff-main"><section className="notice-panel"><h1>Pricing workspace unavailable</h1><p>The authoritative preview options could not be loaded.</p></section></main>;
   return (
     <main className="staff-main staff-order-intake-main">
-      <header className="staff-page-header"><div><p className="eyebrow">Guided pricing</p><h1>Publish a price rule</h1><p>Choose the audience first. The form then shows only the target that applies to that level.</p></div><Link className="button button-secondary" href="/staff/launch">Quick actions</Link></header>
+      <header className="staff-page-header"><div><p className="eyebrow">Special pricing</p><h1>Publish a price rule</h1><p>Use this only when a business, license class, region, or channel needs terms different from the normal item price.</p></div><Link className="button button-secondary" href="/staff/inventory">Stock &amp; prices</Link></header>
       <StaffNotice error={parameters.error} notice={parameters.notice} />
       <PriceBindingForm preview={preview.data} workspace={result.data} />
     </main>

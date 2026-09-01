@@ -12,7 +12,7 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 const economyPath = "/staff/economy";
 function returnPath(formData: FormData) {
   const candidate = formData.get("return_to");
-  return typeof candidate === "string" && (candidate === "/staff/buy" || candidate === "/staff/inventory" || /^\/staff\/materials\/[A-Za-z0-9-]+$/.test(candidate))
+  return typeof candidate === "string" && (candidate === "/staff/activity" || candidate === "/staff/inventory" || /^\/staff\/materials\/[A-Za-z0-9-]+$/.test(candidate))
     ? candidate
     : economyPath;
 }

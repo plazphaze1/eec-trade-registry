@@ -49,7 +49,7 @@ export default async function MaterialPage({ params, searchParams }: PageProps) 
   const jurisdiction = workspace.jurisdictions[0];
 
   return <main className="staff-main">
-    <header className="staff-page-header"><div><p className="eyebrow">Owner · material record</p><h1>{position.item_name}</h1><p>Advanced policy and history for this material.</p></div><div className="staff-button-row"><Link className="button button-primary" href="/staff/buy">Back to simple buying</Link><Link className="button button-secondary" href="/staff/economy?view=system">All material records</Link></div></header>
+    <header className="staff-page-header"><div><p className="eyebrow">Owner · material record</p><h1>{position.item_name}</h1><p>Advanced policy and history for this material.</p></div><div className="staff-button-row"><Link className="button button-primary" href={`/staff/activity?mode=purchase&item=${position.item_id}`}>Record a purchase</Link><Link className="button button-secondary" href="/staff/economy?view=system">All material records</Link></div></header>
     <ReferenceBlock label="Material code" reference={position.item_code} status={position.reserve_state.replaceAll("_", " ")} />
     <EconomyNotice error={parameters.error} notice={parameters.notice} />
 
