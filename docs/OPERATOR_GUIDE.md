@@ -175,7 +175,7 @@ There is no second dashboard of technical tools. The ordinary routes remain the 
 The Owner sees a short **Administration** row on Today:
 
 - **Staff access** approves or blocks Discord identities.
-- **Company setup** manages reusable categories, units, license types, endorsements, and other choices.
+- **Company setup** manages reusable categories, units, license types, endorsements, and other choices. It never contains product, stock, or pricing forms.
 - **Sheets & Discord** opens the public Sheet and projection-delivery status.
 - **System health** shows failures and access evidence.
 

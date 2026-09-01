@@ -24,7 +24,7 @@ const commands: Command[] = [
   { href: "/staff/applications", icon: "license", label: "Review license requests", description: "Approve, renew, or decline a business application", keywords: "pending license renew application", suggested: true },
   { href: "/staff/dealers", icon: "building", label: "Find a business", description: "Open a licensed business record", keywords: "dealer organization shop customer", suggested: true },
   { href: "/staff", icon: "catalogue", label: "Find a product", description: "Open or edit a catalogue item", keywords: "product material catalogue" },
-  { href: "/staff/configuration#quick-add-item", icon: "box", label: "Add a product", description: "Create and optionally publish a new good", keywords: "new product material catalogue" },
+  { href: "/staff/items/new", icon: "box", label: "Add a product", description: "Create and optionally publish a new good", keywords: "new product material catalogue" },
   { href: "/staff/economy?view=system", icon: "coins", label: "Reserve targets & history", description: "Inspect material thresholds and past buying rates", keywords: "procurement policy floor reserve", ownerOnly: true },
   { href: "/staff/pricing", icon: "coins", label: "Publish a price rule", description: "Bind a schedule to a business, class, region, or channel", keywords: "dealer pricing wholesale" },
   { href: "/staff/consignments", icon: "truck", label: "Open consignments", description: "Manage custody, reports, commission, and settlement", keywords: "consignment finance commission" },

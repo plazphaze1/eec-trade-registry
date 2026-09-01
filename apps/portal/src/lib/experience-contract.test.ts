@@ -74,4 +74,23 @@ describe("consumer experience contracts", () => {
     expect(launchActions).not.toContain("createTradeOrderAction");
     expect(launchActions).not.toContain("decideApplicationAction");
   });
+
+  it("keeps product work out of Company setup", () => {
+    const setup = source("../app/staff/configuration/page.tsx");
+    const setupActions = source("../app/staff/configuration/actions.ts");
+    const productList = source("../app/staff/page.tsx");
+    const productCreate = source("../app/staff/items/new/page.tsx");
+    const productEdit = source("../app/staff/items/[id]/edit/page.tsx");
+
+    expect(setup).toContain(">Company setup<");
+    expect(setup).toContain("Reusable choices");
+    expect(setup).not.toContain("Quick-add an item or material");
+    expect(setup).not.toContain("Add ordinary inventory");
+    expect(setup).not.toContain("Edit publication and price");
+    expect(setupActions).not.toContain("quickReceiptAction");
+    expect(productList).toContain('href="/staff/items/new"');
+    expect(productCreate).toContain(">Add product<");
+    expect(productCreate).toContain("How does the Company get it?");
+    expect(productEdit).toContain("<ItemPublicListingForm");
+  });
 });

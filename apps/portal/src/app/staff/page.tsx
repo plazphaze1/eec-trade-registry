@@ -62,12 +62,12 @@ export default async function StaffCataloguePage({
       <header className="staff-page-header">
         <div>
           <p className="eyebrow">Goods and materials</p>
-          <h1>Catalogue</h1>
-          <p>Add or update what the Company buys and sells. Each item keeps its public listing, price, supply policy, and stock history together.</p>
+          <h1>Products</h1>
+          <p>Add or update what the Company buys and sells. Open one product to change how it appears in the public shop.</p>
         </div>
         <div className="staff-button-row">
-          <Link className="button button-primary" href="/staff/configuration#quick-add-item">
-            Add item
+          <Link className="button button-primary" href="/staff/items/new">
+            Add product
           </Link>
         </div>
       </header>
