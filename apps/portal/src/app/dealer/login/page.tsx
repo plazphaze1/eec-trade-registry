@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { signInDealerAction } from "@/app/dealer/actions";
+import { EecSeal } from "@/components/eec-seal";
 import { hasAuthenticatedDealerSession } from "@/lib/dealer-auth";
 import { readPublicSupabaseEnvironment } from "@/lib/env";
 
@@ -21,7 +22,8 @@ export default async function DealerLoginPage({
   return (
     <main className="staff-login-main dealer-login-main">
       <section className="staff-login-card dealer-login-card">
-        <div>
+        <div className="login-card-intro">
+          <EecSeal className="login-card-seal" />
           <p className="eyebrow">Business portal</p>
           <h1>Business sign in</h1>
           <p>

@@ -1373,3 +1373,444 @@ body > main h2 {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* EEC art direction -------------------------------------------------------
+ * A chartered mercantile house: engraved paper, oxblood ink, forest leather,
+ * and aged brass. Ornament is concentrated in identity and wayfinding so the
+ * operational surfaces remain as quick to scan as the ledger underneath.
+ */
+:root {
+  --xp-bg: #eee8dc;
+  --xp-surface: #fffdf7;
+  --xp-surface-soft: #f6f0e4;
+  --xp-line: #d3c6b2;
+  --xp-line-strong: #aa987c;
+  --xp-navy: #13241f;
+  --xp-navy-2: #20372f;
+  --xp-blue: #7a3029;
+  --xp-blue-dark: #56201d;
+  --xp-blue-soft: #f2e1db;
+  --xp-gold: #9b773c;
+  --xp-gold-soft: #f4e8cf;
+  --xp-shadow: 0 18px 44px rgba(45, 34, 22, .12);
+}
+
+body {
+  background-color: var(--xp-bg);
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(255, 253, 244, .82), transparent 30%),
+    radial-gradient(circle at 88% 24%, rgba(128, 93, 44, .055), transparent 28%),
+    repeating-linear-gradient(0deg, rgba(85, 65, 38, .018) 0, rgba(85, 65, 38, .018) 1px, transparent 1px, transparent 6px),
+    linear-gradient(100deg, rgba(255, 255, 255, .22), transparent 38%, rgba(108, 76, 37, .025));
+}
+
+body > main h1,
+body > main h2,
+.staff-page-header h1,
+.staff-editor-header h1,
+.dealer-page-header h1,
+.staff-login-card h1 {
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -.035em;
+}
+
+.eyebrow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--xp-blue-dark);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-weight: 850;
+  letter-spacing: .13em;
+}
+
+.eyebrow::before {
+  content: "◆";
+  color: var(--xp-gold);
+  font-size: .55rem;
+}
+
+.button-primary {
+  border-color: #65251f;
+  background: linear-gradient(#853a32, #712d27);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 2px 0 #4b1b18;
+}
+
+.button-primary:hover {
+  border-color: #4c1c18;
+  background: linear-gradient(#713027, #5f251f);
+}
+
+.button-secondary {
+  border-color: #b6a589;
+  background: linear-gradient(#fffef9, #f4ecdf);
+  box-shadow: inset 0 1px 0 #fff;
+}
+
+.button-secondary:hover { border-color: var(--xp-gold); background: #fffdf7; }
+
+/* Code-drawn Company seal */
+.eec-seal {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  color: var(--seal-ink, currentColor);
+}
+
+.eec-seal-field { fill: var(--seal-paper, transparent); }
+.eec-seal-outer { fill: none; stroke: currentColor; stroke-width: 1.5; }
+.eec-seal-inner { fill: none; stroke: currentColor; stroke-width: .7; opacity: .82; }
+.eec-seal-tick { fill: none; stroke: currentColor; stroke-width: 1.2; }
+.eec-seal-star { fill: currentColor; fill-opacity: .075; stroke: currentColor; stroke-width: .7; }
+.eec-seal-center { fill: var(--seal-center, transparent); stroke: currentColor; stroke-width: 1; }
+.eec-seal-flourish { fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: .85; opacity: .72; }
+.eec-seal-monogram { fill: currentColor; font-family: Georgia, serif; font-size: 15px; font-weight: 700; letter-spacing: 1.5px; }
+.eec-seal-dot { fill: currentColor; }
+
+/* Public masthead */
+.site-header {
+  min-height: 78px;
+  border-bottom: 3px double rgba(199, 162, 91, .72);
+  background:
+    radial-gradient(circle at 6% 0, rgba(197, 158, 83, .13), transparent 22%),
+    linear-gradient(110deg, #10211c, #182b24 58%, #14231f);
+  box-shadow: 0 7px 22px rgba(22, 30, 26, .16);
+}
+
+.site-header-inner { min-height: 75px; }
+.site-header .brand { color: #f7edd9; }
+.site-header .brand-mark {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #c9a45d;
+  --seal-paper: rgba(248, 231, 193, .035);
+  --seal-center: rgba(9, 22, 17, .4);
+}
+
+.site-header .brand strong {
+  color: #fff9eb;
+  font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-size: 1.04rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+
+.site-header .brand small { color: #c9b993; letter-spacing: .16em; }
+.public-desktop-nav > a:not(.button) { color: #ded8ca !important; }
+.public-desktop-nav > a:not(.button):hover,
+.public-desktop-nav > a.is-active { color: #fff3d4 !important; }
+.public-desktop-nav > a.is-active::after { height: 2px; background: #c9a45d; }
+.public-login-link { border-left-color: rgba(230, 213, 177, .24); }
+.site-header .button-primary {
+  border-color: #b8904b;
+  background: rgba(201, 164, 93, .08);
+  color: #f8eacb;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+}
+.site-header .button-primary:hover { border-color: #d1b476; background: #c09b56; color: #13241f; }
+.public-mobile-nav > summary { border-color: rgba(222, 201, 158, .5); color: #f8eedb; }
+.public-mobile-nav nav { border-color: #9d8150; background: #fffaf0; }
+
+/* Engraved hero crest */
+.catalogue-hero,
+.how-hero,
+body > main > .hero,
+.verification-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: clamp(36px, 7vw, 92px);
+  align-items: center;
+  min-height: 390px;
+  padding: 58px 0 48px;
+  border-bottom: 3px double var(--xp-line-strong);
+  background: transparent;
+}
+
+.catalogue-hero::before,
+.how-hero::before,
+body > main > .hero::before,
+.verification-hero::before {
+  position: absolute;
+  inset: 18px -5vw auto auto;
+  width: 310px;
+  height: 310px;
+  border: 1px solid rgba(137, 101, 50, .07);
+  border-radius: 50%;
+  box-shadow: 0 0 0 34px rgba(137, 101, 50, .025), 0 0 0 72px rgba(137, 101, 50, .016);
+  content: "";
+  pointer-events: none;
+}
+
+.hero h1,
+.verification-hero h1 {
+  max-width: 780px;
+  color: #25231e;
+  font-size: clamp(3rem, 5.3vw, 5.35rem);
+  line-height: .94;
+  text-wrap: balance;
+}
+
+.verification-hero > div > p:not(.eyebrow) {
+  max-width: 650px;
+  color: var(--xp-copy);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.eec-hero-emblem {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 310px;
+  padding: 24px 22px 21px;
+  border: 4px double #aa864c;
+  background:
+    linear-gradient(90deg, transparent 49.65%, rgba(121, 83, 39, .06) 50%, transparent 50.35%),
+    linear-gradient(0deg, transparent 49.65%, rgba(121, 83, 39, .06) 50%, transparent 50.35%),
+    radial-gradient(circle, rgba(255,255,255,.7), transparent 72%),
+    #f5ecda;
+  box-shadow: inset 0 0 0 7px #f5ecda, inset 0 0 0 8px rgba(125, 91, 42, .34), 0 16px 38px rgba(64, 43, 21, .1);
+  color: #765927;
+  text-align: center;
+}
+
+.eec-hero-emblem::before,
+.eec-hero-emblem::after {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: #8e6930;
+  content: "";
+}
+
+.eec-hero-emblem::before { inset: 8px auto auto 8px; border-top: 1px solid; border-left: 1px solid; }
+.eec-hero-emblem::after { inset: auto 8px 8px auto; border-right: 1px solid; border-bottom: 1px solid; }
+.eec-emblem-kicker,
+.eec-emblem-motto { color: #765927; font-size: .58rem; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
+.eec-emblem-seal { width: 155px; height: 155px; margin: 7px 0 5px; --seal-paper: rgba(255,255,255,.18); --seal-center: rgba(255,253,247,.62); }
+.eec-emblem-name { color: #54251f; font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; font-size: .98rem; font-weight: 700; }
+.eec-emblem-rule { display: grid; grid-template-columns: 62px auto 62px; gap: 8px; align-items: center; margin: 8px 0 7px; color: #9a7337; font-size: .48rem; }
+.eec-emblem-rule i { height: 1px; background: currentColor; }
+.eec-emblem-rule b { font-weight: 400; }
+
+.section-heading,
+.how-section-heading,
+.staff-page-header,
+.staff-editor-header,
+.dealer-page-header {
+  position: relative;
+  border-bottom: 3px double var(--xp-line-strong);
+}
+
+.section-heading::after,
+.how-section-heading::after,
+.staff-page-header::after,
+.staff-editor-header::after,
+.dealer-page-header::after {
+  position: absolute;
+  right: 0;
+  bottom: -5px;
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--xp-gold);
+  background: var(--xp-bg);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.catalogue-list {
+  border-color: #bfae92;
+  border-radius: 2px;
+  box-shadow: 0 12px 30px rgba(60, 43, 25, .065);
+}
+
+.catalogue-list-heading {
+  border-bottom-color: rgba(210, 182, 127, .42);
+  background: linear-gradient(100deg, #182b24, #20362e);
+  color: #d8c59e;
+}
+
+.catalogue-list-item { border-bottom-color: #ded2bf; background: rgba(255, 253, 247, .86); }
+.catalogue-list-item:nth-child(odd) { background: rgba(249, 244, 234, .78); }
+.catalogue-list-item:hover { background: #f8edda; }
+.product-category { color: #7b5940; }
+.catalogue-list-product h2 a:hover { color: var(--xp-blue-dark); }
+
+.catalogue-filter,
+.how-start-grid,
+.how-flow,
+.how-numbered-list,
+.verification-choices {
+  border-color: #c2b093;
+  background: rgba(255,253,247,.84);
+  box-shadow: 0 10px 26px rgba(67, 48, 27, .055);
+}
+
+.how-start-grid > a > span,
+.how-flow article > span,
+.how-numbered-list article > span {
+  border-color: #9c7940;
+  background: var(--xp-gold-soft);
+  color: var(--xp-blue-dark);
+}
+
+.how-path-card.is-primary { border-top-color: var(--xp-blue); }
+.how-callout { border-left-color: var(--xp-blue); }
+.how-final-cta {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #9f804a;
+  border-radius: 2px;
+  background:
+    radial-gradient(circle at 88% 50%, rgba(197, 158, 83, .17), transparent 25%),
+    linear-gradient(115deg, #12251f, #21382f);
+  box-shadow: inset 0 0 0 5px #1b3129, inset 0 0 0 6px rgba(196,159,88,.32);
+}
+
+/* Sign-in is the first institutional handshake. */
+.staff-login-main { position: relative; width: min(660px, calc(100% - 40px)); padding-block: 64px; }
+.staff-login-card {
+  border: 3px double #9c7a45;
+  border-radius: 2px;
+  background: #fffaf0;
+  box-shadow: 0 24px 60px rgba(36, 29, 20, .16);
+}
+.login-card-intro {
+  position: relative;
+  min-height: 245px;
+  padding-right: 176px !important;
+  border-bottom: 3px double rgba(201, 164, 93, .52);
+  background:
+    radial-gradient(circle at 86% 42%, rgba(201,164,93,.14), transparent 27%),
+    linear-gradient(115deg, #12241f, #20372f);
+}
+.login-card-intro .eyebrow { color: #d7bc83; }
+.login-card-intro h1 { color: #fff8e8; }
+.staff-login-card .login-card-intro > p:not(.eyebrow) { color: #d7d0c0; }
+.login-card-seal {
+  position: absolute;
+  top: 47px;
+  right: 29px;
+  width: 125px;
+  height: 125px;
+  color: #c9a45d;
+  opacity: .9;
+  --seal-center: rgba(9,22,17,.35);
+}
+.staff-login-form { background: #f3ecdf; }
+.staff-login-card > footer { border-top: 1px solid #d6c8b2; background: #fffaf0; }
+
+/* Staff and business workspaces carry the same house identity, quietly. */
+.app-sidebar {
+  background:
+    radial-gradient(circle at 50% 7%, rgba(190, 151, 78, .12), transparent 17%),
+    linear-gradient(165deg, #10221c, #172a23 56%, #10201b);
+  box-shadow: inset -1px 0 0 rgba(207, 174, 110, .22);
+}
+.app-sidebar .app-brand { min-height: 82px; border-bottom: 3px double rgba(206,170,101,.3); }
+.app-sidebar .app-brand-mark,
+.app-mobile-bar .app-brand-mark {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #c7a15b;
+  --seal-center: rgba(8,20,15,.28);
+}
+.app-sidebar .app-brand strong { font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; font-size: .96rem; font-weight: 600; }
+.app-nav-group > p { color: #a59068; letter-spacing: .12em; }
+.app-navigation a[aria-current="page"] { background: linear-gradient(90deg, rgba(193,155,84,.17), rgba(193,155,84,.045)); box-shadow: inset 3px 0 0 #c5a05c; }
+
+.staff-page-header h1,
+.staff-editor-header h1,
+.dealer-page-header h1 { font-size: clamp(2.25rem, 3.8vw, 3.65rem); }
+
+.inventory-section,
+.staff-item-row,
+.order-card,
+.order-line-card,
+.registry-entry,
+.staff-fieldset,
+.staff-license-section,
+.customer-license-section {
+  border-color: #ccbda5;
+  background: rgba(255,253,247,.88);
+}
+
+.dealer-app-header {
+  min-height: 76px;
+  border-bottom: 3px double rgba(199,162,91,.65);
+  background: linear-gradient(110deg, #12251f, #1d332b);
+  box-shadow: 0 6px 20px rgba(22,30,26,.13);
+}
+.dealer-app-header .app-brand-mark {
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #c9a45d;
+  --seal-center: rgba(8,20,15,.3);
+}
+.dealer-app-header .app-brand strong { color: #fff8e8; font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; font-weight: 600; }
+.dealer-app-header .app-brand small { color: #cbb991; }
+.dealer-app-header nav a { color: #dcd5c6; }
+.dealer-app-header nav a:hover { color: #fff8e8; }
+.dealer-app-header nav a.is-active { background: rgba(203,167,99,.13); color: #fff1d3; box-shadow: inset 0 -2px 0 #c5a05c; }
+.dealer-account-actions a,
+.dealer-account-actions button { color: #c8c0b0; }
+
+.site-footer {
+  grid-template-columns: 58px minmax(0, 1fr) minmax(260px, .6fr);
+  gap: 20px;
+  align-items: center;
+  padding-top: 28px;
+  border-top: 3px double var(--xp-line-strong);
+}
+.footer-seal { width: 56px; height: 56px; color: #89682f; --seal-paper: rgba(255,255,255,.2); --seal-center: rgba(255,253,247,.38); }
+
+@media (max-width: 980px) {
+  .catalogue-hero,
+  .how-hero,
+  body > main > .hero,
+  .verification-hero { grid-template-columns: minmax(0, 1fr) 245px; gap: 34px; }
+  .eec-hero-emblem { min-height: 280px; }
+  .eec-emblem-seal { width: 132px; height: 132px; }
+}
+
+@media (max-width: 760px) {
+  .site-header { min-height: 72px; }
+  .site-header-inner { min-height: 69px; }
+  .site-header .brand-mark { width: 44px; height: 44px; }
+  .site-header .brand strong { font-size: .92rem; }
+  .catalogue-hero,
+  .how-hero,
+  body > main > .hero,
+  .verification-hero {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    padding: 42px 0 35px;
+  }
+  .catalogue-hero::before,
+  .how-hero::before,
+  body > main > .hero::before,
+  .verification-hero::before { display: none; }
+  .hero h1,
+  .verification-hero h1 { font-size: clamp(2.75rem, 13vw, 4rem); }
+  .eec-hero-emblem { display: none; }
+  .login-card-intro { min-height: 0; padding-right: 28px !important; }
+  .login-card-seal { display: none; }
+  .site-footer { grid-template-columns: 42px minmax(0, 1fr); }
+  .footer-seal { width: 42px; height: 42px; }
+  .site-footer > p:last-child { grid-column: 1 / -1; }
+}

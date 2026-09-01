@@ -44,4 +44,17 @@ describe("consumer experience contracts", () => {
     );
     expect(stockSheetRule).toContain("grid-template-columns:");
   });
+
+  it("uses one code-drawn Company seal across every application surface", () => {
+    const seal = source("../components/eec-seal.tsx");
+    const publicChrome = source("../components/public-chrome.tsx");
+    const staffShell = source("../components/staff-shell.tsx");
+    const dealerShell = source("../components/dealer-shell.tsx");
+
+    expect(seal).toContain('viewBox="0 0 100 100"');
+    expect(seal).toContain("institutionName");
+    expect(publicChrome).toContain("<EecSeal />");
+    expect(staffShell).toContain("<EecSeal />");
+    expect(dealerShell).toContain("<EecSeal />");
+  });
 });
