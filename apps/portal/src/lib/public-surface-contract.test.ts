@@ -13,6 +13,21 @@ describe("public rendering contracts", () => {
     expect(catalogue).not.toContain("Retrieving current catalogue records");
   });
 
+  it("integrates a plain-language guide into the public navigation and storefront", () => {
+    const guide = source("../app/how-it-works/page.tsx");
+    const chrome = source("../components/public-chrome.tsx");
+    const catalogue = source("../app/page.tsx");
+
+    expect(chrome).toContain('["/how-it-works", "How it works"]');
+    expect(catalogue).toContain('href="/how-it-works"');
+    expect(guide).toContain("How EEC trade works.");
+    expect(guide).toContain("Buy through a licensed business");
+    expect(guide).toContain("Order directly from an EEC Agent");
+    expect(guide).toContain("No seller name is needed");
+    expect(guide).toContain("LIC number + private code");
+    expect(guide).not.toMatch(/Supabase|inventory ledger entry|dealer authorization/i);
+  });
+
   it("ships the authoritative item name and description metadata on detail pages", () => {
     const detail = source("../app/catalogue/[slug]/page.tsx");
     expect(detail).toContain("<h1>{item.display_name}</h1>");

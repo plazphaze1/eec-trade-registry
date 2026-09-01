@@ -53,6 +53,9 @@ export default async function CataloguePage({
             <a className="button button-primary" href="#catalogue-title">
               <UiIcon name="search" /> Start shopping
             </a>
+            <Link className="button button-secondary" href="/how-it-works">
+              <UiIcon name="spark" /> How it works
+            </Link>
             <Link className="button button-secondary" href="/verify">
               <UiIcon name="shield" /> Check a license
             </Link>
