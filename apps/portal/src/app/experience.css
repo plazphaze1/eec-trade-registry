@@ -982,12 +982,12 @@ body > main h2 {
 }
 
 .stock-sheet-mobile-hint { display: none; }
-.stock-sheet-table { min-width: 1080px; }
+.stock-sheet-table { min-width: 960px; }
 
 .stock-sheet-header,
 .stock-sheet-row {
   display: grid;
-  grid-template-columns: minmax(180px, 1.1fr) 90px minmax(240px, 1.35fr) minmax(190px, 1fr) minmax(190px, 1fr) 76px;
+  grid-template-columns: minmax(168px, 1.05fr) 80px minmax(210px, 1.25fr) minmax(176px, 1fr) minmax(176px, 1fr) 64px;
   align-items: stretch;
 }
 
