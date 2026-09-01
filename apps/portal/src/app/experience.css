@@ -1450,24 +1450,13 @@ body > main h2,
 
 .button-secondary:hover { border-color: var(--xp-gold); background: #fffdf7; }
 
-/* Code-drawn Company seal */
-.eec-seal {
+/* Approved Company warehouse artwork */
+.eec-logo {
   display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  color: var(--seal-ink, currentColor);
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
 }
-
-.eec-seal-field { fill: var(--seal-paper, transparent); }
-.eec-seal-outer { fill: none; stroke: currentColor; stroke-width: 1.5; }
-.eec-seal-inner { fill: none; stroke: currentColor; stroke-width: .7; opacity: .82; }
-.eec-seal-tick { fill: none; stroke: currentColor; stroke-width: 1.2; }
-.eec-seal-star { fill: currentColor; fill-opacity: .075; stroke: currentColor; stroke-width: .7; }
-.eec-seal-center { fill: var(--seal-center, transparent); stroke: currentColor; stroke-width: 1; }
-.eec-seal-flourish { fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: .85; opacity: .72; }
-.eec-seal-monogram { fill: currentColor; font-family: Georgia, serif; font-size: 15px; font-weight: 700; letter-spacing: 1.5px; }
-.eec-seal-dot { fill: currentColor; }
 
 /* Public masthead */
 .site-header {
@@ -1482,15 +1471,15 @@ body > main h2,
 .site-header-inner { min-height: 75px; }
 .site-header .brand { color: #f7edd9; }
 .site-header .brand-mark {
-  width: 48px;
-  height: 48px;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: #c9a45d;
-  --seal-paper: rgba(248, 231, 193, .035);
-  --seal-center: rgba(9, 22, 17, .4);
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  border: 1px solid rgba(199, 161, 91, .5);
+  border-radius: 3px;
+  background: #101817;
+  box-shadow: 0 0 0 2px rgba(10, 20, 16, .7), 0 0 0 3px rgba(199, 161, 91, .22);
 }
+.site-header .brand-mark .eec-logo { width: 100%; height: 100%; object-fit: cover; }
 
 .site-header .brand strong {
   color: #fff9eb;
@@ -1596,9 +1585,8 @@ body > main > .hero::before,
 .eec-hero-emblem::after { inset: auto 8px 8px auto; border-right: 1px solid; border-bottom: 1px solid; }
 .eec-emblem-kicker,
 .eec-emblem-motto { color: #765927; font-size: .58rem; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
-.eec-emblem-seal { width: 155px; height: 155px; margin: 7px 0 5px; --seal-paper: rgba(255,255,255,.18); --seal-center: rgba(255,253,247,.62); }
-.eec-emblem-name { color: #54251f; font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; font-size: .98rem; font-weight: 700; }
-.eec-emblem-rule { display: grid; grid-template-columns: 62px auto 62px; gap: 8px; align-items: center; margin: 8px 0 7px; color: #9a7337; font-size: .48rem; }
+.eec-emblem-logo { width: 205px; margin: 10px 0 3px; filter: drop-shadow(0 7px 8px rgba(35, 26, 18, .18)); }
+.eec-emblem-rule { display: grid; grid-template-columns: 62px auto 62px; gap: 8px; align-items: center; margin: 3px 0 7px; color: #9a7337; font-size: .48rem; }
 .eec-emblem-rule i { height: 1px; background: currentColor; }
 .eec-emblem-rule b { font-weight: 400; }
 
@@ -1696,15 +1684,12 @@ body > main > .hero::before,
 .login-card-intro .eyebrow { color: #d7bc83; }
 .login-card-intro h1 { color: #fff8e8; }
 .staff-login-card .login-card-intro > p:not(.eyebrow) { color: #d7d0c0; }
-.login-card-seal {
+.login-card-logo {
   position: absolute;
-  top: 47px;
-  right: 29px;
-  width: 125px;
-  height: 125px;
-  color: #c9a45d;
-  opacity: .9;
-  --seal-center: rgba(9,22,17,.35);
+  top: 42px;
+  right: 28px;
+  width: 136px;
+  filter: drop-shadow(0 9px 10px rgba(0, 0, 0, .28));
 }
 .staff-login-form { background: #f3ecdf; }
 .staff-login-card > footer { border-top: 1px solid #d6c8b2; background: #fffaf0; }
@@ -1719,14 +1704,15 @@ body > main > .hero::before,
 .app-sidebar .app-brand { min-height: 82px; border-bottom: 3px double rgba(206,170,101,.3); }
 .app-sidebar .app-brand-mark,
 .app-mobile-bar .app-brand-mark {
-  width: 44px;
-  height: 44px;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: #c7a15b;
-  --seal-center: rgba(8,20,15,.28);
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  border: 1px solid rgba(199, 161, 91, .42);
+  border-radius: 3px;
+  background: #0d1513;
 }
+.app-sidebar .app-brand-mark .eec-logo,
+.app-mobile-bar .app-brand-mark .eec-logo { width: 100%; height: 100%; object-fit: cover; }
 .app-sidebar .app-brand strong { font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; font-size: .96rem; font-weight: 600; }
 .app-nav-group > p { color: #a59068; letter-spacing: .12em; }
 .app-navigation a[aria-current="page"] { background: linear-gradient(90deg, rgba(193,155,84,.17), rgba(193,155,84,.045)); box-shadow: inset 3px 0 0 #c5a05c; }
@@ -1754,14 +1740,14 @@ body > main > .hero::before,
   box-shadow: 0 6px 20px rgba(22,30,26,.13);
 }
 .dealer-app-header .app-brand-mark {
-  width: 46px;
-  height: 46px;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: #c9a45d;
-  --seal-center: rgba(8,20,15,.3);
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  border: 1px solid rgba(199, 161, 91, .5);
+  border-radius: 3px;
+  background: #0d1513;
 }
+.dealer-app-header .app-brand-mark .eec-logo { width: 100%; height: 100%; object-fit: cover; }
 .dealer-app-header .app-brand strong { color: #fff8e8; font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; font-weight: 600; }
 .dealer-app-header .app-brand small { color: #cbb991; }
 .dealer-app-header nav a { color: #dcd5c6; }
@@ -1777,7 +1763,7 @@ body > main > .hero::before,
   padding-top: 28px;
   border-top: 3px double var(--xp-line-strong);
 }
-.footer-seal { width: 56px; height: 56px; color: #89682f; --seal-paper: rgba(255,255,255,.2); --seal-center: rgba(255,253,247,.38); }
+.footer-logo { width: 58px; filter: drop-shadow(0 4px 5px rgba(48, 34, 20, .16)); }
 
 @media (max-width: 980px) {
   .catalogue-hero,
@@ -1785,7 +1771,7 @@ body > main > .hero::before,
   body > main > .hero,
   .verification-hero { grid-template-columns: minmax(0, 1fr) 245px; gap: 34px; }
   .eec-hero-emblem { min-height: 280px; }
-  .eec-emblem-seal { width: 132px; height: 132px; }
+  .eec-emblem-logo { width: 178px; }
 }
 
 @media (max-width: 760px) {
@@ -1809,8 +1795,8 @@ body > main > .hero::before,
   .verification-hero h1 { font-size: clamp(2.75rem, 13vw, 4rem); }
   .eec-hero-emblem { display: none; }
   .login-card-intro { min-height: 0; padding-right: 28px !important; }
-  .login-card-seal { display: none; }
+  .login-card-logo { position: static; width: 88px; margin: 0 auto 20px; }
   .site-footer { grid-template-columns: 42px minmax(0, 1fr); }
-  .footer-seal { width: 42px; height: 42px; }
+  .footer-logo { width: 42px; }
   .site-footer > p:last-child { grid-column: 1 / -1; }
 }

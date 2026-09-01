@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { EecHeroEmblem } from "@/components/eec-seal";
+import { EecHeroEmblem } from "@/components/eec-logo";
 import { UiIcon, type IconName } from "@/components/ui-icon";
-import { getInstitutionName } from "@/lib/env";
 
 export const metadata: Metadata = {
   title: "How it works",
@@ -45,8 +44,6 @@ const orderSteps = [
 ] as const;
 
 export default function HowItWorksPage() {
-  const institutionName = getInstitutionName();
-
   return (
     <main className="how-main">
       <section className="hero how-hero">
@@ -67,7 +64,7 @@ export default function HowItWorksPage() {
             </Link>
           </div>
         </div>
-        <EecHeroEmblem institutionName={institutionName} />
+        <EecHeroEmblem />
       </section>
 
       <nav className="how-start-grid" aria-label="Choose what you want to do">
