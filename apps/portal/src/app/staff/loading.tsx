@@ -1,9 +1,9 @@
 export default function StaffLoading() {
   return (
     <main className="staff-main">
-      <section className="notice-panel" aria-live="polite">
-        <p className="eyebrow">Authoritative registry</p>
-        <h1>Loading staff catalogue…</h1>
+      <section className="staff-loading" aria-live="polite" aria-label="Loading staff workspace">
+        <span aria-hidden="true" />
+        <p>Opening the current staff workspace…</p>
       </section>
     </main>
   );
