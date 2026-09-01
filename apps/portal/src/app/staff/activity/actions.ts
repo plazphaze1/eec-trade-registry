@@ -40,7 +40,7 @@ async function verifiedClient() {
 
 function refresh() {
   updateTag("public-catalogue");
-  for (const path of [activityPath, "/staff/money", "/staff/inventory", "/staff/buy", "/staff/dashboard", "/catalogue", "/"]) {
+  for (const path of [activityPath, "/staff/money", "/staff/inventory", "/staff/dashboard", "/catalogue", "/"]) {
     revalidatePath(path);
   }
 }

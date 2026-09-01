@@ -57,4 +57,21 @@ describe("consumer experience contracts", () => {
     expect(staffShell).toContain("<EecLogo");
     expect(dealerShell).toContain("<EecLogo");
   });
+
+  it("keeps legacy desks out of the everyday dashboard and default launcher", () => {
+    const dashboard = source("../app/staff/dashboard/page.tsx");
+    const palette = source("../components/staff-command-palette.tsx");
+    const oldBuyingPage = source("../app/staff/buy/page.tsx");
+    const launchActions = source("../app/staff/launch/actions.ts");
+
+    expect(dashboard).toContain('id="administration-title">Administration');
+    expect(dashboard).not.toContain("toolGroups");
+    expect(dashboard).not.toContain(">Staff tools<");
+    expect(palette).toContain("available.filter((command) => command.suggested)");
+    expect(palette).not.toContain('label: "Issue a license"');
+    expect(palette).not.toContain('label: "Add a business"');
+    expect(oldBuyingPage).toContain('redirect("/staff/activity?mode=purchase")');
+    expect(launchActions).not.toContain("createTradeOrderAction");
+    expect(launchActions).not.toContain("decideApplicationAction");
+  });
 });

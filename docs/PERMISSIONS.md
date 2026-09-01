@@ -36,7 +36,7 @@ Authenticated human with one or more effective staff role assignments. Scope may
 
 The ordinary server-facing staff classes are **Owner** and **Agent** under ADR 0021. Owner administers access and audit; Agent performs approved day-to-day EEC operations. Fine-grained scopes remain the database enforcement mechanism. Business is not a staff class: an authenticated business representative is authorized only for the exact represented party/dealer relationship.
 
-ADR 0023 narrows the ordinary interface without broadening either class. Primary navigation is a usability choice, never a grant. The Staff tools panel may explain and link a capability that the current actor cannot execute; the destination and every secure command still fail closed under the effective permission and assignment scope.
+ADRs 0023 and 0031 narrow the ordinary interface without broadening either class. Primary navigation, contextual links, task-search results, and the Owner Administration strip are usability choices, never grants. Every destination and secure command still fails closed under the effective permission and assignment scope.
 
 ### Auditor
 

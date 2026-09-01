@@ -101,6 +101,8 @@ ADR 0028 removes email and Discord from ordinary business access. An Owner sets 
 
 ADR 0029 removes the final split in ordinary business onboarding. A configured license-class profile lets one reviewed public application create the business party, current dealer authorization, and linked license atomically. The staff queue presents one **Approve business** action, while imported or exceptional records keep manual tools. Order detail is also reduced to a compact item work list with one state and one next action per line.
 
+ADR 0031 removes the advanced dashboard catalogue that still made the console feel like two applications. Today now exposes only routine work, live exceptions, recent orders, and four compact Owner administration links. Specialist custody, compliance, pricing, document, and policy work remains searchable or contextual. The superseded Buy materials page redirects to **Record activity**, and unused launch actions and links are retired without deleting authoritative functions or history.
+
 ### User outcome
 
 Authorized staff can maintain the master catalogue, prices, publication, and control metadata; public output changes from the same source record.

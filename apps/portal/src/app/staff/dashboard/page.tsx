@@ -10,43 +10,11 @@ export const dynamic = "force-dynamic";
 
 type CounterGroup = CommandDashboard["orders"];
 type AttentionItem = { description: string; href: string; icon: IconName; label: string; value: number };
-type Tool = { description: string; href: string; icon: IconName; label: string; ownerOnly?: boolean };
+type DashboardAction = { description: string; href: string; icon: IconName; label: string };
 
 function value(group: CounterGroup, key: string) { return group[key] ?? 0; }
 
-const toolGroups: Array<{ label: string; tools: Tool[] }> = [
-  {
-    label: "People and authority",
-    tools: [
-      { href: "/staff/licensing", icon: "license", label: "Licenses", description: "Issue, renew, suspend, and inspect a customer’s authority." },
-      { href: "/staff/access", icon: "people", label: "Staff access", description: "Approve Discord identities and manage Agent access.", ownerOnly: true },
-      { href: "/staff/configuration", icon: "gear", label: "Reference setup", description: "Add categories, units, license types, and other reusable choices." },
-    ],
-  },
-  {
-    label: "Trade and custody",
-    tools: [
-      { href: "/staff/economy?view=system", icon: "coins", label: "Material policy records", description: "Inspect advanced reserve targets and offer history.", ownerOnly: true },
-      { href: "/staff/pricing", icon: "coins", label: "Advanced pricing", description: "Create special business, license, regional, or channel price rules." },
-      { href: "/staff/fulfillment", icon: "package", label: "Fulfillment queue", description: "See handoffs across every order when exception work needs a queue." },
-      { href: "/staff/transfers", icon: "transfer", label: "Warehouse transfers", description: "Move recorded custody between configured locations." },
-      { href: "/staff/consignments", icon: "truck", label: "Consignments", description: "Track Company-owned goods held by a business and settle reports." },
-      { href: "/staff/assets", icon: "key", label: "Unique goods", description: "Track individually identified goods and their custody history." },
-    ],
-  },
-  {
-    label: "Evidence and system",
-    tools: [
-      { href: "/staff/inventory?view=system", icon: "box", label: "Stock records", description: "Inspect holds, corrections, and movement evidence.", ownerOnly: true },
-      { href: "/staff/documents", icon: "document", label: "Official documents", description: "Generate and download frozen PDF snapshots of authoritative records." },
-      { href: "/staff/compliance", icon: "shield", label: "Compliance", description: "Record investigations, findings, appeals, and configured actions." },
-      { href: "/staff/integrations", icon: "external", label: "Sheets and Discord", description: "Open the public Sheet, check freshness, and inspect delivery failures." },
-      { href: "/staff/operations", icon: "heart", label: "System health", description: "Inspect services, stuck work, and the authoritative audit trail.", ownerOnly: true },
-    ],
-  },
-];
-
-function QuickAction({ description, href, icon, label }: Tool) {
+function QuickAction({ description, href, icon, label }: DashboardAction) {
   return (
     <Link className="dashboard-quick-action" href={href}>
       <span><UiIcon name={icon} size={22} /></span>
@@ -76,7 +44,7 @@ export default async function DashboardPage() {
     { href: "/staff/integrations", icon: "external", label: "Sheet or Discord failure", description: "Business data is safe; its projection needs attention.", value: value(dashboard.integrations, "outbox_failed") + value(dashboard.integrations, "exports_failed") + value(dashboard.integrations, "deliveries_failed") },
   ];
   const attention = attentionCandidates.filter((item) => item.value > 0 && (!item.href.startsWith("/staff/access") || isOwner));
-  const quickActions: Tool[] = [
+  const quickActions: DashboardAction[] = [
     { href: "/staff/orders/new", icon: "clipboard", label: "Record an order", description: "Choose the buyer, goods, and handoff." },
     { href: "/staff/activity", icon: "package", label: "Record activity", description: "Save a material purchase or counted stock total." },
     { href: "/staff/applications", icon: "license", label: "Review applications", description: "Approve, renew, or deny a license request." },
@@ -113,17 +81,15 @@ export default async function DashboardPage() {
         </section>
       </div>
 
-      <details className="staff-tools-panel">
-        <summary><span><UiIcon name="gear" size={19} /><span><strong>Staff tools</strong><small>Advanced records, policy, custody, documents, and system controls</small></span></span><span>Open tools</span></summary>
-        <div className="staff-tools-content">
-          <p className="staff-tools-explanation"><strong>These tools are part of the system, but they are not part of an ordinary order.</strong> Open them only when the task specifically involves the subject described. Permissions are still checked by Supabase.</p>
-          <div className="staff-tools-groups">{toolGroups.map((group) => {
-            const tools = group.tools.filter((tool) => !tool.ownerOnly || isOwner);
-            return <section key={group.label}><h3>{group.label}</h3><div>{tools.map((tool) => <QuickAction key={tool.href} {...tool} />)}</div></section>;
-          })}</div>
-          {dashboard.recent_audit.length > 0 && isOwner && <details className="staff-activity-panel"><summary>Recent authoritative staff changes</summary><ul>{dashboard.recent_audit.slice(0, 6).map((entry) => <li key={entry.id}><strong>{entry.action.replaceAll("_", " ")}</strong><span>{entry.record_type.replace("public.", "").replaceAll("_", " ")} · <RelativeTime value={entry.occurred_at} /></span></li>)}</ul></details>}
-        </div>
-      </details>
+      {isOwner && <section className="dashboard-admin-strip" aria-labelledby="administration-title">
+        <div><p className="eyebrow">Owner only</p><h2 id="administration-title">Administration</h2><p>Access, reusable setup, public copies, and system health.</p></div>
+        <nav aria-label="Owner administration">
+          <Link href="/staff/access"><UiIcon name="people" size={16} />Staff access</Link>
+          <Link href="/staff/configuration"><UiIcon name="gear" size={16} />Company setup</Link>
+          <Link href="/staff/integrations"><UiIcon name="external" size={16} />Sheets &amp; Discord</Link>
+          <Link href="/staff/operations"><UiIcon name="heart" size={16} />System health</Link>
+        </nav>
+      </section>}
     </main>
   );
 }

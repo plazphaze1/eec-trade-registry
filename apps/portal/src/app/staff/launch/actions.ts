@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
-  decisionSchema, documentGenerationSchema, financeTermSchema, fulfillmentSchema,
+  documentGenerationSchema, financeTermSchema, fulfillmentSchema,
   parse, paymentSchema, priceBindingSchema, readAssistedOrderForm, settlementSchema,
 } from "@/lib/launch-form";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
@@ -14,8 +14,6 @@ import {
   tradeOrderPreviewSchema,
 } from "@/lib/order-preview";
 
-const base = "/staff/launch";
-function destination(key: "error" | "notice", value: string) { return `${base}?${new URLSearchParams({ [key]: value })}`; }
 async function client() {
   const instance = await createServerSupabaseClient(); const { data, error } = await instance.auth.getClaims();
   if (error || typeof data?.claims?.sub !== "string") redirect("/staff/login"); return instance;
@@ -29,7 +27,17 @@ function failure(error: { code?: string; message: string }) {
   if (error.code === "P0002") return "not_found";
   return "save_failed";
 }
-function refresh() { revalidatePath(base); revalidatePath("/staff/dashboard"); revalidatePath("/staff/orders"); }
+function refresh() {
+  for (const path of [
+    "/staff/dashboard",
+    "/staff/orders",
+    "/staff/applications",
+    "/staff/consignments",
+    "/staff/assets",
+    "/staff/documents",
+    "/staff/pricing",
+  ]) revalidatePath(path);
+}
 
 function resolveOrderContext(input: ReturnType<typeof readAssistedOrderForm>) {
   if (!input.success) return null;
@@ -123,33 +131,6 @@ export async function guidedTradeOrderAction(
     redirect(`/staff/orders/${row.order_id}?notice=created`);
   }
   redirect("/staff/orders?notice=created");
-}
-
-export async function createTradeOrderAction(form: FormData) {
-  const parsed = readAssistedOrderForm(form); if (!parsed.success) redirect(destination("error", "invalid_input"));
-  const input = parsed.data; let party: string | null = input.direct_customer_id;
-  let dealer: string | null = null; let license: string | null = null; let jurisdiction = input.jurisdiction_id;
-  if (input.channel === "staff_assisted_business") {
-    const parts = input.business_key.split("|"); if (parts.length !== 4) redirect(destination("error", "invalid_input"));
-    [party, dealer, license, jurisdiction] = parts;
-  }
-  const { error } = await (await client()).rpc("staff_create_trade_order", {
-    p_channel: input.channel, p_contact_label: input.contact_label, p_customer_name: input.new_customer_name,
-    p_customer_party_id: party, p_dealer_authorization_id: dealer, p_fulfillment_mode: input.fulfillment_mode,
-    p_jurisdiction_id: jurisdiction, p_license_id: license, p_lines: input.lines, p_notes: input.notes,
-    p_reason: input.reason, p_request_id: crypto.randomUUID(),
-  });
-  if (error) redirect(destination("error", failure(error))); refresh(); redirect(destination("notice", "order_created"));
-}
-
-export async function decideApplicationAction(form: FormData) {
-  const parsed = parse(decisionSchema, form); if (!parsed.success) redirect(destination("error", "invalid_input"));
-  const input = parsed.data; const { error } = await (await client()).rpc("staff_decide_license_application", {
-    p_application_id: input.application_id, p_decision: input.decision, p_effective_from: input.effective_from,
-    p_expected_version: input.expected_version, p_expires_at: input.expires_at, p_holder_party_id: input.holder_party_id,
-    p_initial_status_code: input.initial_status_code, p_reason: input.reason, p_request_id: crypto.randomUUID(),
-  });
-  if (error) redirect(destination("error", failure(error))); refresh(); revalidatePath("/staff/licensing"); redirect(destination("notice", "application_decided"));
 }
 
 export async function configureFinanceTermsAction(form: FormData) {

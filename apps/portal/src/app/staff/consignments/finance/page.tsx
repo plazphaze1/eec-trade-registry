@@ -24,7 +24,7 @@ export default async function ConsignmentFinancePage({ searchParams }: FinancePa
 
   return (
     <main className="staff-main">
-      <header className="staff-page-header"><div><p className="eyebrow">Consignment finance</p><h1>Commission and settlement</h1><p>Set the commission once, then freeze each accepted sales report into an auditable settlement.</p></div><div className="staff-button-row"><Link className="button button-secondary" href="/staff/consignments">Custody desk</Link><Link className="button button-secondary" href="/staff/launch">Quick actions</Link></div></header>
+      <header className="staff-page-header"><div><p className="eyebrow">Consignment finance</p><h1>Commission and settlement</h1><p>Set the commission once, then freeze each accepted sales report into an auditable settlement.</p></div><div className="staff-button-row"><Link className="button button-secondary" href="/staff/consignments">Back to consignments</Link></div></header>
       <StaffNotice error={parameters.error} notice={parameters.notice} />
 
       <section className="inventory-section">
