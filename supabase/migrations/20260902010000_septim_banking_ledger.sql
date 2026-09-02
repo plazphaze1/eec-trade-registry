@@ -751,8 +751,8 @@ begin
   ) values (invoice_record.id, transaction_id, p_amount_minor, actor_id, p_request_id);
   paid_total := paid_total + p_amount_minor;
   next_status := case when paid_total = invoice_record.total_amount_minor then 'paid' else 'partially_paid' end;
-  update public.sales_invoices set status = next_status, version = version + 1
-  where id = invoice_record.id returning sales_invoices.version into next_version;
+  update public.sales_invoices as invoice set status = next_status, version = invoice.version + 1
+  where invoice.id = invoice_record.id returning invoice.version into next_version;
   insert into public.outbox_events (event_type, aggregate_type, aggregate_id, payload, deduplication_key)
   values ('finance.invoice_payment_recorded', 'sales_invoice', invoice_record.id,
     jsonb_build_object('public_reference', invoice_record.public_reference, 'amount_minor', p_amount_minor,
@@ -777,9 +777,9 @@ begin
   if invoice_record.status <> 'open' or exists (select 1 from public.sales_invoice_payments where sales_invoice_id = invoice_record.id) then
     raise exception using errcode = '22023', message = 'invoice_cannot_be_voided';
   end if;
-  update public.sales_invoices set status = 'void', voided_at = statement_timestamp(),
-    voided_by_actor_id = actor_id, void_reason = btrim(p_reason), version = version + 1
-  where id = invoice_record.id returning sales_invoices.version into invoice_record.version;
+  update public.sales_invoices as invoice set status = 'void', voided_at = statement_timestamp(),
+    voided_by_actor_id = actor_id, void_reason = btrim(p_reason), version = invoice.version + 1
+  where invoice.id = invoice_record.id returning invoice.version into invoice_record.version;
   return query select invoice_record.id, 'void'::text, invoice_record.version;
 end;
 $$;
@@ -803,9 +803,10 @@ begin
     source_account.party_id, 'bank.transfer',
     coalesce(nullif(btrim(p_memo), ''), 'Business account transfer.'), p_request_id
   ) as context;
-  select * into destination_account from public.financial_accounts
-  where public_reference = private.normalize_registry_reference(p_to_account_reference)
-    and status = 'active' and not hidden_from_routine_ui and account_type <> 'external';
+  select destination.* into destination_account from public.financial_accounts as destination
+  where destination.public_reference = private.normalize_registry_reference(p_to_account_reference)
+    and destination.status = 'active' and not destination.hidden_from_routine_ui
+    and destination.account_type <> 'external';
   if not found or destination_account.currency_id <> source_account.currency_id then
     raise exception using errcode = '22023', message = 'dealer_destination_account_invalid';
   end if;
@@ -865,8 +866,8 @@ begin
   ) values (invoice_record.id, transaction_id, p_amount_minor, actor_id, p_request_id);
   paid_total := paid_total + p_amount_minor;
   next_status := case when paid_total = invoice_record.total_amount_minor then 'paid' else 'partially_paid' end;
-  update public.sales_invoices set status = next_status, version = version + 1
-  where id = invoice_record.id returning sales_invoices.version into next_version;
+  update public.sales_invoices as invoice set status = next_status, version = invoice.version + 1
+  where invoice.id = invoice_record.id returning invoice.version into next_version;
   insert into public.outbox_events (event_type, aggregate_type, aggregate_id, payload, deduplication_key)
   values ('finance.invoice_payment_recorded', 'sales_invoice', invoice_record.id,
     jsonb_build_object('public_reference', invoice_record.public_reference, 'amount_minor', p_amount_minor,
@@ -923,14 +924,16 @@ begin
     raise exception using errcode = '22023', message = 'financial_account_status_invalid';
   end if;
   if p_status = 'closed' and (private.financial_account_balance(account_record.id) <> 0
-    or exists (select 1 from public.financial_account_holds where financial_account_id = account_record.id and status = 'active')
-    or exists (select 1 from public.loans where borrower_account_id = account_record.id and status in ('active', 'defaulted'))) then
+    or exists (select 1 from public.financial_account_holds as account_hold
+      where account_hold.financial_account_id = account_record.id and account_hold.status = 'active')
+    or exists (select 1 from public.loans as loan
+      where loan.borrower_account_id = account_record.id and loan.status in ('active', 'defaulted'))) then
     raise exception using errcode = '23514', message = 'financial_account_cannot_close';
   end if;
-  update public.financial_accounts set status = p_status,
+  update public.financial_accounts as account set status = p_status,
     closed_at = case when p_status = 'closed' then statement_timestamp() else null end,
-    version = version + 1 where id = account_record.id
-  returning financial_accounts.version into account_record.version;
+    version = account.version + 1 where account.id = account_record.id
+  returning account.version into account_record.version;
   return query select account_record.id, p_status, account_record.version;
 end;
 $$;
@@ -983,9 +986,10 @@ begin
   if hold_record.version <> p_expected_version or hold_record.status <> 'active' then
     raise exception using errcode = '40001', message = 'financial_hold_version_conflict';
   end if;
-  update public.financial_account_holds set status = 'released', released_at = statement_timestamp(),
+  update public.financial_account_holds as account_hold set status = 'released', released_at = statement_timestamp(),
     released_by_actor_id = actor_id, release_reason = btrim(p_reason), release_request_id = p_request_id,
-    version = version + 1 where id = hold_record.id returning financial_account_holds.version into hold_record.version;
+    version = account_hold.version + 1 where account_hold.id = hold_record.id
+    returning account_hold.version into hold_record.version;
   return query select hold_record.id, 'released'::text,
     private.financial_account_available_balance(hold_record.financial_account_id), hold_record.version;
 end;
@@ -1104,7 +1108,7 @@ create function public.staff_record_loan_payment(
 returns table (loan_id uuid, loan_status text, remaining_due_minor bigint, version bigint)
 language plpgsql volatile security definer set search_path = '' as $$
 declare actor_id uuid; loan_record public.loans%rowtype; treasury_id uuid; transaction_id uuid;
-  payment_id uuid; unapplied bigint; installment record; interest_remaining bigint; fee_remaining bigint;
+  payment_id uuid; unapplied bigint; payment_installment record; interest_remaining bigint; fee_remaining bigint;
   principal_remaining bigint; take_fee bigint; take_interest bigint; take_principal bigint;
   total_remaining bigint; next_status text; next_version bigint;
 begin
@@ -1144,7 +1148,7 @@ begin
     nullif(btrim(coalesce(p_payment_reference, '')), ''), actor_id, p_request_id
   ) returning id into payment_id;
   unapplied := p_amount_minor;
-  for installment in
+  for payment_installment in
     select scheduled.id, scheduled.principal_due_minor, scheduled.interest_due_minor, scheduled.fee_due_minor,
       scheduled.version, coalesce(paid.principal, 0)::bigint as principal_paid,
       coalesce(paid.interest, 0)::bigint as interest_paid, coalesce(paid.fee, 0)::bigint as fee_paid
@@ -1157,25 +1161,26 @@ begin
     order by scheduled.installment_number
   loop
     exit when unapplied = 0;
-    fee_remaining := installment.fee_due_minor - installment.fee_paid;
-    interest_remaining := installment.interest_due_minor - installment.interest_paid;
-    principal_remaining := installment.principal_due_minor - installment.principal_paid;
+    fee_remaining := payment_installment.fee_due_minor - payment_installment.fee_paid;
+    interest_remaining := payment_installment.interest_due_minor - payment_installment.interest_paid;
+    principal_remaining := payment_installment.principal_due_minor - payment_installment.principal_paid;
     take_fee := least(unapplied, fee_remaining); unapplied := unapplied - take_fee;
     take_interest := least(unapplied, interest_remaining); unapplied := unapplied - take_interest;
     take_principal := least(unapplied, principal_remaining); unapplied := unapplied - take_principal;
     insert into public.loan_payment_allocations (
       loan_payment_id, loan_installment_id, principal_minor, interest_minor, fee_minor
-    ) values (payment_id, installment.id, take_principal, take_interest, take_fee);
-    update public.loan_installments set status = case
-      when installment.principal_paid + take_principal = installment.principal_due_minor
-        and installment.interest_paid + take_interest = installment.interest_due_minor
-        and installment.fee_paid + take_fee = installment.fee_due_minor then 'paid'
-      else 'partially_paid' end, version = version + 1 where id = installment.id;
+    ) values (payment_id, payment_installment.id, take_principal, take_interest, take_fee);
+    update public.loan_installments as scheduled set status = case
+      when payment_installment.principal_paid + take_principal = payment_installment.principal_due_minor
+        and payment_installment.interest_paid + take_interest = payment_installment.interest_due_minor
+        and payment_installment.fee_paid + take_fee = payment_installment.fee_due_minor then 'paid'
+      else 'partially_paid' end, version = scheduled.version + 1
+    where scheduled.id = payment_installment.id;
   end loop;
   total_remaining := total_remaining - p_amount_minor;
   next_status := case when total_remaining = 0 then 'paid' else loan_record.status end;
-  update public.loans set status = next_status, version = version + 1
-  where id = loan_record.id returning loans.version into next_version;
+  update public.loans as loan set status = next_status, version = loan.version + 1
+  where loan.id = loan_record.id returning loan.version into next_version;
   insert into public.outbox_events (event_type, aggregate_type, aggregate_id, payload, deduplication_key)
   values ('finance.loan_payment_recorded', 'loan', loan_record.id,
     jsonb_build_object('public_reference', loan_record.public_reference, 'amount_minor', p_amount_minor,
@@ -1199,10 +1204,10 @@ begin
   if p_status not in ('active', 'defaulted', 'written_off') or loan_record.status = 'paid' then
     raise exception using errcode = '22023', message = 'loan_status_invalid';
   end if;
-  update public.loans set status = p_status,
+  update public.loans as loan set status = p_status,
     defaulted_at = case when p_status in ('defaulted', 'written_off') then statement_timestamp() else null end,
     default_reason = case when p_status in ('defaulted', 'written_off') then btrim(p_reason) else null end,
-    version = version + 1 where id = loan_record.id returning loans.version into loan_record.version;
+    version = loan.version + 1 where loan.id = loan_record.id returning loan.version into loan_record.version;
   return query select loan_record.id, p_status, loan_record.version;
 end;
 $$;

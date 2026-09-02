@@ -72,7 +72,7 @@ select lives_ok(format($test$
 $test$,current_setting('test.bank_account_id')),'hold reserves available funds');
 select throws_ok(format($test$
   select * from public.staff_transfer_funds(%L::uuid,%L::uuid,2800,current_date,
-    'Too much while held.',null,'Test hold enforcement.','ba300000-0000-4000-8000-000000000004')
+    'HOLD-OVERSPEND','Too much while held.','Test hold enforcement.','ba300000-0000-4000-8000-000000000004')
 $test$,current_setting('test.bank_account_id'),current_setting('test.treasury_id')),'23514','financial_insufficient_funds','holds prevent overspending');
 reset role;
 select set_config('test.hold_id',(select id::text from public.financial_account_holds where source_request_id='ba300000-0000-4000-8000-000000000003'),true);
