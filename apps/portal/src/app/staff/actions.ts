@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import {
-  readCreateCatalogueItemForm,
   readSetCatalogueStatusForm,
   readUpdateCatalogueItemForm,
 } from "@/lib/staff-catalogue-form";
@@ -86,41 +85,6 @@ export async function retryStaffAccessRequestAction() {
   if (!result.ok) redirect(destination("/staff/access/pending", "error", "request_failed"));
   if (result.data.state === "authorized") redirect("/staff/dashboard");
   redirect(`/staff/access/pending?state=${result.data.state}`);
-}
-
-export async function createCatalogueItemAction(formData: FormData) {
-  const parsed = readCreateCatalogueItemForm(formData);
-  if (!parsed.success) {
-    redirect(destination("/staff/items/new", "error", "invalid_input"));
-  }
-
-  const client = await verifiedClient();
-  if (!client) {
-    redirect("/staff/login");
-  }
-  const input = parsed.data;
-  const { data, error } = await client.rpc("staff_create_catalogue_item", {
-    p_item_code: input.itemCode,
-    p_slug: input.slug,
-    p_display_name: input.displayName,
-    p_description: input.description,
-    p_category_code: input.categoryCode,
-    p_unit_code: input.unitCode,
-    p_inventory_mode: input.inventoryMode,
-    p_internal_notes: input.internalNotes,
-    p_reason: input.reason,
-    p_request_id: crypto.randomUUID(),
-  });
-  if (error) {
-    redirect(mutationErrorPath("/staff/items/new", error));
-  }
-
-  const itemId = Array.isArray(data) ? data[0]?.id : null;
-  revalidatePath("/staff");
-  if (typeof itemId === "string") {
-    redirect(destination(`/staff/items/${itemId}/edit`, "notice", "created"));
-  }
-  redirect(destination("/staff", "notice", "created"));
 }
 
 export async function updateCatalogueItemAction(formData: FormData) {

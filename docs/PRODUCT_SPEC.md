@@ -92,8 +92,8 @@ The approved intermediated ordering model also permits a specifically authorized
 
 Authenticated staff receive a role-appropriate work queue rather than unrestricted table access. The console supports:
 
-- Rapid item onboarding that combines canonical data, supply policy, optional publication, optional explicit-schedule price, and permitted opening stock in one atomic command
-- Three-field ordinary inventory receipt entry with generated provenance defaults
+- Plain-language product onboarding in **Products** that combines canonical data, supply policy, and optional publication in one atomic command while generating stable identifiers and routine audit wording
+- Product-centered editing for internal details and public-shop presentation; normal stock and price work remains in **Stock & prices** and **Record activity**
 - No-code creation of categories, units, license classes, endorsements, availability language, and control profiles
 - Catalogue, price schedule, control profile, and publication management
 - Party, dealer, representative, and factor administration
@@ -294,7 +294,7 @@ Frontend code may display estimates for usability only when clearly labeled and 
 - A public business applicant chooses between new and renewal using ordinary links, then answers business name, Discord contact, trade categories, and purpose. Configured routine class and region selections are derived; exceptional endorsements are optional.
 - An Owner approves an ordinary new license request with one **Approve business** action. The application name and configured onboarding profile create the canonical business, current dealer authorization, and public license together; manual onboarding remains an exceptional Staff tool.
 - An order with several lines is presented as one compact item list. Status, quantity, price, and the next permitted action appear once per item; repeated progress diagrams, technical unit codes, database versions, and duplicated order-state labels stay out of the ordinary view.
-- A prepared ordinary item can be onboarded and an ordinary inventory receipt can be posted in approximately 30 seconds through the rapid-operations workspace.
+- A prepared ordinary product can be created in approximately 30 seconds through **Products**. Ordinary stock is then added on its **Stock & prices** row or recorded as a counted total in **Record activity**; Company setup never duplicates those tasks.
 - Work queues identify ownership, age, blocking reason, and next permitted actions.
 - The interface never presents raw Booleans, enum codes, or database identifiers when plain language is appropriate.
 - Routine forms never ask staff to choose a sales channel, price schedule, license reference, warehouse, ledger account, reservation record, or audit reference when the authoritative service can derive it.

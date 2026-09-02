@@ -1,7 +1,7 @@
 # East Empire Company Trade Registry — Complete User Guide
 
 Status: Production operator guide  
-Last revised and checked against the live portal: 2026-08-13
+Last revised: 2026-09-01
 Production portal: <https://eec-trade-registry-portal.vercel.app>  
 Public registry Sheet: <https://docs.google.com/spreadsheets/d/13bJeSAUF52cQnudC_l0JNOlKmcYY0wRWIq8OVqiEdrc/edit>  
 Institutional time zone: `America/New_York`  
@@ -13,15 +13,11 @@ This guide explains how to use the implemented East Empire Company trade registr
 
 ## Fastest routine administration
 
-Open `/staff/configuration` and use **Quick operations** for the two most common setup tasks.
+Use **Products** to add or edit something the Company trades. Adding a product asks only for its name, category, unit, supply workflow, and whether customers should see it. Stable codes, the public URL, and routine audit wording are generated automatically.
 
-To add a normal item, enter its name, category, unit, and supply workflow, then select **Create complete item**. The system can generate the item code, public URL slug, audit wording, and receipt reference. Open the optional section only when you need a starting price, opening quantity, reserve thresholds, or custom public wording. The item and supply policy are always created together; selected publication, price, and permitted opening stock either all commit or all roll back.
+Use **Stock & prices** to check quantities, add ordinary finished stock, and edit the normal selling or guaranteed buying price beside an item. Use **Record activity** to save aggregate player-material purchases or enter a physically counted stock total. These actions still post balanced immutable ledger records; no editable stock cell exists.
 
-To add ordinary stock, search for an item, enter the quantity, select its location, and choose **Add to inventory**. Source and audit text are optional because the portal can generate traceable defaults. This still creates a balanced immutable ledger transaction. It does not overwrite a stock cell.
-
-Player-sourced reserves such as configured keystone materials intentionally do not appear in the quick-receipt list. Receive those on the Economy desk against a registered supplier and current purchase offer. Serialized items use the Serialized assets desk. Those additional steps are evidence, not avoidable form friction.
-
-The same Configuration studio can add categories, units, license types, endorsements, availability wording, and control profiles without a code deployment. Public presentation and price can be replaced from each item card; previous effective versions remain in history.
+Use **Company setup** only when the registry needs a new reusable category, unit, license type, endorsement, availability message, or control profile. It is not a product, stock, or pricing desk.
 
 For a plain-language, roleplay-first explanation built around a public customer, licensed business, EEC agent, and warehouse handoff, start with the [Player and Discord Admin Handbook](PLAYER_ADMIN_HANDBOOK.md).
 
@@ -262,16 +258,16 @@ Those records can be created together where the quick workflow supports it, but 
 
 Use this for routine fungible goods such as a normal garment, tool, component, food item, or ordinary warehouse material.
 
-Open <https://eec-trade-registry-portal.vercel.app/staff/configuration> and find **Quick-add an item or material**.
+Open **Products** and select **Add product**.
 
 For the shortest safe setup:
 
-1. Enter **Item name**.
+1. Enter **Product name** and an optional short description.
 2. Select **Category**.
-3. Select **Unit**.
-4. Select **Supply workflow**.
-5. Leave **Publish to the public catalogue now** checked if the listing is ready.
-6. Select **Create complete item**.
+3. Select how it is measured.
+4. Choose how the Company normally gets it.
+5. Leave **Show it in the public shop** checked when customers should see it.
+6. Select **Add product**.
 
 The system can generate:
 
@@ -280,10 +276,9 @@ The system can generate:
 - A description based on the name
 - Default public purchase wording
 - A traceable audit reason
-- A receipt source reference if opening stock is entered
 - A unique request identifier that prevents retry duplication
 
-Use the generated values for ordinary work. Supply a custom code or slug only when staff have an approved naming convention that must be preserved.
+Use the generated values for ordinary work. Stock and prices are deliberately handled afterward in **Stock & prices**, where the product is already visible as one row.
 
 ### 7.3 How to choose the supply workflow
 
@@ -292,61 +287,25 @@ The supply workflow is a behavioral preset. It is not merely a public label.
 | Supply workflow | Use it when | Inventory type | Ordinary receipt allowed? | Important consequence |
 |---|---|---:|---:|---|
 | **Warehouse stocked** | EEC receives and holds ordinary quantities | Fungible | Yes | Stock exists only after a receipt posts |
-| **Player-sourced reserve** | EEC reserves must come from player suppliers | Fungible | No | Every accepted unit must name a supplier and current purchase offer through the Economy desk |
+| **Player-sourced reserve** | EEC reserves must come from player suppliers | Fungible | No | Record purchases in **Record activity**; an incidental seller name is not required |
 | **Made to order** | Demand may be accepted before goods are produced | Fungible | Yes | The order can wait for stock; selecting this does not create infinite physical stock |
 | **Limited release** | EEC wants an auditable finite release | Fungible | Yes | Scarcity comes from real receipts and reservations, not a typed stock number |
 | **Serialized unique item** | Each object needs its own identity and custody history | Serialized | No | Register individual assets on `/staff/assets`; never receive it as a generic quantity |
 
 If the wrong workflow is chosen, do not work around it with a misleading receipt. Stop and use the approved correction path. Supply behavior controls which later commands are legal.
 
-### 7.4 Optional quick-item fields, in plain language
+### 7.4 What happens when **Add product** succeeds
 
-Open **Optional price, opening stock, thresholds, and public wording** only when those values are already known.
-
-| Field | What the operator should enter | Practical rule |
-|---|---|---|
-| Description | Internal/default description of the good | Keep it factual; it becomes the public description when publishing through the quick form |
-| Item code | Stable staff and transaction reference | Leave blank for generated `ITM-####`; do not encode rules in the name |
-| Public URL slug | Human-readable catalogue URL segment | Leave blank unless an approved stable slug is required |
-| Control profile | Ordinary, restricted, unique, or another configured behavior | Choose based on review/custody needs, not lore or item name |
-| Availability wording | Public phrase such as normally available, reserve dependent, limited allocation, or made to order | This is communication, not a stock balance |
-| Public purchase requirements | What the public should do or possess | Explain the route clearly, such as contacting an authorized licensed business |
-| Public price schedule | The schedule under which the public number is published | A schedule is required if a price is entered |
-| Price | Whole Septims in the present zero-decimal `SEP` configuration | Blank means pending or unavailable, never free |
-| Opening location | Physical warehouse location receiving starting stock | Leave blank when there is no verified stock |
-| Opening quantity | Real quantity physically received at onboarding | Never use it to invent player-sourced reserves or serialized assets |
-| Receipt source | Shipment, count, donation, production batch, or approved source reference | Leave blank for a traceable generated onboarding reference |
-| Critical level | Point at which reserve pressure is critical | Must be no greater than minimum |
-| Minimum level | Lower operating boundary | Must be no greater than target |
-| Target level | Desired reserve position | Must be no greater than surplus |
-| Surplus level | Position above which stock is considered surplus | Use only after economic policy is approved |
-| Permit direct individual orders | Records whether a personal channel is permitted for this item | The current portal does not yet provide complete direct-customer order intake or automatically apply a premium |
-| Personal weekly limit | Configured intended cap for the personal channel | It is not a substitute for the still-unimplemented quota-consumption workflow |
-| Business bulk-review quantity | Quantity at which business demand should receive additional review | It records policy intent; staff still use the implemented order review path |
-| Audit note | Why this record is being created | A useful default is generated; add detail when the choice is exceptional |
-
-Thresholds must be ordered as:
-
-```text
-critical <= minimum <= target <= surplus
-```
-
-Any threshold may be left blank. Blank means no approved value has been configured.
-
-### 7.5 What happens when **Create complete item** succeeds
-
-One database transaction can create all selected parts:
+One database transaction creates the parts needed for the selected workflow:
 
 1. The canonical item.
 2. Its supply policy.
 3. Its public catalogue presentation when publication is selected.
-4. Its explicit price rule when a schedule and price are supplied.
-5. Its balanced opening-stock receipt when an allowed location and quantity are supplied.
-6. Audit evidence for each consequential part.
-7. An outbox event for projections and notifications.
-8. An idempotency receipt so a retry cannot create a second item.
+4. Audit evidence for each consequential part.
+5. An outbox event for projections and notifications.
+6. An idempotency receipt so a retry cannot create a second item.
 
-The operation is atomic. If the actor lacks one of the required permissions, a code is duplicated, a profile is invalid, a player-sourced item is given generic opening stock, or any other selected part fails, the entire onboarding rolls back.
+The operation is atomic. If the actor lacks a required permission or a configured choice is invalid, the entire onboarding rolls back.
 
 The button does **not**:
 
@@ -359,20 +318,28 @@ The button does **not**:
 - Create multiple serialized objects
 - Guarantee that a published price will be the final settled order price
 
+### 7.5 What to do next
+
+- To add ordinary finished stock, open **Stock & prices** and enter the amount beside the product.
+- To record a player-material purchase, open **Record activity → Bought materials**.
+- To enter a physical total, open **Record activity → Set a stock total**.
+- To set normal selling or buying prices, use the price cells in **Stock & prices**.
+- To change its public wording, open the product from **Products** and use **What customers see**.
+- To set rare reserve thresholds or bespoke rules, use the contextual specialist record only after policy is approved.
+
 ### 7.6 Worked setup: ordinary warehouse-stocked garment
 
 Example: add a new **Blue Evening Coat**.
 
-1. Open `/staff/configuration`.
+1. Open **Products → Add product**.
 2. Enter `Blue Evening Coat` as the item name.
 3. Select `Tailoring goods`.
 4. Select `Garment`.
-5. Select `Warehouse stocked`.
+5. Select **Keep it in stock**.
 6. Leave publication checked if the public description is ready.
-7. Open the optional section only if staff know the public price or have real starting inventory.
-8. Choose the ordinary configured control and the desired availability wording.
-9. If 10 coats are physically present, select the real receiving location and enter `10`. Otherwise leave opening stock blank.
-10. Select **Create complete item**.
+7. Select **Add product**.
+8. If 10 coats are physically present, open **Stock & prices** and enter `10` in the coat's **Add stock** cell.
+9. Set its normal selling price in the same row when approved.
 
 The item now exists once. If 10 were received, the ledger shows a balanced receipt. If no quantity was entered, stock remains zero even though the catalogue item exists.
 
@@ -381,17 +348,15 @@ The item now exists once. If 10 were received, the ledger shows a balanced recei
 Example: add **Moonstone Ore** as an economic floor material.
 
 1. Add a suitable category or unit first if the required option does not already exist.
-2. In **Quick-add an item or material**, enter `Moonstone Ore`.
+2. In **Products → Add product**, enter `Moonstone Ore`.
 3. Choose the raw-material category and material unit.
-4. Select **Player-sourced reserve**.
+4. Select **Buy it from players**.
 5. Configure reserve thresholds only after the economic policy owner approves them.
 6. Publish public wording if ready, but do **not** enter opening stock.
 7. Create the item.
-8. Open **Stock & prices** and select **Manage** on Moonstone Ore.
-9. Enter the approved **Company buying price**.
-10. Enter the first seller's name when the card asks for it.
-11. Record each inspected delivery by selecting the seller and entering quantity on that same card.
-12. Record payment evidence only after the Septims were actually paid through the approved server process.
+8. Open **Stock & prices** and enter the approved **Company pays** amount beside Moonstone Ore.
+9. Record each aggregate purchase in **Record activity → Bought materials** using item, quantity, and date. No seller name is required.
+10. Review the automatically tabulated spending and any unpriced purchases in **Money**.
 
 The material remains visible in Stock & prices, but the generic receipt is unavailable. The card uses the supplier-delivery command instead. This prevents an admin from quietly spawning the keystone reserve on the website.
 
@@ -535,21 +500,17 @@ A control profile does not by itself say “requires tailoring license” or “
 
 ### 7.18 Publish, unpublish, or change an item's public terms
 
-Scroll to **Edit publication and price** on `/staff/configuration`, then open the item card.
+Open **Products**, select the item, and find **What customers see**.
 
-1. Check or clear **Published publicly**.
+1. Check or clear **Show this product in the public shop**.
 2. Confirm the public name and description.
 3. Select the control and availability profiles.
 4. Write plain-language purchase requirements.
 5. Set a positive bulk minimum when one exists.
 6. Set the order increment, such as `1` garment or `10` material units.
-7. Choose a price action:
-   - **Keep current price** leaves the current price rule unchanged.
-   - **Set or replace price** closes the prior effective rule for the selected schedule and creates a new one.
-   - **Clear price** closes the current selected-schedule price without treating it as zero.
-8. Enter the price schedule and whole-Septim price when setting a price.
-9. Enter a useful audit note when changing commercial terms.
-10. Select **Save public terms**.
+7. Enter a useful audit note only when the commercial change needs explanation.
+8. Select **Save public listing**.
+9. Change the normal selling price separately in **Stock & prices**. Blank means unset, never free.
 
 The previous public presentation and price remain in effective-dated history. Existing submitted order snapshots are not silently rewritten by a later catalogue edit.
 

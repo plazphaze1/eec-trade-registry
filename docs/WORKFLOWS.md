@@ -57,8 +57,8 @@ Let specifically assigned catalogue staff maintain canonical item source records
 4. The owner opens `/staff/access`, compares the immutable Discord identifier with the known server person, and approves as Agent, denies, or blocks with a reason. Approval creates the actor and Agent assignment transactionally; appearing in the queue never grants authority.
 5. Each later database request independently validates the Supabase session and resolves an active actor profile, effective-dated role assignment, and required permission.
 6. The internal work queue is returned by a secured projection and includes staff-only catalogue fields needed for this task.
-7. Creating an item calls a secure command that creates one unpublished canonical record. It does not create publication, price, eligibility, inventory, or asset state.
-8. Editing an item supplies the expected record version. The command locks and rechecks the row so stale work cannot overwrite a concurrent change. When the item has a current public publication, the same ordinary form shows its customer-facing name and replaces that name in the same transaction when changed; the previous publication remains in effective-dated history.
+7. Creating a product starts from **Products** and calls the atomic quick-create command. Staff enter the recognizable name, optional description, category, unit, supply workflow, and whether it should appear publicly. Stable codes, slugs, supply policy, routine audit wording, and a permitted initial publication are derived and committed together.
+8. Editing a product supplies the expected record version. The command locks and rechecks the row so stale work cannot overwrite a concurrent change. The same product page contains a separate public-shop form whose effective-dated replacement preserves previous publication terms.
 9. Item code and public slug remain immutable after creation until a correction policy is approved.
 10. Archive and restore are explicit status commands with a mandatory reason. Archiving removes the item from current public projections without deleting publication, price, or audit history.
 11. Every accepted write records actor, authentication identity, permission and assignment, request/correlation ID, reason, previous state, new state, source surface, and timestamp.
@@ -73,7 +73,7 @@ Let specifically assigned catalogue staff maintain canonical item source records
 
 ### Deliberate exclusions
 
-- Backdated or scheduled publication; effective-now public creation, full-terms replacement, and withdrawal are implemented in Quick operations. The ordinary item editor can replace only the current customer-facing name while preserving the other effective terms.
+- Backdated or scheduled publication remains excluded. Effective-now public creation, full-terms replacement, and withdrawal are available on the product record.
 - Specialized private/dealer price precedence and approval; explicit active-schedule public price set/clear is implemented
 - Item-code or slug corrections
 - Existing reference-record rename/archive and role administration; new category, unit, availability, license-class, endorsement, and control-profile creation is implemented
@@ -91,27 +91,26 @@ Let specifically assigned catalogue staff maintain canonical item source records
 8. Opening **Manage** on a card keeps ordinary receipt, player purchase, base selling price, and guaranteed buying-price work on that item. Only serialized assets leave for their required individual-custody workflow.
 9. **Record activity → Bought materials** is the only ordinary aggregate-purchase entry. The legacy Buy materials URL redirects there. The advanced economy route remains an Owner-only system-record view and is not part of ordinary navigation.
 
-## 2.2 Rapid item onboarding and ordinary receipt
+## 2.2 Product onboarding and ordinary stock entry
 
 ### Quick item flow
 
-1. Authorized staff opens **Quick operations** and enters an item name, category, unit, and supply workflow.
+1. Authorized staff opens **Products → Add product** and enters an item name, optional description, category, unit, and plain-language supply workflow.
 2. The server validates the form but does not calculate business authority.
 3. One database command re-resolves catalogue and supply-policy permissions, creates a stable code and slug when omitted, and creates the canonical item plus supply policy.
 4. If selected, the same transaction re-resolves publication permission and creates the current public presentation.
-5. If a price is supplied, the command re-resolves pricing permission and stores it only on the explicitly selected configured schedule. Blank remains unset, never zero.
-6. If permitted opening quantity is supplied, the command re-resolves warehouse scope and posts the same balanced receipt used by the detailed Inventory desk.
-7. Audit, idempotency receipt, and outbox event commit with the item. Any failure rolls back every selected effect.
+5. Normal prices and stock are deliberately not requested during creation. Staff set them on the product's **Stock & prices** row only when they exist.
+6. Audit, idempotency receipt, and outbox event commit with the item. Any failure rolls back every selected effect.
 
-### Three-field receipt flow
+### Ordinary stock flow
 
-1. Staff searches by stable item code or display name, enters a positive quantity, and selects a receiving location.
-2. Optional source and audit text may be omitted; traceable request-based defaults are generated.
-3. Supabase resolves the item by code and rejects archived, serialized, player-sourced-only, or generic-receipt-disabled items.
-4. The existing warehouse-scoped receipt function creates the external-source and physical entries atomically.
-5. Retrying the request UUID returns the existing transaction rather than adding stock twice.
+1. For an ordinary finished good, staff enters the amount beside the product in **Stock & prices**. The default available location, source wording, audit wording, and request identifier are supplied by the server workflow.
+2. For a physical count, staff uses **Record activity → Set a stock total**, chooses item, total, and date, and Supabase posts only the difference.
+3. Player-sourced materials use **Record activity → Bought materials** so the effective buying rate and money status are recorded with the stock movement.
+4. Serialized goods route to unique-asset custody instead of accepting an aggregate quantity.
+5. The underlying receipt, reconciliation, and procurement functions remain permission-checked, balanced, audited, and idempotent.
 
-The approximately 30-second target applies to prepared ordinary work. Player-sourced delivery, restricted review, unique custody, reversals, and reconciliation retain their additional evidence and permission steps.
+The approximately 30-second target applies to prepared ordinary work. Restricted review, unique custody, reversals, and exceptional reconciliation retain their additional evidence and permission steps. Company setup contains reusable reference choices only and never acts as a duplicate stock or product desk.
 
 ## 3. Public license and dealer verification
 

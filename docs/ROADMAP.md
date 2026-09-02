@@ -103,6 +103,8 @@ ADR 0029 removes the final split in ordinary business onboarding. A configured l
 
 ADR 0031 removes the advanced dashboard catalogue that still made the console feel like two applications. Today now exposes only routine work, live exceptions, recent orders, and four compact Owner administration links. Specialist custody, compliance, pricing, document, and policy work remains searchable or contextual. The superseded Buy materials page redirects to **Record activity**, and unused launch actions and links are retired without deleting authoritative functions or history.
 
+ADR 0032 removes the remaining catch-all configuration page. **Products** owns product creation and public presentation, **Stock & prices** and **Record activity** own quantities and normal prices, and **Company setup** contains reusable reference choices only. The atomic onboarding, ledger, permission, and audit functions remain unchanged beneath the smaller interface.
+
 ### User outcome
 
 Authorized staff can maintain the master catalogue, prices, publication, and control metadata; public output changes from the same source record.

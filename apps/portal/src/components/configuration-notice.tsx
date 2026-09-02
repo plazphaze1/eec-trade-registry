@@ -1,9 +1,6 @@
 const notices: Record<string, string> = {
   control_created: "The control profile is ready to use.",
-  item_created: "The item, supply policy, public terms, optional price, and optional opening receipt were committed together.",
-  receipt_posted: "Inventory was added through one balanced, audited ledger transaction.",
   reference_created: "The configuration option is immediately available in staff forms.",
-  terms_saved: "The public presentation and selected price schedule were updated with effective-dated history.",
 };
 
 const errors: Record<string, string> = {

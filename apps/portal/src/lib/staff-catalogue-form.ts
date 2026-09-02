@@ -1,13 +1,5 @@
 import { z } from "zod";
 
-const machineCodeSchema = z
-  .string()
-  .trim()
-  .regex(/^[A-Z0-9][A-Z0-9_-]{1,31}$/);
-const slugSchema = z
-  .string()
-  .trim()
-  .regex(/^[a-z0-9][a-z0-9-]{1,79}$/);
 const referenceCodeSchema = z
   .string()
   .trim()
@@ -24,11 +16,6 @@ const mutableCatalogueFieldsSchema = z.object({
   reason: reasonSchema,
 });
 
-export const createCatalogueItemSchema = mutableCatalogueFieldsSchema.extend({
-  itemCode: machineCodeSchema,
-  slug: slugSchema,
-});
-
 export const updateCatalogueItemSchema = mutableCatalogueFieldsSchema.extend({
   itemId: z.guid(),
   expectedVersion: z.coerce.number().int().positive().safe(),
@@ -42,9 +29,6 @@ export const setCatalogueStatusSchema = z.object({
   reason: reasonSchema,
 });
 
-export type CreateCatalogueItemInput = z.infer<
-  typeof createCatalogueItemSchema
->;
 export type UpdateCatalogueItemInput = z.infer<
   typeof updateCatalogueItemSchema
 >;
@@ -55,20 +39,6 @@ export type SetCatalogueStatusInput = z.infer<
 function text(formData: FormData, name: string): string {
   const value = formData.get(name);
   return typeof value === "string" ? value : "";
-}
-
-export function readCreateCatalogueItemForm(formData: FormData) {
-  return createCatalogueItemSchema.safeParse({
-    itemCode: text(formData, "item_code").toUpperCase(),
-    slug: text(formData, "slug").toLowerCase(),
-    displayName: text(formData, "display_name"),
-    description: text(formData, "description"),
-    categoryCode: text(formData, "category_code"),
-    unitCode: text(formData, "unit_code"),
-    inventoryMode: text(formData, "inventory_mode"),
-    internalNotes: text(formData, "internal_notes"),
-    reason: text(formData, "reason"),
-  });
 }
 
 export function readUpdateCatalogueItemForm(formData: FormData) {

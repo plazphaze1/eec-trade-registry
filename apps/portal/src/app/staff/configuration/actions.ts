@@ -8,24 +8,44 @@ import {
   readControlProfileForm,
   readPublicTermsForm,
   readQuickItemForm,
-  readQuickReceiptForm,
 } from "@/lib/configuration-form";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
 const configurationPath = "/staff/configuration";
+const productCreatePath = "/staff/items/new";
 
-function destination(key: "error" | "notice", value: string) {
-  return `${configurationPath}?${new URLSearchParams({ [key]: value })}`;
+function destination(path: string, key: "error" | "notice", value: string) {
+  const [pathname, query = ""] = path.split("?", 2);
+  const parameters = new URLSearchParams(query);
+  parameters.set(key, value);
+  return `${pathname}?${parameters}`;
 }
 
-function mutationErrorPath(error: { code?: string; message: string }) {
+function mutationErrorPath(path: string, error: { code?: string; message: string }) {
   console.error(`[staff-configuration:mutation] ${error.code ?? "unknown"}`);
-  if (error.code === "42501" || error.code === "28000") return destination("error", "access_denied");
-  if (error.code === "23505") return destination("error", "duplicate");
-  if (error.code === "P0002") return destination("error", "not_found");
-  if (error.code === "40001" || error.message.includes("version_conflict")) return destination("error", "conflict");
-  if (["22023", "23514", "23P01"].includes(error.code ?? "")) return destination("error", "invalid_input");
-  return destination("error", "save_failed");
+  if (error.code === "42501" || error.code === "28000") return destination(path, "error", "access_denied");
+  if (error.code === "23505") return destination(path, "error", "duplicate");
+  if (error.code === "P0002") return destination(path, "error", "not_found");
+  if (error.code === "40001" || error.message.includes("version_conflict")) return destination(path, "error", "conflict");
+  if (["22023", "23514", "23P01"].includes(error.code ?? "")) return destination(path, "error", "invalid_input");
+  return destination(path, "error", "save_failed");
+}
+
+function generatedCode(displayName: string, suppliedCode: string) {
+  if (suppliedCode) return suppliedCode;
+  const readable = displayName
+    .toLocaleLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 50);
+  return readable || `option-${crypto.randomUUID().slice(0, 8)}`;
+}
+
+function itemEditPath(formData: FormData) {
+  const itemId = formData.get("item_id");
+  return typeof itemId === "string" && /^[0-9a-f-]{36}$/i.test(itemId)
+    ? `/staff/items/${itemId}/edit`
+    : "/staff";
 }
 
 async function verifiedClient() {
@@ -46,7 +66,7 @@ function refreshConfiguration() {
 
 export async function quickCreateItemAction(formData: FormData) {
   const parsed = readQuickItemForm(formData);
-  if (!parsed.success) redirect(destination("error", "invalid_input"));
+  if (!parsed.success) redirect(destination(productCreatePath, "error", "invalid_input"));
   const client = await verifiedClient();
   if (!client) redirect("/staff/login");
   const input = parsed.data;
@@ -78,39 +98,29 @@ export async function quickCreateItemAction(formData: FormData) {
     p_target_level: input.targetLevel,
     p_unit_code: input.unitCode,
   });
-  if (error) redirect(mutationErrorPath(error));
+  if (error) redirect(mutationErrorPath(productCreatePath, error));
   refreshConfiguration();
-  redirect(destination("notice", "item_created"));
-}
-
-export async function quickReceiptAction(formData: FormData) {
-  const parsed = readQuickReceiptForm(formData);
-  if (!parsed.success) redirect(destination("error", "invalid_input"));
-  const client = await verifiedClient();
-  if (!client) redirect("/staff/login");
-  const input = parsed.data;
-  const { error } = await client.rpc("staff_quick_post_inventory_receipt", {
-    p_item_code: input.itemCode,
-    p_quantity: input.quantity,
-    p_reason: input.reason,
-    p_request_id: crypto.randomUUID(),
-    p_source_reference: input.sourceReference,
-    p_stock_location_id: input.stockLocationId,
-  });
-  if (error) redirect(mutationErrorPath(error));
-  refreshConfiguration();
-  redirect(destination("notice", "receipt_posted"));
+  redirect(destination("/staff", "notice", "product_created"));
 }
 
 export async function createConfigurationReferenceAction(formData: FormData) {
+  const kind = formData.get("kind");
+  const viewByKind: Record<string, string> = {
+    availability_profile: "advanced",
+    endorsement: "endorsements",
+    item_category: "categories",
+    license_class: "licenses",
+    unit: "units",
+  };
+  const returnPath = `${configurationPath}?view=${viewByKind[String(kind)] ?? "categories"}`;
   const parsed = readConfigurationReferenceForm(formData);
-  if (!parsed.success) redirect(destination("error", "invalid_input"));
+  if (!parsed.success) redirect(destination(returnPath, "error", "invalid_input"));
   const client = await verifiedClient();
   if (!client) redirect("/staff/login");
   const input = parsed.data;
   const reason = input.reason || `Create configured ${input.kind.replaceAll("_", " ")} ${input.displayName}.`;
   const { error } = await client.rpc("staff_create_configuration_reference", {
-    p_code: input.code,
+    p_code: generatedCode(input.displayName, input.code),
     p_description: input.description,
     p_display_name: input.displayName,
     p_kind: input.kind,
@@ -121,20 +131,21 @@ export async function createConfigurationReferenceAction(formData: FormData) {
     p_sort_order: input.sortOrder,
     p_symbol: input.symbol,
   });
-  if (error) redirect(mutationErrorPath(error));
+  if (error) redirect(mutationErrorPath(returnPath, error));
   refreshConfiguration();
-  redirect(destination("notice", "reference_created"));
+  redirect(destination(returnPath, "notice", "reference_created"));
 }
 
 export async function createControlProfileAction(formData: FormData) {
+  const returnPath = `${configurationPath}?view=advanced`;
   const parsed = readControlProfileForm(formData);
-  if (!parsed.success) redirect(destination("error", "invalid_input"));
+  if (!parsed.success) redirect(destination(returnPath, "error", "invalid_input"));
   const client = await verifiedClient();
   if (!client) redirect("/staff/login");
   const input = parsed.data;
   const reason = input.reason || `Create configured control profile ${input.displayName}.`;
   const { error } = await client.rpc("staff_create_control_profile", {
-    p_code: input.code,
+    p_code: generatedCode(input.displayName, input.code),
     p_display_name: input.displayName,
     p_public_description: input.publicDescription,
     p_reason: reason,
@@ -143,14 +154,15 @@ export async function createControlProfileAction(formData: FormData) {
     p_requires_staff_review: input.requiresStaffReview,
     p_requires_transaction_approval: input.requiresTransactionApproval,
   });
-  if (error) redirect(mutationErrorPath(error));
+  if (error) redirect(mutationErrorPath(returnPath, error));
   refreshConfiguration();
-  redirect(destination("notice", "control_created"));
+  redirect(destination(returnPath, "notice", "control_created"));
 }
 
 export async function setItemPublicTermsAction(formData: FormData) {
+  const returnPath = itemEditPath(formData);
   const parsed = readPublicTermsForm(formData);
-  if (!parsed.success) redirect(destination("error", "invalid_input"));
+  if (!parsed.success) redirect(destination(returnPath, "error", "invalid_input"));
   const client = await verifiedClient();
   if (!client) redirect("/staff/login");
   const input = parsed.data;
@@ -171,7 +183,7 @@ export async function setItemPublicTermsAction(formData: FormData) {
     p_request_id: crypto.randomUUID(),
     p_requirement_summary: input.requirementSummary,
   });
-  if (error) redirect(mutationErrorPath(error));
+  if (error) redirect(mutationErrorPath(returnPath, error));
   refreshConfiguration();
-  redirect(destination("notice", "terms_saved"));
+  redirect(destination(returnPath, "notice", "listing_saved"));
 }

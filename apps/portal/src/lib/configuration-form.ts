@@ -18,6 +18,10 @@ const optionalMoney = z.preprocess(
   z.coerce.number().int().nonnegative().safe().nullable(),
 );
 const reason = optionalText(500);
+const optionalConfigurationCode = z.string().trim().max(50).refine(
+  (value) => !value || /^[a-z0-9][a-z0-9_-]{0,49}$/.test(value),
+  "Use lowercase letters, numbers, dashes, or underscores.",
+);
 
 const quickItemSchema = z.object({
   availabilityProfileCode: z.string().trim().min(1).max(50),
@@ -88,25 +92,9 @@ export function readQuickItemForm(formData: FormData) {
   });
 }
 
-export function readQuickReceiptForm(formData: FormData) {
-  return z.object({
-    itemCode: z.string().trim().min(2).max(32),
-    quantity: z.coerce.number().positive(),
-    reason,
-    sourceReference: optionalText(200),
-    stockLocationId: z.guid(),
-  }).safeParse({
-    itemCode: formData.get("item_code"),
-    quantity: formData.get("quantity"),
-    reason: formData.get("reason") ?? "",
-    sourceReference: formData.get("source_reference") ?? "",
-    stockLocationId: formData.get("stock_location_id"),
-  });
-}
-
 export function readConfigurationReferenceForm(formData: FormData) {
   return z.object({
-    code: z.string().trim().regex(/^[a-z0-9][a-z0-9_-]{0,49}$/),
+    code: optionalConfigurationCode,
     description: optionalText(2000),
     displayName: z.string().trim().min(1).max(200),
     kind: z.enum(["item_category", "unit", "license_class", "endorsement", "availability_profile"]),
@@ -116,7 +104,7 @@ export function readConfigurationReferenceForm(formData: FormData) {
     sortOrder: z.coerce.number().int().safe(),
     symbol: optionalText(30),
   }).safeParse({
-    code: formData.get("code"),
+    code: formData.get("code") ?? "",
     description: formData.get("description") ?? "",
     displayName: formData.get("display_name"),
     kind: formData.get("kind"),
@@ -130,7 +118,7 @@ export function readConfigurationReferenceForm(formData: FormData) {
 
 export function readControlProfileForm(formData: FormData) {
   return z.object({
-    code: z.string().trim().regex(/^[a-z0-9][a-z0-9_-]{0,49}$/),
+    code: optionalConfigurationCode,
     displayName: z.string().trim().min(1).max(200),
     publicDescription: z.string().trim().min(1).max(2000),
     reason,
@@ -138,7 +126,7 @@ export function readControlProfileForm(formData: FormData) {
     requiresStaffReview: z.boolean(),
     requiresTransactionApproval: z.boolean(),
   }).safeParse({
-    code: formData.get("code"),
+    code: formData.get("code") ?? "",
     displayName: formData.get("display_name"),
     publicDescription: formData.get("public_description"),
     reason: formData.get("reason") ?? "",

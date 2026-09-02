@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  createCatalogueItemSchema,
   setCatalogueStatusSchema,
   updateCatalogueItemSchema,
 } from "@/lib/staff-catalogue-form";
@@ -17,37 +16,6 @@ const validMutableFields = {
 };
 
 describe("staff catalogue form schemas", () => {
-  it("accepts a valid canonical item draft", () => {
-    expect(
-      createCatalogueItemSchema.safeParse({
-        ...validMutableFields,
-        itemCode: "EQ-CRATE-001",
-        slug: "harbor-crate",
-      }).success,
-    ).toBe(true);
-  });
-
-  it("rejects unstable item codes and slugs", () => {
-    expect(
-      createCatalogueItemSchema.safeParse({
-        ...validMutableFields,
-        itemCode: "contains spaces",
-        slug: "Contains Capitals",
-      }).success,
-    ).toBe(false);
-  });
-
-  it("requires an explicit audit reason", () => {
-    expect(
-      createCatalogueItemSchema.safeParse({
-        ...validMutableFields,
-        itemCode: "EQ-CRATE-001",
-        slug: "harbor-crate",
-        reason: "",
-      }).success,
-    ).toBe(false);
-  });
-
   it("requires a positive concurrency version for updates", () => {
     expect(
       updateCatalogueItemSchema.safeParse({

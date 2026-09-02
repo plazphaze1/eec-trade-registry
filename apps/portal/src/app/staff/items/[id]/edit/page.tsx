@@ -2,9 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { setCatalogueItemStatusAction } from "@/app/staff/actions";
+import { ItemPublicListingForm } from "@/components/item-public-listing-form";
 import { StaffAccessDenied } from "@/components/staff-access-denied";
 import { StaffItemForm } from "@/components/staff-item-form";
 import { StaffNotice } from "@/components/staff-notice";
+import { getStaffConfigurationWorkspace } from "@/lib/configuration";
 import { readPublicSupabaseEnvironment } from "@/lib/env";
 import { requireStaffSession } from "@/lib/staff-auth";
 import {
@@ -33,14 +35,16 @@ export default async function EditStaffCatalogueItemPage({
     );
   }
   const { client } = await requireStaffSession();
-  const [itemResult, referenceResult] = await Promise.all([
+  const [itemResult, referenceResult, configurationResult] = await Promise.all([
     getStaffCatalogueItem(client, id),
     getStaffCatalogueReferenceData(client),
+    getStaffConfigurationWorkspace(client),
   ]);
 
   if (
     (!itemResult.ok && itemResult.code === "access_denied") ||
-    (!referenceResult.ok && referenceResult.code === "access_denied")
+    (!referenceResult.ok && referenceResult.code === "access_denied") ||
+    (!configurationResult.ok && configurationResult.code === "access_denied")
   ) {
     return (
       <main className="staff-main">
@@ -48,7 +52,7 @@ export default async function EditStaffCatalogueItemPage({
       </main>
     );
   }
-  if (!itemResult.ok || !referenceResult.ok) {
+  if (!itemResult.ok || !referenceResult.ok || !configurationResult.ok) {
     return (
       <main className="staff-main">
         <section className="notice-panel">
@@ -63,25 +67,24 @@ export default async function EditStaffCatalogueItemPage({
   }
 
   const item = itemResult.data;
+  const configuredItem = configurationResult.data.items.find((entry) => entry.id === item.id);
+  if (!configuredItem) {
+    return <main className="staff-main"><section className="notice-panel"><h1>The product settings could not be loaded</h1><p>No authoritative data was changed.</p></section></main>;
+  }
   const nextStatus = item.status === "active" ? "archived" : "active";
 
   return (
     <main className="staff-main staff-editor-main">
-      <Link className="back-link" href="/staff">
-        ← Return to work queue
-      </Link>
-      <header className="staff-editor-header">
-        <p className="eyebrow">Canonical record · {item.item_code}</p>
+      <Link className="back-link" href="/staff">← Back to Products</Link>
+      <header className="staff-editor-header product-editor-header">
+        <p className="eyebrow">Product · {item.item_code}</p>
         <h1>{item.display_name}</h1>
-        <p>
-          Change the item and its public catalogue name in one place. Public
-          price and trade terms remain separately effective-dated. Concurrent
-          changes are rejected by record version.
-        </p>
+        <p>Update the product itself or change what customers see in the public shop.</p>
       </header>
 
       <StaffNotice error={messages.error} notice={messages.notice} />
       <StaffItemForm item={item} references={referenceResult.data} />
+      <ItemPublicListingForm item={configuredItem} workspace={configurationResult.data} />
 
       <section className="staff-danger-zone">
         <div>

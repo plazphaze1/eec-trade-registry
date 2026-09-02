@@ -70,7 +70,7 @@ function MoneyField({
 
 function SalePriceCell({ item }: { item: StockItem }) {
   if (!item.salePrice) {
-    return <div className="stock-sheet-cell-message"><span>Not published</span><Link href="/staff/configuration">Publish</Link></div>;
+    return <div className="stock-sheet-cell-message"><span>Not published</span><Link href={`/staff/items/${item.id}/edit`}>Publish</Link></div>;
   }
   if (!item.salePrice.canEdit) {
     return <span className="stock-sheet-readonly-value">{money(item.salePrice.amount, item.salePrice.currencyCode)}</span>;
