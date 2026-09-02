@@ -345,7 +345,7 @@ Initial measures, subject to product-owner approval:
 ## 11. Out of scope for the initial platform
 
 - A general-purpose retail point-of-sale system
-- Full accounting, banking, payroll, or tax ledgers
+- Real-world banking, payment processing, payroll, tax, securities, or currency exchange
 - Discord or Google Sheets as an administrative database
 - Automatic gameplay enforcement outside supported integrations
 - Hard-coded lore, calendar names, currency names, jurisdictions, ranks, or commodity taxonomies
@@ -366,6 +366,12 @@ These are working assumptions for design, not final institutional policy:
 8. Public Sheets and Discord may lag briefly and will show a generated-at time when feasible.
 9. Existing spreadsheet data will be imported only after validation, normalization, and explicit field mapping.
 10. Historical corrections use reversals or superseding records rather than destructive edits.
+
+## 12.2 Fictional-currency banking baseline
+
+ADR 0033 approves a Supabase-authoritative Septim account and lending system for server roleplay. It covers Company Treasury, business and personal accounts, deposits, withdrawals, transfers, holds, freezes, statements, order invoices and payments, automatic recorded expenditure, loan products, disbursement, installment schedules, repayments, default, and write-off evidence.
+
+The product must remain usable at large account counts: searchable paginated registers, bounded overview payloads, exact account references, and object-centered account/loan pages are requirements. Browser code never calculates an authoritative balance, receivable, available amount, or loan allocation. Real-world financial services remain outside the product boundary.
 
 ## 12.1 Approved operating baseline
 

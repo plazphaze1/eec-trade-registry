@@ -799,6 +799,19 @@ Open `/staff/economy`.
 
 Do not use a supplier reference as a dealer reference, license number, or login. Those identifiers prove different relationships.
 
+## 28. Business money and Company banking
+
+An authorized business signs into the same Business account with its license number and private access code, then opens **Money**. No email is required. The business sees only its own account, bills, loans, and recent money activity.
+
+- The `EEC-ACC-*` number identifies where Septims are recorded. It is not the license number.
+- An order records what the business wants. An invoice records what it owes. Payment is the separate event that actually moves Septims.
+- The business can pay its invoice from its account or send Septims to another exact account number.
+- A hold means some of the balance is temporarily unavailable; it does not mean the money vanished.
+- A frozen account keeps its balance and statement but cannot send money until an authorized Owner reactivates it.
+- A loan places principal in the borrower account and creates visible scheduled payments. Repayment moves the money back to Company Treasury.
+
+For an Agent, all ordinary money work starts at **Today → Money**. Search Accounts instead of scrolling. Open the exact account, invoice, or loan to work on it. Never edit a Sheet total or type a replacement balance.
+
 <!-- FEATURE_STATUS:START -->
 ## Current feature status
 
@@ -813,7 +826,7 @@ This table is generated from the same manifest used by the application. Do not e
 | Staff-assisted and direct order entry | Live | `/staff/orders/new` |
 | Ledger inventory and reservations | Live | `/staff/inventory` |
 | Keystone material procurement | Live | `/staff/activity` |
-| Procurement money summary | Live | `/staff/money` |
+| Treasury, accounts, invoices, and loans | Live | `/staff/money` |
 | Unique-asset fulfillment | Live | `/staff/assets/fulfillment` |
 | Consignment settlement | Live | `/staff/consignments/finance` |
 | Official document generation | Live | `/staff/documents/new` |

@@ -1500,3 +1500,53 @@ The system does not infer guilt or issue sanctions from a Discord message. “Au
 4. The PDF footer shows document reference, source type/version, and SHA-256 checksum.
 
 Editing a PDF or losing a downloaded copy does not alter Supabase. Generate a new snapshot only after the source record has a new version; never edit an old official snapshot.
+
+## 31. Complete Septim banking guide
+
+The site operates an in-server fictional-currency ledger. It is not connected to real money. Supabase calculates every balance from balanced immutable entries.
+
+### 31.1 Business account access
+
+When an Owner activates portal access for an authorized licensed business, the ordinary business bank account is created automatically. The representative signs in with the existing license-number/private-code business login and opens **Money**. They can see only represented businesses, their account numbers, their invoices, their loans, and their own statement entries.
+
+The business can select **Send Septims**, enter another exact `EEC-ACC-*` recipient number, amount, and purpose. It can also pay its own invoice from an active matching account. Every request rechecks current dealer authority and representation; expired or revoked authority fails closed.
+
+### 31.2 Staff account register
+
+Open `/staff/money?view=accounts`. Search by person, business, or account number. Results are paginated so a registry with thousands of accounts does not load everything at once. Select an account name to open its object page.
+
+The account page shows:
+
+- Ledger balance and available balance
+- Account status
+- Holds and release actions
+- Linked loans
+- The newest 100 signed statement entries with running balance
+- Freeze, reactivate, or close controls when permitted
+
+An opening amount, deposit, withdrawal, or transfer always creates a transaction. It never edits a balance field.
+
+### 31.3 Order invoice and payment
+
+An approved order with fully configured prices appears under **Invoices → Orders without an invoice**. Selecting **Issue invoice** freezes the amount due. Record one or more payments until the balance is zero. Paying from an internal account moves money from that account to Company Treasury. An approved external payment uses the hidden clearing account and retains the supplied receipt reference.
+
+### 31.4 Purchases and consignment money
+
+A priced aggregate material purchase posts Treasury expenditure in the same transaction as its accepted stock activity. A named delivery posts expenditure when its settlement becomes paid. A paid consignment settlement posts the owner amount from Treasury. Unpriced purchases remain visibly unpriced and never reduce Treasury by a guessed value.
+
+### 31.5 Lending
+
+Owner first saves reusable loan terms: rate, weekly/monthly frequency, term and principal limits, grace period, and optional fee. **New loan** selects the borrower account, amount, dates, payment count, and purpose. Approval atomically disburses principal from Treasury and creates the installment schedule.
+
+Open the loan to see principal, interest, fees, paid portions, remaining balance, due dates, past-due installments, and payment history. Repayment withdraws from the borrower account and deposits Treasury, applying the amount to the oldest fee, interest, and principal. Default or write-off preserves all evidence and does not erase the amount or transactions.
+
+### 31.6 Meaning of the main numbers
+
+- **Treasury balance:** signed total of every entry in the Company Treasury account.
+- **Available:** ledger balance minus live holds.
+- **Customers owe:** unpaid invoice totals; not cash.
+- **We owe suppliers:** accepted named deliveries still awaiting recorded settlement.
+- **Loan principal out:** unpaid principal on active/defaulted loans.
+- **Money in/out 30 days:** actual signed Treasury entries in the rolling period.
+
+Sheets, Discord, PDFs, and copied statements remain projections. Editing them never changes money.

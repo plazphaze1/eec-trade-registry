@@ -13,6 +13,7 @@ import {
 import { OrderNotice } from "@/components/order-notice";
 import { StaffAccessDenied } from "@/components/staff-access-denied";
 import { UiIcon } from "@/components/ui-icon";
+import { getStaffOrderFinance } from "@/lib/banking";
 import { getDefaultLocale } from "@/lib/env";
 import { getStaffFulfillmentWorkspace } from "@/lib/fulfillment";
 import { getStaffInventoryWorkspace } from "@/lib/inventory";
@@ -51,10 +52,11 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
   const [{ id }, parameters] = await Promise.all([params, searchParams]);
   if (!z.guid().safeParse(id).success) notFound();
   const { client } = await requireStaffSession();
-  const [result, inventoryResult, fulfillmentResult] = await Promise.all([
+  const [result, inventoryResult, fulfillmentResult, financeResult] = await Promise.all([
     getStaffOrder(client, id),
     getStaffInventoryWorkspace(client),
     getStaffFulfillmentWorkspace(client),
+    getStaffOrderFinance(client, id),
   ]);
   if (!result.ok && result.code === "access_denied") {
     return <main className="staff-editor-main staff-main"><StaffAccessDenied /></main>;
@@ -66,6 +68,7 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
   const order = result.data;
   const inventory = inventoryResult.ok ? inventoryResult.data : null;
   const fulfillment = fulfillmentResult.ok ? fulfillmentResult.data : null;
+  const invoice = financeResult.ok ? financeResult.data : null;
   const locale = getDefaultLocale();
   const terminal = ["cancelled", "denied", "fulfilled"].includes(order.status);
   const itemsNeedingAction = order.lines.filter((line) => line.status === "review_required").length;
@@ -84,6 +87,14 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
       </header>
 
       <OrderNotice error={parameters.error} notice={parameters.notice} />
+
+      <section className="order-finance-strip">
+        <div>
+          <p className="eyebrow">Money</p>
+          {invoice ? <><h2>{invoice.status === "paid" ? "Paid in full" : `${invoice.balance_due_minor} ${invoice.currency_code} due`}</h2><p>{invoice.public_reference} · {invoice.paid_amount_minor} of {invoice.total_amount_minor} {invoice.currency_code} paid</p></> : <><h2>No invoice yet</h2><p>Once approved items have prices, Money can turn this order into an invoice.</p></>}
+        </div>
+        <Link className="button button-secondary" href="/staff/money?view=invoices">{invoice ? "Open invoice" : "Open invoicing"}</Link>
+      </section>
 
       <section className="order-detail-lines">
         <header className="order-items-heading"><div><h2>{order.lines.length} {order.lines.length === 1 ? "item" : "items"}</h2><p>{itemsNeedingAction ? `${itemsNeedingAction} waiting for you` : "No item needs an approval decision"}</p></div></header>

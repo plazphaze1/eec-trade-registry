@@ -153,6 +153,38 @@ Use **License requests** for public requests:
 
 A pending application is never a valid license. Approval must finish the issuance or renewal transaction.
 
+## Money, accounts, and loans
+
+Open **Money** for everything that changes Septim records. It has five simple tabs:
+
+- **Overview:** Treasury, money in/out, customer debt, supplier debt, loan principal, and urgent overdue work.
+- **Accounts:** search thousands of people or businesses by name or `EEC-ACC-*` account number. Open one account for its statement, holds, status, and loans.
+- **Invoices:** turn an approved priced order into a bill and record partial or full payment.
+- **Move money:** deposit, withdraw, or transfer. Use this only when the in-server money event actually happened.
+- **Loans:** define reusable terms, approve a loan, disburse principal, and record repayments.
+
+### Ordinary sale
+
+1. Finish price review on the order.
+2. Open **Money → Invoices** and choose **Issue invoice**.
+3. When the business pays, record the payment from its account or enter the external receipt reference.
+4. The invoice and Treasury change together. A partly paid invoice stays open for the remaining amount.
+
+An order is not money by itself. It becomes an amount owed only after invoicing and becomes Treasury money only after payment.
+
+### Account protection
+
+Open the account from **Money → Accounts**. **Place a hold** reserves some funds without changing the statement balance. **Freeze** blocks movement while preserving every record. Release the hold or reactivate the account only with a clear reason. Closing is rejected while money, holds, or active loans remain.
+
+### Loan
+
+1. Create **Loan terms** once for a reusable rate and payment frequency.
+2. Choose **New loan**, borrower account, principal, number of payments, dates, and purpose.
+3. Approval immediately moves principal from Treasury to the borrower and creates the schedule.
+4. Open the loan for its full installment table. A repayment moves real funds back to Treasury and applies them to oldest fees, interest, then principal.
+
+Never type a replacement balance. Never record payment because someone merely promised to pay. Corrections must use the authorized correction path; invoice and loan payments cannot use the generic reversal button because their allocations must change with the money.
+
 The public form deliberately asks only for the business name, Discord contact, ordinary trade categories, and a short description. The standard class and region are configured automatically. Unusual bulk, consignment, controlled, or serialized authority is available under **special permissions** rather than confronting every applicant.
 
 ## Products

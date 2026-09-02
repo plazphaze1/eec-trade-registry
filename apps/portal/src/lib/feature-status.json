@@ -6,7 +6,7 @@
   "staffAssistedOrderEntry": { "label": "Staff-assisted and direct order entry", "status": "live", "route": "/staff/orders/new" },
   "inventoryReservations": { "label": "Ledger inventory and reservations", "status": "live", "route": "/staff/inventory" },
   "keystoneProcurement": { "label": "Keystone material procurement", "status": "live", "route": "/staff/activity" },
-  "procurementCashbook": { "label": "Procurement money summary", "status": "live", "route": "/staff/money" },
+  "septimBanking": { "label": "Treasury, accounts, invoices, and loans", "status": "live", "route": "/staff/money" },
   "uniqueAssetFulfillment": { "label": "Unique-asset fulfillment", "status": "live", "route": "/staff/assets/fulfillment" },
   "consignmentFinance": { "label": "Consignment settlement", "status": "live", "route": "/staff/consignments/finance" },
   "generatedDocuments": { "label": "Official document generation", "status": "live", "route": "/staff/documents/new" },
