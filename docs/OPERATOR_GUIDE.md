@@ -33,7 +33,7 @@ The Today page has four routine starting points:
 - **Record an order**
 - **Record activity**
 - **Review applications**
-- **Money**
+- **Company books**
 
 Below them, **Needs attention** shows only real work: pending applications, orders awaiting review or stock, low reserves, unpaid purchases, access requests, or failed projections. Zero-value panels are omitted.
 
@@ -119,7 +119,7 @@ Use **Record activity → Bought materials** when the Company buys naturally pro
 3. Confirm the date.
 4. Select **Save purchase**.
 
-No seller name is required for ordinary aggregate buying. If a buying rate was active on that date, Supabase applies it and updates **Money** automatically. If no rate existed, stock still updates and the entry is clearly marked **Unpriced**; the site never invents a price.
+No seller name is required for ordinary aggregate buying. If a buying rate was active on that date, Supabase applies it and updates **Company books** automatically. If no rate existed, stock still updates and the entry is clearly marked **Unpriced**; the site never invents a price.
 
 Set or change the normal Company buying rate directly in **Stock & prices**. Earlier purchases keep the rate recorded when they occurred. Named suppliers and separate payment evidence remain available only in the advanced material record for exceptional purchases that genuinely require counterparty evidence.
 
@@ -153,21 +153,19 @@ Use **License requests** for public requests:
 
 A pending application is never a valid license. Approval must finish the issuance or renewal transaction.
 
-## Money, accounts, and loans
+## Company books and Bank
 
-Open **Money** for everything that changes Septim records. It has six simple tabs:
+There is one authoritative Septim ledger with two simple staff workspaces:
 
-- **Overview:** Treasury, money in/out, customer debt, supplier debt, loan principal, and urgent overdue work.
-- **Accounts:** search thousands of people or businesses by name or `EEC-ACC-*` account number. Open one account for its statement, holds, status, and loans.
-- **Invoices:** turn an approved priced order into a bill and record partial or full payment.
-- **Move money:** deposit, withdraw, or transfer. Use this only when the in-server money event actually happened.
-- **Loans:** define reusable terms, approve a loan, disburse principal, and record repayments.
-- **Controls:** correct the latest invoice or loan payment, compare counted balances, assess due late fees, and close finished bookkeeping dates.
+- **Company books:** Treasury, cash infusions, customer invoices, supplier spending, the Company journal, reconciliation, and closing.
+- **Bank:** customer accounts, deposits, withdrawals, transfers, statements, holds, and loans.
+
+To add owner funding or starting cash, open **Company books**, enter the amount and date under **Add cash to Treasury**, optionally name its source, and press **Add cash**. Do not record it as a sale. The server chooses Treasury and balances the entry automatically.
 
 ### Ordinary sale
 
 1. Finish price review on the order.
-2. Open **Money → Invoices** and choose **Issue invoice**.
+2. Open **Company books → Sales** and choose **Issue invoice**.
 3. When the business pays, record the payment from its account or enter the external receipt reference.
 4. The invoice and Treasury change together. A partly paid invoice stays open for the remaining amount.
 
@@ -175,7 +173,7 @@ An order is not money by itself. It becomes an amount owed only after invoicing 
 
 ### Account protection
 
-Open the account from **Money → Accounts**. **Place a hold** reserves some funds without changing the statement balance. **Freeze** blocks movement while preserving every record. Release the hold or reactivate the account only with a clear reason. Closing is rejected while money, holds, or active loans remain.
+Open the account from **Bank → Accounts**. **Place a hold** reserves some funds without changing the statement balance. **Freeze** blocks movement while preserving every record. Release the hold or reactivate the account only with a clear reason. Closing is rejected while money, holds, or active loans remain.
 
 ### Loan
 
@@ -189,7 +187,7 @@ Never type a replacement balance. Never record payment because someone merely pr
 ### Correct, reconcile, and close
 
 - To fix a duplicate or wrong payment, find its invoice or loan, expand **Undo latest payment**, and state why. The button reverses the latest payment only; it does not delete it.
-- To check a balance, open **Money → Controls → Compare an account**. Enter what the independent count says. A mismatch stays visible for investigation and does not rewrite the account.
+- To check a balance, open **Company books → Controls → Compare an account**. Enter what the independent count says. A mismatch stays visible for investigation and does not rewrite the account.
 - **Run today's late fees** applies each loan product's configured fee once to installments whose grace period has passed.
 - Close only dates whose work is finished. A closed range refuses new backdated money. If an authorized correction is necessary, reopen the range with the reason, post the correction, check it, and close the appropriate range again.
 

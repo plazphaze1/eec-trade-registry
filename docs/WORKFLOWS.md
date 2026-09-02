@@ -81,7 +81,7 @@ Let specifically assigned catalogue staff maintain canonical item source records
 
 ## 2.1.1 Simplified staff shell
 
-1. The primary navigation exposes only Today, Create an order, Orders, Record activity, Stock & prices, Money, License requests, Businesses, and Products.
+1. The primary navigation exposes only Today, Create an order, Orders, Record activity, Stock & prices, Company books, Bank, License requests, Businesses, and Products.
 2. Today offers the four routine starting actions and returns only non-zero exceptions requiring attention.
 3. Today does not enumerate specialist systems. Relevant exception counts link directly to their work; domain-specific tools are reached from the affected record or by task search. Owners receive one compact Administration strip for access, reusable setup, external projections, and system health.
 4. Moving a feature out of primary navigation changes no database permission, RLS policy, state transition, audit requirement, or integration behavior.
@@ -753,16 +753,23 @@ No workflow-dependent implementation should guess these decisions. A decision re
 
 ### Review purchase money
 
-1. **Money** reads the authoritative Treasury ledger and separately shows known purchasing, supplier obligations, receivables, loan principal, and overdue amounts.
+1. **Company books** reads the authoritative Treasury ledger and shows known purchasing, supplier obligations, receivables, cash infusions, and accounting controls. **Bank** separately shows customer accounts, transfers, statements, and lending from the same ledger.
 2. A priced aggregate purchase posts inventory and Treasury expenditure together. A named delivery posts expenditure when settlement becomes paid.
 3. Pending named deliveries remain still owed. Purchases without an effective rate remain unpriced and excluded from monetary sums.
 4. Orders do not become revenue automatically. Staff issues an invoice from approved priced lines; a payment then moves money into Treasury.
+
+### Add cash to Company Treasury
+
+1. Staff opens **Company books → Overview** and enters amount, occurrence date, and optional source/note.
+2. The secure command resolves the active configured currency, Company Treasury, and hidden outside-world clearing account.
+3. Supabase posts one balanced `deposit` transaction, stores actor/reason/request evidence, and emits integration work.
+4. Treasury, the Company journal, dashboard totals, and any dependent projections update from that same transaction. The amount is not sales revenue, a customer deposit, or an editable balance.
 
 ## 22.1 Banking and lending workflow
 
 ### Open an account
 
-1. Owner opens **Money → Accounts → Open an account**, chooses business, personal, or escrow, and optionally links a registry party.
+1. Owner opens **Bank → Accounts → Open an account**, chooses business, personal, or escrow, and optionally links a registry party.
 2. Licensed-business portal activation automatically creates the ordinary business account if one does not exist.
 3. An opening amount is a balanced clearing-to-account transaction, not a typed balance.
 
@@ -789,20 +796,20 @@ No workflow-dependent implementation should guess these decisions. A decision re
 
 ### Correct a payment
 
-1. Open **Money → Invoices** or **Money → Loans** and expand **Undo latest payment** on the affected record.
+1. Open **Company books → Sales** for an invoice or **Bank → Loans** for a loan and expand **Undo latest payment** on the affected record.
 2. Enter the plain-language reason and confirm once.
 3. Supabase reverses the exact latest unreversed payment, recalculates the invoice or loan, and retains both original and correction.
 4. If the payment was not the latest one, undo later payments first. If its date belongs to a closed period, reopen that period before posting the correction.
 
 ### Review overdue loans
 
-1. **Money → Controls** shows how many installments are currently eligible for a configured late fee.
+1. **Company books → Controls** shows how many installments are currently eligible for a configured late fee.
 2. Owner selects **Run today's late fees**. Supabase rechecks due date, grace period, outstanding amount, and earlier assessment.
 3. Each installment receives its configured fee no more than once. Repeating the command does not duplicate charges.
 
 ### Compare and close the books
 
-1. Under **Money → Controls**, choose an account, enter the independently counted balance, and select the date through which it was counted.
+1. Under **Company books → Controls**, choose an account, enter the independently counted balance, and select the date through which it was counted.
 2. The ledger balance and exact difference are stored as immutable reconciliation evidence. Staff investigate a variance rather than editing it away.
 3. After finished dates are reviewed, close their range. Supabase freezes an account-balance snapshot and rejects future postings backdated into that range.
 4. A period can be reopened only with an Owner reason. The original close and snapshot remain in history.

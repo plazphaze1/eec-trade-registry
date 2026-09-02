@@ -4,6 +4,7 @@ import {
   readAccountForm,
   readAccountHoldForm,
   readClosePeriodForm,
+  readCashInfusionForm,
   readInvoicePaymentForm,
   readLateFeeRunForm,
   readLoanProductForm,
@@ -22,6 +23,21 @@ function form(entries: Record<string, string>) {
 }
 
 describe("banking forms", () => {
+  it("accepts a simple Company cash infusion", () => {
+    const result = readCashInfusionForm(form({
+      amount_minor: "2500", currency_code: "SEP", note: "Owner capital",
+      occurred_on: "2026-09-02", source_reference: "Opening purse",
+    }));
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.amount_minor).toBe(2500);
+  });
+
+  it("rejects a zero Company cash infusion", () => {
+    expect(readCashInfusionForm(form({
+      amount_minor: "0", currency_code: "SEP", note: "", occurred_on: "2026-09-02", source_reference: "",
+    })).success).toBe(false);
+  });
+
   it("accepts a party-linked business account without an opening balance", () => {
     const result = readAccountForm(form({
       account_type: "business", currency_code: "SEP", display_name: "Solitude Tailor",

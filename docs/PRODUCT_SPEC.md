@@ -299,7 +299,8 @@ Frontend code may display estimates for usability only when clearly labeled and 
 - The interface never presents raw Booleans, enum codes, or database identifiers when plain language is appropriate.
 - Routine forms never ask staff to choose a sales channel, price schedule, license reference, warehouse, ledger account, reservation record, or audit reference when the authoritative service can derive it.
 - A counted ordinary-stock total posts only the ledger difference. The interface may say “set total,” but no current-stock field is overwritten.
-- The Money page distinguishes known paid procurement, unpaid named-supplier obligations, and unpriced purchases. It must not imply a treasury balance until sales receipts and other cash movements are recorded.
+- **Company books** distinguishes Treasury, sales receipts, known paid procurement, unpaid supplier obligations, unpriced purchases, and cash infusions. **Bank** separately presents customer accounts, transfers, holds, statements, and loans; both are views of the same authoritative ledger.
+- Adding Company cash requires only amount, date, and optional source/note. The server derives the configured Treasury and clearing account, and the infusion is never classified as a sale or customer deposit.
 - A first-time player or Agent can identify the next button from the screen itself. If an ordinary task needs a guide to explain the interface, the interface has failed this requirement.
 - Dates, currency labels, organizational titles, and setting-specific vocabulary are configuration-driven.
 - Accessibility, mobile behavior, and localization expectations must be defined before interface implementation.

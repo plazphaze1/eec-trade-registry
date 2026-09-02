@@ -8,6 +8,7 @@ import {
   readAccountHoldForm,
   readAccountStatusForm,
   readCashForm,
+  readCashInfusionForm,
   readClosePeriodForm,
   readInvoiceForm,
   readInvoicePaymentForm,
@@ -27,7 +28,8 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 type View = "overview" | "accounts" | "invoices" | "transactions" | "loans" | "controls";
 
 function destination(view: View, key: "error" | "notice", value: string) {
-  return `/staff/money?${new URLSearchParams({ view, [key]: value }).toString()}`;
+  const base = view === "invoices" || view === "controls" ? "/staff/books" : "/staff/money";
+  return `${base}?${new URLSearchParams({ view, [key]: value }).toString()}`;
 }
 
 async function client() {
@@ -49,7 +51,7 @@ function failure(error: { code?: string; message: string }, view: View) {
 }
 
 function refresh(orderId?: string) {
-  for (const path of ["/staff/money", "/staff/dashboard", "/staff/orders", "/staff/activity", "/staff/consignments/finance"]) {
+  for (const path of ["/staff/books", "/staff/money", "/staff/dashboard", "/staff/orders", "/staff/activity", "/staff/consignments/finance"]) {
     revalidatePath(path);
   }
   if (orderId) revalidatePath(`/staff/orders/${orderId}`);
@@ -91,6 +93,29 @@ export async function cashMovementAction(form: FormData) {
   if (error) redirect(failure(error, "transactions"));
   refresh();
   redirect(destination("transactions", "notice", "money_recorded"));
+}
+
+export async function treasuryCashInfusionAction(form: FormData) {
+  const parsed = readCashInfusionForm(form);
+  if (!parsed.success) redirect(`/staff/books?view=overview&error=invalid_input`);
+  const input = parsed.data;
+  const { error } = await (await client()).rpc("staff_record_treasury_cash_infusion", {
+    p_amount_minor: input.amount_minor,
+    p_currency_code: input.currency_code,
+    p_note: input.note ?? "",
+    p_occurred_on: input.occurred_on,
+    p_reason: "Company cash infusion recorded through Company books.",
+    p_request_id: crypto.randomUUID(),
+    p_source_reference: input.source_reference,
+  });
+  if (error) {
+    console.error(`[company-books:cash-infusion] ${error.code ?? "unknown"}`);
+    const code = error.code === "42501" || error.message.includes("permission_denied") ? "access_denied"
+      : ["22023", "23514"].includes(error.code ?? "") ? "invalid_input" : "save_failed";
+    redirect(`/staff/books?view=overview&error=${code}`);
+  }
+  refresh();
+  redirect(`/staff/books?view=overview&notice=cash_infused`);
 }
 
 export async function transferAction(form: FormData) {

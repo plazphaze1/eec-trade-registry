@@ -375,6 +375,24 @@ export async function getStaffBankAccountRegister(
   return parsed.success ? { ok: true, data: parsed.data } : { ok: false, code: "invalid_response" };
 }
 
+export async function getStaffBankCustomerAccountRegister(
+  client: SupabaseClient,
+  options: { search?: string; status?: "active" | "frozen" | "closed"; limit?: number; offset?: number } = {},
+): Promise<Result<BankAccountRegister>> {
+  const { data, error } = await client.rpc("get_staff_bank_customer_account_register", {
+    p_limit: options.limit ?? 50,
+    p_offset: options.offset ?? 0,
+    p_search: options.search?.trim() || null,
+    p_status: options.status ?? null,
+  });
+  if (error) {
+    console.error(`[staff-bank:customer-accounts] ${error.message}`);
+    return { ok: false, code: failure(error) };
+  }
+  const parsed = bankAccountRegisterSchema.safeParse(data);
+  return parsed.success ? { ok: true, data: parsed.data } : { ok: false, code: "invalid_response" };
+}
+
 export async function getStaffFinancialAccountStatement(
   client: SupabaseClient,
   accountId: string,

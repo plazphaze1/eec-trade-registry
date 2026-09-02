@@ -356,7 +356,7 @@ Example: add **Moonstone Ore** as an economic floor material.
 7. Create the item.
 8. Open **Stock & prices** and enter the approved **Company pays** amount beside Moonstone Ore.
 9. Record each aggregate purchase in **Record activity → Bought materials** using item, quantity, and date. No seller name is required.
-10. Review the automatically tabulated spending and any unpriced purchases in **Money**.
+10. Review the automatically tabulated spending and any unpriced purchases in **Company books**.
 
 The material remains visible in Stock & prices, but the generic receipt is unavailable. The card uses the supplier-delivery command instead. This prevents an admin from quietly spawning the keystone reserve on the website.
 
@@ -1398,7 +1398,7 @@ If this guide conflicts with a governing decision record or the authoritative da
 
 After Discord sign-in, staff land on `/staff/dashboard`. This is the full overview:
 
-- Four everyday starting points: **Record an order**, **Record activity**, **Review applications**, and **Money**.
+- Four everyday starting points: **Record an order**, **Record activity**, **Review applications**, and **Company books**.
 - **Needs attention**, which lists only non-zero work such as a pending application, an order awaiting stock, an unpaid record, an access request, or a failed public projection.
 - **Recent orders**, which opens each order directly.
 - A compact Owner-only **Administration** row for staff access, reusable setup, Sheets and Discord, and system health.
@@ -1501,19 +1501,23 @@ The system does not infer guilt or issue sanctions from a Discord message. “Au
 
 Editing a PDF or losing a downloaded copy does not alter Supabase. Generate a new snapshot only after the source record has a new version; never edit an old official snapshot.
 
-## 31. Complete Septim banking guide
+## 31. Company books and Septim banking guide
 
-The site operates an in-server fictional-currency ledger. It is not connected to real money. Supabase calculates every balance from balanced immutable entries.
+The site operates an in-server fictional-currency ledger. It is not connected to real money. Supabase calculates every balance from balanced immutable entries. Staff see two tabs because the jobs are different: **Company books** runs the EEC itself; **Bank** serves customer accounts and loans. They never maintain separate balances.
+
+### 31.0 Company books
+
+Open **Company books** for Treasury, sales invoices, supplier costs, purchasing spend, the Company journal, and bookkeeping controls. To add starting funds or an owner cash infusion, enter the amount and date in **Add cash to Treasury**. Source and note are optional. One click posts a balanced transaction into Treasury; it does not claim that the money was a sale.
 
 ### 31.1 Business account access
 
-When an Owner activates portal access for an authorized licensed business, the ordinary business bank account is created automatically. The representative signs in with the existing license-number/private-code business login and opens **Money**. They can see only represented businesses, their account numbers, their invoices, their loans, and their own statement entries.
+When an Owner activates portal access for an authorized licensed business, the ordinary business bank account is created automatically. The representative signs in with the existing license-number/private-code business login and opens the business portal **Money** page. They can see only represented businesses, their account numbers, their invoices, their loans, and their own statement entries.
 
 The business can select **Send Septims**, enter another exact `EEC-ACC-*` recipient number, amount, and purpose. It can also pay its own invoice from an active matching account. Every request rechecks current dealer authority and representation; expired or revoked authority fails closed.
 
 ### 31.2 Staff account register
 
-Open `/staff/money?view=accounts`. Search by person, business, or account number. Results are paginated so a registry with thousands of accounts does not load everything at once. Select an account name to open its object page.
+Open **Bank → Accounts** at `/staff/money?view=accounts`. Search by person, business, or account number. Results are paginated so a registry with thousands of accounts does not load everything at once. Company Treasury does not appear in this customer register. Select an account name to open its object page.
 
 The account page shows:
 
@@ -1528,7 +1532,7 @@ An opening amount, deposit, withdrawal, or transfer always creates a transaction
 
 ### 31.3 Order invoice and payment
 
-An approved order with fully configured prices appears under **Invoices → Orders without an invoice**. Selecting **Issue invoice** freezes the amount due. Record one or more payments until the balance is zero. Paying from an internal account moves money from that account to Company Treasury. An approved external payment uses the hidden clearing account and retains the supplied receipt reference.
+An approved order with fully configured prices appears under **Company books → Sales → Orders without an invoice**. Selecting **Issue invoice** freezes the amount due. Record one or more payments until the balance is zero. Paying from an internal account moves money from that account to Company Treasury. An approved external payment uses the hidden clearing account and retains the supplied receipt reference.
 
 ### 31.4 Purchases and consignment money
 
@@ -1544,7 +1548,7 @@ Open the loan to see principal, interest, fees, paid portions, remaining balance
 
 For a duplicate or mistaken payment, open the affected invoice or loan and choose **Undo latest payment**. Enter the reason. The system restores the exact account movement and recalculates what remains due; the original payment stays visible as corrected. It can undo only the latest unreversed payment, preventing later allocations from being silently rearranged.
 
-Open **Controls** for the three Owner bookkeeping tasks:
+Open **Company books → Controls** for the three Owner bookkeeping tasks:
 
 - **Compare an account:** choose the account, enter the independently counted balance and date, and save. The result says matched or shows the exact variance. It does not change money.
 - **Assess late fees:** one click rechecks every overdue installment and applies its loan product's configured fee once after the grace period. An empty run is safe and recorded.

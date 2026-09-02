@@ -1081,6 +1081,8 @@ The original **Money** cashbook is now one source feeding the authoritative fict
 
 `financial_accounts` stores identity, type, optional owning party, currency, lifecycle status, and version; it deliberately stores no balance. `financial_transactions` is the immutable business header and source link. `financial_entries` contains signed account movements. A deferred constraint requires at least two entries and a zero signed sum for every transaction. Balance is the entry sum; available balance subtracts current holds.
 
+Company books and the Bank do not have separate ledgers. They are bounded projections of these records: Company books includes the `company_treasury` account and operating receivables/expenditure; the Bank customer register includes only `business`, `personal`, and `escrow` accounts. `staff_record_treasury_cash_infusion` posts from the hidden `external` account to the configured Treasury and retains the occurrence date, source reference, actor, reason, and idempotency request.
+
 ### Sales invoices
 
 `sales_invoices` is a one-to-one receivable for an order. Immutable invoice lines snapshot approved quantity and price. `sales_invoice_payments` links each partial payment to one balanced transaction. Invoice status advances from open to partially paid to paid; an unpaid open invoice may be voided with version and reason.

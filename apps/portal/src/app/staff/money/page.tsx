@@ -15,10 +15,11 @@ import {
   reverseInvoicePaymentAction,
   reverseLoanPaymentAction,
   transferAction,
+  treasuryCashInfusionAction,
 } from "@/app/staff/money/actions";
 import { StaffAccessDenied } from "@/components/staff-access-denied";
 import {
-  getStaffBankAccountRegister,
+  getStaffBankCustomerAccountRegister,
   getStaffBankingControls,
   getStaffBankingWorkspace,
   type BankAccountRegister,
@@ -31,7 +32,7 @@ import { requireStaffSession } from "@/lib/staff-auth";
 type View = "overview" | "accounts" | "invoices" | "transactions" | "loans" | "controls";
 
 interface MoneyPageProps {
-  searchParams: Promise<{ error?: string; notice?: string; page?: string; q?: string; status?: string; view?: string }>;
+  searchParams: Promise<{ error?: string; notice?: string; page?: string; q?: string; scope?: string; status?: string; view?: string }>;
 }
 
 const notices: Record<string, string> = {
@@ -46,6 +47,7 @@ const notices: Record<string, string> = {
   loan_payment_reversed: "Latest loan repayment undone. Money and installment allocations were corrected together.",
   loan_product_created: "Loan terms saved and ready to use.",
   money_recorded: "Money movement posted to the ledger.",
+  cash_infused: "Cash added to Company Treasury. The books and Treasury balance are updated.",
   period_closed: "Financial period closed. Backdated money in that date range is now blocked.",
   period_reopened: "Financial period reopened with a permanent reason record.",
   transfer_recorded: "Transfer completed. Both account statements were updated.",
@@ -61,12 +63,17 @@ const errors: Record<string, string> = {
   version_conflict: "That record changed while it was open. Refresh and try again.",
 };
 
-const viewLabels: Array<[View, string]> = [
+const bankViewLabels: Array<[View, string]> = [
   ["overview", "Overview"],
   ["accounts", "Accounts"],
-  ["invoices", "Invoices"],
   ["transactions", "Move money"],
   ["loans", "Loans"],
+];
+
+const booksViewLabels: Array<[View, string]> = [
+  ["overview", "Overview"],
+  ["invoices", "Sales"],
+  ["transactions", "Journal"],
   ["controls", "Controls"],
 ];
 
@@ -107,39 +114,76 @@ function bankAccountOptions(workspace: BankingWorkspace, includeTreasury = true)
   );
 }
 
-function Overview({ workspace }: { workspace: BankingWorkspace }) {
+function companyLedgerTransactions(workspace: BankingWorkspace) {
+  return workspace.transactions.filter((transaction) =>
+    transaction.from_account.includes("Treasury") || transaction.to_account.includes("Treasury")
+  );
+}
+
+function CompanyOverview({ workspace }: { workspace: BankingWorkspace }) {
   const summary = workspace.summaries.find((row) => row.currency_code === REGISTRY_CONFIG.currency.code) ?? workspace.summaries[0];
   if (!summary) return <p className="empty-state">No active currency is configured.</p>;
   const openInvoices = workspace.invoices.filter((invoice) => ["open", "partially_paid"].includes(invoice.status));
-  const activeLoans = workspace.loans.filter((loan) => ["active", "defaulted"].includes(loan.status));
+  const companyTransactions = companyLedgerTransactions(workspace);
   return <>
-    <section className="bank-summary-grid" aria-label="Bank summary">
+    <section className="bank-summary-grid" aria-label="Company books summary">
       <article className={summary.treasury_balance_minor < 0 ? "needs-attention" : ""}><span>Company Treasury</span><strong>{amount(summary.treasury_balance_minor, summary.currency_code)}</strong><small>Actual ledger balance</small></article>
       <article><span>Customers owe</span><strong>{amount(summary.receivable_minor, summary.currency_code)}</strong><small>{openInvoices.length} open invoices</small></article>
       <article><span>We owe suppliers</span><strong>{amount(summary.outstanding_total_minor, summary.currency_code)}</strong><small>Recorded unpaid deliveries</small></article>
-      <article><span>Loan principal out</span><strong>{amount(summary.loan_principal_outstanding_minor, summary.currency_code)}</strong><small>{activeLoans.length} active loans</small></article>
+      <article><span>Purchases · 30 days</span><strong>{amount(summary.paid_30d_minor, summary.currency_code)}</strong><small>Recorded Company spending</small></article>
       <article><span>Money in · 30 days</span><strong>{amount(summary.money_in_30d_minor, summary.currency_code)}</strong><small>Posted to Treasury</small></article>
       <article><span>Money out · 30 days</span><strong>{amount(summary.money_out_30d_minor, summary.currency_code)}</strong><small>Posted from Treasury</small></article>
     </section>
 
-    {(summary.overdue_minor > 0 || summary.loan_overdue_minor > 0 || workspace.unpriced_purchase_count > 0) && <section className="bank-attention-strip">
+    {workspace.capabilities.can_post && <section className="bank-panel bank-cash-infusion">
+      <div className="bank-panel-heading"><div><p className="eyebrow">Company cash</p><h2>Add cash to Treasury</h2><p>Use this for owner funding, starting cash, or another cash infusion. It is not recorded as a sale.</p></div></div>
+      <form action={treasuryCashInfusionAction} className="bank-action-form bank-infusion-form">
+        <input name="currency_code" type="hidden" value={summary.currency_code}/>
+        <label><span>Amount</span><div className="money-input"><input min="1" name="amount_minor" placeholder="0" required step="1" type="number"/><strong>{summary.currency_code}</strong></div></label>
+        <label><span>Date</span><input defaultValue={today()} name="occurred_on" required type="date"/></label>
+        <label><span>Source or reference <small>optional</small></span><input name="source_reference" placeholder="Owner purse, opening funds…"/></label>
+        <label><span>Note <small>optional</small></span><input name="note" placeholder="Why cash was added"/></label>
+        <button className="button button-primary">Add cash</button>
+      </form>
+    </section>}
+
+    {(summary.overdue_minor > 0 || workspace.unpriced_purchase_count > 0) && <section className="bank-attention-strip">
       <div><p className="eyebrow">Needs attention</p><h2>Money work waiting for you</h2></div>
       <div className="bank-attention-items">
-        {summary.overdue_minor > 0 && <Link href="/staff/money?view=invoices"><strong>{amount(summary.overdue_minor, summary.currency_code)}</strong><span>overdue invoices</span></Link>}
-        {summary.loan_overdue_minor > 0 && <Link href="/staff/money?view=loans"><strong>{amount(summary.loan_overdue_minor, summary.currency_code)}</strong><span>overdue loans</span></Link>}
+        {summary.overdue_minor > 0 && <Link href="/staff/books?view=invoices"><strong>{amount(summary.overdue_minor, summary.currency_code)}</strong><span>overdue invoices</span></Link>}
         {workspace.unpriced_purchase_count > 0 && <Link href="/staff/activity"><strong>{workspace.unpriced_purchase_count}</strong><span>unpriced purchases</span></Link>}
       </div>
     </section>}
 
     <section className="bank-two-column">
-      <div className="bank-panel"><div className="bank-panel-heading"><div><p className="eyebrow">Receivables</p><h2>Open invoices</h2></div><Link href="/staff/money?view=invoices">View all</Link></div>
+      <div className="bank-panel"><div className="bank-panel-heading"><div><p className="eyebrow">Receivables</p><h2>Open invoices</h2></div><Link href="/staff/books?view=invoices">View all</Link></div>
         <div className="bank-list">{openInvoices.slice(0, 5).map((invoice) => <article key={invoice.id}><div><strong>{invoice.party_name}</strong><span>{invoice.public_reference} · {invoice.order_reference}</span></div><div><strong>{amount(invoice.balance_due_minor, invoice.currency_code)}</strong><span>{invoice.due_on ? `Due ${invoice.due_on}` : "No due date"}</span></div></article>)}</div>
         {!openInvoices.length && <p className="empty-state">Nothing is currently owed to the Company.</p>}
       </div>
-      <div className="bank-panel"><div className="bank-panel-heading"><div><p className="eyebrow">Latest ledger activity</p><h2>Recent money movement</h2></div><Link href="/staff/money?view=transactions">View all</Link></div>
-        <div className="bank-list">{workspace.transactions.slice(0, 5).map((transaction) => <article key={transaction.id}><div><strong>{transaction.memo}</strong><span>{transaction.from_account} → {transaction.to_account}</span></div><div><strong>{amount(transaction.amount_minor, transaction.currency_code)}</strong><span>{transaction.occurred_on}</span></div></article>)}</div>
-        {!workspace.transactions.length && <p className="empty-state">No money has moved yet. Record the opening Treasury deposit first.</p>}
+      <div className="bank-panel"><div className="bank-panel-heading"><div><p className="eyebrow">Latest ledger activity</p><h2>Recent money movement</h2></div><Link href="/staff/books?view=transactions">View all</Link></div>
+        <div className="bank-list">{companyTransactions.slice(0, 5).map((transaction) => <article key={transaction.id}><div><strong>{transaction.memo}</strong><span>{transaction.from_account} → {transaction.to_account}</span></div><div><strong>{amount(transaction.amount_minor, transaction.currency_code)}</strong><span>{transaction.occurred_on}</span></div></article>)}</div>
+        {!companyTransactions.length && <p className="empty-state">No Company money has moved yet. Add starting cash when it exists.</p>}
       </div>
+    </section>
+  </>;
+}
+
+function BankOverview({ workspace }: { workspace: BankingWorkspace }) {
+  const summary = workspace.summaries.find((row) => row.currency_code === REGISTRY_CONFIG.currency.code) ?? workspace.summaries[0];
+  if (!summary) return <p className="empty-state">No active currency is configured.</p>;
+  const customerAccounts = workspace.accounts.filter((account) => ["business", "personal", "escrow"].includes(account.account_type));
+  const activeLoans = workspace.loans.filter((loan) => ["active", "defaulted"].includes(loan.status));
+  const bankTransactions = workspace.transactions.filter((transaction) => ["deposit", "withdrawal", "transfer", "loan_disbursement", "loan_payment"].includes(transaction.transaction_type));
+  return <>
+    <section className="bank-summary-grid" aria-label="Bank summary">
+      <article><span>Customer deposits</span><strong>{amount(summary.customer_deposits_minor, summary.currency_code)}</strong><small>Across {customerAccounts.length} accounts shown</small></article>
+      <article><span>Active accounts</span><strong>{customerAccounts.filter((account) => account.status === "active").length}</strong><small>Business, personal, and escrow</small></article>
+      <article><span>Loan principal out</span><strong>{amount(summary.loan_principal_outstanding_minor, summary.currency_code)}</strong><small>{activeLoans.length} active loans</small></article>
+      <article className={summary.loan_overdue_minor > 0 ? "needs-attention" : ""}><span>Overdue loans</span><strong>{amount(summary.loan_overdue_minor, summary.currency_code)}</strong><small>Needs collection attention</small></article>
+    </section>
+    <section className="bank-two-column">
+      <div className="bank-panel"><div className="bank-panel-heading"><div><p className="eyebrow">Banking</p><h2>Customer accounts</h2></div><Link href="/staff/money?view=accounts">Open register</Link></div><p>Find an account, inspect its statement, place a hold, freeze it, or change its status.</p></div>
+      <div className="bank-panel"><div className="bank-panel-heading"><div><p className="eyebrow">Latest bank activity</p><h2>Recent movement</h2></div><Link href="/staff/money?view=transactions">View all</Link></div><div className="bank-list">{bankTransactions.slice(0, 5).map((transaction) => <article key={transaction.id}><div><strong>{transaction.memo}</strong><span>{transaction.from_account} → {transaction.to_account}</span></div><div><strong>{amount(transaction.amount_minor, transaction.currency_code)}</strong><span>{transaction.occurred_on}</span></div></article>)}</div>{!bankTransactions.length && <p className="empty-state">No customer banking activity yet.</p>}</div>
     </section>
   </>;
 }
@@ -175,14 +219,17 @@ function Accounts({ register, search, status, workspace }: {
   </section>;
 }
 
-function Transactions({ workspace }: { workspace: BankingWorkspace }) {
-  const accounts = bankAccountOptions(workspace);
+function Transactions({ scope, workspace }: { scope: "bank" | "books"; workspace: BankingWorkspace }) {
+  const accounts = bankAccountOptions(workspace, false);
+  const transactions = scope === "books" ? companyLedgerTransactions(workspace) : workspace.transactions.filter((transaction) =>
+    ["deposit", "withdrawal", "transfer", "loan_disbursement", "loan_payment"].includes(transaction.transaction_type)
+  );
   return <>
-    {workspace.capabilities.can_post && <section className="bank-quick-actions">
+    {scope === "bank" && workspace.capabilities.can_post && <section className="bank-quick-actions">
       <details><summary><strong>Deposit or withdraw</strong><span>Cash entering or leaving one account</span></summary><form action={cashMovementAction} className="bank-action-form"><div className="bank-form-row"><label><span>Action</span><select name="direction"><option value="deposit">Deposit</option><option value="withdrawal">Withdraw</option></select></label><label><span>Account</span><select name="account_id" required>{accounts.map((account) => <option key={account.id} value={account.id}>{account.display_name} · {amount(account.available_balance_minor, account.currency_code)}</option>)}</select></label></div><div className="bank-form-row"><label><span>Amount</span><input min="1" name="amount_minor" required step="1" type="number" /></label><label><span>Date</span><input defaultValue={today()} name="occurred_on" required type="date" /></label></div><label><span>What was this for?</span><input name="memo" required /></label><label><span>Receipt or reference optional</span><input name="reference" /></label><button className="button button-primary">Post money movement</button></form></details>
       <details><summary><strong>Transfer</strong><span>Move Septims between two accounts</span></summary><form action={transferAction} className="bank-action-form"><div className="bank-form-row"><label><span>From</span><select name="from_account_id" required>{accounts.map((account) => <option key={account.id} value={account.id}>{account.display_name} · {amount(account.available_balance_minor, account.currency_code)}</option>)}</select></label><label><span>To</span><select name="to_account_id" required>{accounts.map((account) => <option key={account.id} value={account.id}>{account.display_name}</option>)}</select></label></div><div className="bank-form-row"><label><span>Amount</span><input min="1" name="amount_minor" required step="1" type="number" /></label><label><span>Date</span><input defaultValue={today()} name="occurred_on" required type="date" /></label></div><label><span>What was this for?</span><input name="memo" required /></label><label><span>Reference optional</span><input name="reference" /></label><button className="button button-primary">Transfer Septims</button></form></details>
     </section>}
-    <section className="bank-panel"><div className="bank-panel-heading"><div><p className="eyebrow">Immutable journal</p><h2>All money movement</h2><p>Corrections create a reversal. Posted rows are never rewritten.</p></div><span>{workspace.transactions.length} recent entries</span></div><div className="bank-table-wrap"><table className="bank-table"><thead><tr><th>Date</th><th>Transaction</th><th>From → To</th><th>Amount</th><th>Source</th></tr></thead><tbody>{workspace.transactions.map((transaction) => <tr key={transaction.id}><td>{transaction.occurred_on}</td><td><strong>{transaction.memo}</strong><small>{transaction.public_reference} · {transaction.transaction_type.replaceAll("_", " ")}{transaction.is_reversed ? " · reversed" : ""}</small></td><td>{transaction.from_account}<small>→ {transaction.to_account}</small></td><td>{amount(transaction.amount_minor, transaction.currency_code)}</td><td>{transaction.source_reference ?? transaction.external_reference ?? "Manual"}</td></tr>)}</tbody></table></div></section>
+    <section className="bank-panel"><div className="bank-panel-heading"><div><p className="eyebrow">Immutable journal</p><h2>{scope === "books" ? "Company ledger" : "Bank activity"}</h2><p>Corrections create a reversal. Posted rows are never rewritten.</p></div><span>{transactions.length} recent entries</span></div><div className="bank-table-wrap"><table className="bank-table"><thead><tr><th>Date</th><th>Transaction</th><th>From → To</th><th>Amount</th><th>Source</th></tr></thead><tbody>{transactions.map((transaction) => <tr key={transaction.id}><td>{transaction.occurred_on}</td><td><strong>{transaction.memo}</strong><small>{transaction.public_reference} · {transaction.transaction_type.replaceAll("_", " ")}{transaction.is_reversed ? " · reversed" : ""}</small></td><td>{transaction.from_account}<small>→ {transaction.to_account}</small></td><td>{amount(transaction.amount_minor, transaction.currency_code)}</td><td>{transaction.source_reference ?? transaction.external_reference ?? "Manual"}</td></tr>)}</tbody></table></div></section>
   </>;
 }
 
@@ -315,7 +362,10 @@ function Controls({ controls, workspace }: { controls: BankingControls; workspac
 
 export default async function MoneyPage({ searchParams }: MoneyPageProps) {
   const parameters = await searchParams;
+  const scope = parameters.scope === "books" ? "books" : "bank";
+  const viewLabels = scope === "books" ? booksViewLabels : bankViewLabels;
   const view = viewLabels.some(([value]) => value === parameters.view) ? parameters.view as View : "overview";
+  const basePath = scope === "books" ? "/staff/books" : "/staff/money";
   const { client } = await requireStaffSession();
   const accountStatus = ["active", "frozen", "closed"].includes(parameters.status ?? "")
     ? parameters.status as "active" | "frozen" | "closed"
@@ -324,7 +374,7 @@ export default async function MoneyPage({ searchParams }: MoneyPageProps) {
   const [result, accountResult, controlsResult] = await Promise.all([
     getStaffBankingWorkspace(client),
     view === "accounts"
-      ? getStaffBankAccountRegister(client, { search: parameters.q, status: accountStatus, limit: 50, offset: (accountPage - 1) * 50 })
+      ? getStaffBankCustomerAccountRegister(client, { search: parameters.q, status: accountStatus, limit: 50, offset: (accountPage - 1) * 50 })
       : Promise.resolve(null),
     view === "controls" ? getStaffBankingControls(client) : Promise.resolve(null),
   ]);
@@ -333,18 +383,18 @@ export default async function MoneyPage({ searchParams }: MoneyPageProps) {
   const workspace = result.data;
 
   return <main className="staff-main bank-workspace">
-    <header className="staff-page-header"><div><p className="eyebrow">East Empire Company Bank</p><h1>Money</h1><p>One authoritative place for Treasury, customer accounts, order payments, expenses, statements, and loans.</p></div><Link className="button button-secondary" href="/staff/activity">Record stock activity</Link></header>
+    <header className="staff-page-header"><div><p className="eyebrow">{scope === "books" ? "East Empire Company accounting" : "East Empire Company Bank"}</p><h1>{scope === "books" ? "Company books" : "Bank"}</h1><p>{scope === "books" ? "Treasury, sales, spending, cash infusions, and the Company ledger." : "Customer accounts, transfers, statements, holds, and loans."}</p></div>{scope === "books" ? <Link className="button button-secondary" href="/staff/activity">Record stock activity</Link> : <Link className="button button-secondary" href="/staff/books">Open Company books</Link>}</header>
     {(parameters.notice && notices[parameters.notice]) && <p className="notice-panel notice-success">{notices[parameters.notice]}</p>}
     {(parameters.error && errors[parameters.error]) && <p className="notice-panel notice-error">{errors[parameters.error]}</p>}
-    <nav className="bank-tabs" aria-label="Money sections">{viewLabels.map(([value, label]) => <Link aria-current={view === value ? "page" : undefined} href={`/staff/money?view=${value}`} key={value}>{label}</Link>)}</nav>
-    {view === "overview" && <Overview workspace={workspace}/>}
+    <nav className="bank-tabs" aria-label={scope === "books" ? "Company books sections" : "Bank sections"}>{viewLabels.map(([value, label]) => <Link aria-current={view === value ? "page" : undefined} href={`${basePath}?view=${value}`} key={value}>{label}</Link>)}</nav>
+    {view === "overview" && (scope === "books" ? <CompanyOverview workspace={workspace}/> : <BankOverview workspace={workspace}/>)}
     {view === "accounts" && accountResult?.ok && <Accounts register={accountResult.data} search={parameters.q?.trim() ?? ""} status={accountStatus} workspace={workspace}/>}
     {view === "accounts" && accountResult && !accountResult.ok && <section className="notice-panel"><h2>Account register unavailable</h2><p>The summary remains available, but no account list was substituted.</p></section>}
     {view === "invoices" && <Invoices workspace={workspace}/>}
-    {view === "transactions" && <Transactions workspace={workspace}/>}
+    {view === "transactions" && <Transactions scope={scope} workspace={workspace}/>}
     {view === "loans" && <Loans workspace={workspace}/>}
     {view === "controls" && controlsResult?.ok && <Controls controls={controlsResult.data} workspace={workspace}/>}
     {view === "controls" && controlsResult && !controlsResult.ok && <section className="notice-panel"><h2>Bank controls unavailable</h2><p>No close, correction, fee, or reconciliation was attempted.</p></section>}
-    <details className="bank-system-note"><summary>How these numbers stay trustworthy</summary><p>Every posted movement has equal money-out and money-in entries. Balances are calculated from those entries; staff cannot overwrite them. Orders produce invoices, invoice payments enter Treasury, purchases and settlements leave Treasury, and loans move real balances in both directions. Corrections append reversals, reconciliations preserve differences for review, and closed periods reject new backdated entries.</p></details>
+    <details className="bank-system-note"><summary>How these numbers stay trustworthy</summary><p>Company books and the Bank are two simple views of the same Supabase ledger. Every movement has equal money-out and money-in entries, and balances are calculated instead of typed over. Cash infusions enter Treasury without becoming sales; orders create receivables; purchases create expenses; customer accounts and loans remain in the Bank.</p></details>
   </main>;
 }
