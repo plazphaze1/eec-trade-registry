@@ -129,6 +129,36 @@ const loanStatusSchema = z.object({
   status: z.enum(["active", "defaulted", "written_off"]),
 });
 
+const paymentCorrectionSchema = z.object({
+  expected_version: z.coerce.number().int().positive(),
+  record_id: z.guid(),
+  reason: text(500),
+});
+
+const lateFeeRunSchema = z.object({
+  as_of: z.iso.date(),
+  reason: text(500),
+});
+
+const reconciliationSchema = z.object({
+  account_id: z.guid(),
+  note: optionalText(1000),
+  statement_balance_minor: z.coerce.number().int(),
+  statement_through: z.iso.date(),
+});
+
+const closePeriodSchema = z.object({
+  ends_on: z.iso.date(),
+  note: optionalText(1000),
+  starts_on: z.iso.date(),
+}).refine((value) => value.ends_on >= value.starts_on, { path: ["ends_on"] });
+
+const reopenPeriodSchema = z.object({
+  expected_version: z.coerce.number().int().positive(),
+  period_id: z.guid(),
+  reason: text(500),
+});
+
 export const readAccountForm = (form: FormData) => accountSchema.safeParse(object(form));
 export const readCashForm = (form: FormData) => cashSchema.safeParse(object(form));
 export const readTransferForm = (form: FormData) => transferSchema.safeParse(object(form));
@@ -141,3 +171,8 @@ export const readAccountStatusForm = (form: FormData) => accountStatusSchema.saf
 export const readAccountHoldForm = (form: FormData) => accountHoldSchema.safeParse(object(form));
 export const readReleaseHoldForm = (form: FormData) => releaseHoldSchema.safeParse(object(form));
 export const readLoanStatusForm = (form: FormData) => loanStatusSchema.safeParse(object(form));
+export const readPaymentCorrectionForm = (form: FormData) => paymentCorrectionSchema.safeParse(object(form));
+export const readLateFeeRunForm = (form: FormData) => lateFeeRunSchema.safeParse(object(form));
+export const readReconciliationForm = (form: FormData) => reconciliationSchema.safeParse(object(form));
+export const readClosePeriodForm = (form: FormData) => closePeriodSchema.safeParse(object(form));
+export const readReopenPeriodForm = (form: FormData) => reopenPeriodSchema.safeParse(object(form));

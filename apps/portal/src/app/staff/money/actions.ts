@@ -8,18 +8,23 @@ import {
   readAccountHoldForm,
   readAccountStatusForm,
   readCashForm,
+  readClosePeriodForm,
   readInvoiceForm,
   readInvoicePaymentForm,
+  readLateFeeRunForm,
   readLoanPaymentForm,
   readLoanProductForm,
   readLoanStatusForm,
   readOriginateLoanForm,
   readReleaseHoldForm,
+  readReconciliationForm,
+  readReopenPeriodForm,
+  readPaymentCorrectionForm,
   readTransferForm,
 } from "@/lib/banking-form";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
-type View = "overview" | "accounts" | "invoices" | "transactions" | "loans";
+type View = "overview" | "accounts" | "invoices" | "transactions" | "loans" | "controls";
 
 function destination(view: View, key: "error" | "notice", value: string) {
   return `/staff/money?${new URLSearchParams({ view, [key]: value }).toString()}`;
@@ -276,4 +281,97 @@ export async function setLoanStatusAction(form: FormData) {
   refresh();
   revalidatePath(`/staff/money/loans/${input.loan_id}`);
   redirect(`/staff/money/loans/${input.loan_id}?notice=status_updated`);
+}
+
+export async function reverseInvoicePaymentAction(form: FormData) {
+  const parsed = readPaymentCorrectionForm(form);
+  if (!parsed.success) redirect(destination("invoices", "error", "invalid_input"));
+  const input = parsed.data;
+  const { error } = await (await client()).rpc("staff_reverse_latest_invoice_payment", {
+    p_expected_version: input.expected_version,
+    p_invoice_id: input.record_id,
+    p_reason: input.reason,
+    p_request_id: crypto.randomUUID(),
+  });
+  if (error) redirect(failure(error, "invoices"));
+  refresh();
+  redirect(destination("invoices", "notice", "invoice_payment_reversed"));
+}
+
+export async function reverseLoanPaymentAction(form: FormData) {
+  const parsed = readPaymentCorrectionForm(form);
+  if (!parsed.success) redirect(destination("loans", "error", "invalid_input"));
+  const input = parsed.data;
+  const { error } = await (await client()).rpc("staff_reverse_latest_loan_payment", {
+    p_expected_version: input.expected_version,
+    p_loan_id: input.record_id,
+    p_reason: input.reason,
+    p_request_id: crypto.randomUUID(),
+  });
+  if (error) redirect(failure(error, "loans"));
+  refresh();
+  revalidatePath(`/staff/money/loans/${input.record_id}`);
+  redirect(destination("loans", "notice", "loan_payment_reversed"));
+}
+
+export async function assessLateFeesAction(form: FormData) {
+  const parsed = readLateFeeRunForm(form);
+  if (!parsed.success) redirect(destination("controls", "error", "invalid_input"));
+  const input = parsed.data;
+  const { error } = await (await client()).rpc("staff_assess_overdue_loan_fees", {
+    p_as_of: input.as_of,
+    p_reason: input.reason,
+    p_request_id: crypto.randomUUID(),
+  });
+  if (error) redirect(failure(error, "controls"));
+  refresh();
+  redirect(destination("controls", "notice", "late_fees_assessed"));
+}
+
+export async function reconcileAccountAction(form: FormData) {
+  const parsed = readReconciliationForm(form);
+  if (!parsed.success) redirect(destination("controls", "error", "invalid_input"));
+  const input = parsed.data;
+  const { error } = await (await client()).rpc("staff_record_financial_reconciliation", {
+    p_account_id: input.account_id,
+    p_note: input.note ?? "",
+    p_reason: "Account statement reconciled through the Money controls.",
+    p_request_id: crypto.randomUUID(),
+    p_statement_balance_minor: input.statement_balance_minor,
+    p_statement_through: input.statement_through,
+  });
+  if (error) redirect(failure(error, "controls"));
+  refresh();
+  redirect(destination("controls", "notice", "account_reconciled"));
+}
+
+export async function closeFinancialPeriodAction(form: FormData) {
+  const parsed = readClosePeriodForm(form);
+  if (!parsed.success) redirect(destination("controls", "error", "invalid_input"));
+  const input = parsed.data;
+  const { error } = await (await client()).rpc("staff_close_financial_period", {
+    p_ends_on: input.ends_on,
+    p_note: input.note ?? "",
+    p_reason: "Financial period closed through the Money controls.",
+    p_request_id: crypto.randomUUID(),
+    p_starts_on: input.starts_on,
+  });
+  if (error) redirect(failure(error, "controls"));
+  refresh();
+  redirect(destination("controls", "notice", "period_closed"));
+}
+
+export async function reopenFinancialPeriodAction(form: FormData) {
+  const parsed = readReopenPeriodForm(form);
+  if (!parsed.success) redirect(destination("controls", "error", "invalid_input"));
+  const input = parsed.data;
+  const { error } = await (await client()).rpc("staff_reopen_financial_period", {
+    p_expected_version: input.expected_version,
+    p_period_id: input.period_id,
+    p_reason: input.reason,
+    p_request_id: crypto.randomUUID(),
+  });
+  if (error) redirect(failure(error, "controls"));
+  refresh();
+  redirect(destination("controls", "notice", "period_reopened"));
 }

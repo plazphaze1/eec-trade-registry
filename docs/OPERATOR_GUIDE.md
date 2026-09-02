@@ -155,13 +155,14 @@ A pending application is never a valid license. Approval must finish the issuanc
 
 ## Money, accounts, and loans
 
-Open **Money** for everything that changes Septim records. It has five simple tabs:
+Open **Money** for everything that changes Septim records. It has six simple tabs:
 
 - **Overview:** Treasury, money in/out, customer debt, supplier debt, loan principal, and urgent overdue work.
 - **Accounts:** search thousands of people or businesses by name or `EEC-ACC-*` account number. Open one account for its statement, holds, status, and loans.
 - **Invoices:** turn an approved priced order into a bill and record partial or full payment.
 - **Move money:** deposit, withdraw, or transfer. Use this only when the in-server money event actually happened.
 - **Loans:** define reusable terms, approve a loan, disburse principal, and record repayments.
+- **Controls:** correct the latest invoice or loan payment, compare counted balances, assess due late fees, and close finished bookkeeping dates.
 
 ### Ordinary sale
 
@@ -184,6 +185,13 @@ Open the account from **Money → Accounts**. **Place a hold** reserves some fun
 4. Open the loan for its full installment table. A repayment moves real funds back to Treasury and applies them to oldest fees, interest, then principal.
 
 Never type a replacement balance. Never record payment because someone merely promised to pay. Corrections must use the authorized correction path; invoice and loan payments cannot use the generic reversal button because their allocations must change with the money.
+
+### Correct, reconcile, and close
+
+- To fix a duplicate or wrong payment, find its invoice or loan, expand **Undo latest payment**, and state why. The button reverses the latest payment only; it does not delete it.
+- To check a balance, open **Money → Controls → Compare an account**. Enter what the independent count says. A mismatch stays visible for investigation and does not rewrite the account.
+- **Run today's late fees** applies each loan product's configured fee once to installments whose grace period has passed.
+- Close only dates whose work is finished. A closed range refuses new backdated money. If an authorized correction is necessary, reopen the range with the reason, post the correction, check it, and close the appropriate range again.
 
 The public form deliberately asks only for the business name, Discord contact, ordinary trade categories, and a short description. The standard class and region are configured automatically. Unusual bulk, consignment, controlled, or serialized authority is available under **special permissions** rather than confronting every applicant.
 
