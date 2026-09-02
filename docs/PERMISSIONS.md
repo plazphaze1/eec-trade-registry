@@ -566,8 +566,8 @@ The implemented economic permissions intentionally separate policy from routine 
 | `finance.bank.read` | View Treasury, customer accounts, statements, invoices, holds, transactions, and loans. |
 | `finance.transaction.post` | Post controlled fictional-currency deposits, withdrawals, transfers, invoice payments, holds, and loan repayments. |
 | `finance.invoice.manage` | Issue, collect, and void order invoices. |
-| `finance.account.manage` | Open/freeze/close accounts, configure lending terms, originate loans, and change loan servicing status. |
-| `finance.transaction.reverse` | Post an exact compensating transaction for an eligible generic movement; linked invoice and loan payments require domain correction. |
+| `finance.account.manage` | Open/freeze/close accounts, configure lending terms, originate loans, assess configured late fees, reconcile accounts, close/reopen periods, and change loan servicing status. |
+| `finance.transaction.reverse` | Post an exact compensating transaction, including purpose-built invoice and loan payment correction with synchronized domain status. |
 | `inventory.count.reconcile` | Post the difference between ledger stock and an Owner-recorded counted total for eligible ordinary goods. |
 
 `procurement_officer` receives routine supplier, delivery, settlement, dashboard, and inventory-read powers. `economic_steward` receives policy, offer, supplier, and dashboard powers. Warehouse scope is still enforced when receiving. Neither role receives dealer, licensing, compliance, platform-administration, or unrestricted inventory-correction authority merely because it can operate the economy desk.
@@ -577,6 +577,8 @@ The generic `inventory.receipt.post` permission cannot bypass a player-sourced-o
 ADR 0030 lets an Agent with `procurement.delivery.receive` record an aggregate purchase without supplier identity. Warehouse scope, player-sourced policy, item type, occurrence date, and request identity are still revalidated in PostgreSQL. Owner and Agent receive `finance.cashbook.read`. Only Owner receives `inventory.count.reconcile`; the command additionally rejects player-sourced-only and serialized goods and a total below active reservations. The full reserve-economy and per-material policy records remain Owner-only system records.
 
 ADR 0033 gives Owner all five bank scopes. Agent receives bank read, transaction posting, and invoice management for routine work, but not account administration or generic reversal. Licensed-business representatives receive constrained `bank.read` and `bank.transfer` authority only for actively represented organizations. They cannot enumerate other accounts, spend an unowned source account, open/freeze accounts, configure loans, or reverse entries.
+
+ADR 0034 retains that split. Owner uses `finance.account.manage` for fee batches, reconciliation, and close/reopen, and `finance.transaction.reverse` for payment correction. Agent and business sessions cannot gain those powers from being able to record or initiate an ordinary payment.
 
 ## 18. Launch command permissions
 

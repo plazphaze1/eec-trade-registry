@@ -273,11 +273,52 @@ const loanDetailSchema = z.object({
   })),
 });
 
+const bankingControlsSchema = z.object({
+  can_manage: z.boolean(),
+  eligible_late_fee_count: z.coerce.number().int().nonnegative(),
+  fee_runs: z.array(z.object({
+    assessed_as_of: z.string(),
+    assessed_count: z.coerce.number().int().nonnegative(),
+    created_at: z.string(),
+    id: z.guid(),
+    total_amount_minor: money,
+  })),
+  generated_at: z.string(),
+  periods: z.array(z.object({
+    account_count: z.coerce.number().int().nonnegative(),
+    closed_at: z.string(),
+    ends_on: z.string(),
+    id: z.guid(),
+    note: z.string(),
+    public_reference: z.string(),
+    reopened_at: z.string().nullable(),
+    starts_on: z.string(),
+    status: z.enum(["closed", "reopened"]),
+    version: z.coerce.number().int().positive(),
+  })),
+  reconciliations: z.array(z.object({
+    account_id: z.guid(),
+    account_name: z.string(),
+    account_reference: z.string(),
+    created_at: z.string(),
+    currency_code: z.string(),
+    difference_minor: money,
+    id: z.guid(),
+    ledger_balance_minor: money,
+    note: z.string(),
+    public_reference: z.string(),
+    statement_balance_minor: money,
+    statement_through: z.string(),
+    status: z.enum(["matched", "variance"]),
+  })),
+});
+
 export type BankingWorkspace = z.infer<typeof bankingWorkspaceSchema>;
 export type BankAccount = z.infer<typeof accountSchema>;
 export type BankAccountRegister = z.infer<typeof bankAccountRegisterSchema>;
 export type BankAccountStatement = z.infer<typeof accountStatementSchema>;
 export type BankLoanDetail = z.infer<typeof loanDetailSchema>;
+export type BankingControls = z.infer<typeof bankingControlsSchema>;
 export type BankInvoice = z.infer<typeof invoiceSchema>;
 export type BankLoan = z.infer<typeof loanSchema>;
 export type OrderFinance = z.infer<typeof orderFinanceSchema>;
@@ -358,5 +399,15 @@ export async function getStaffLoan(client: SupabaseClient, loanId: string): Prom
     return { ok: false, code: failure(error) };
   }
   const parsed = loanDetailSchema.safeParse(data);
+  return parsed.success ? { ok: true, data: parsed.data } : { ok: false, code: "invalid_response" };
+}
+
+export async function getStaffBankingControls(client: SupabaseClient): Promise<Result<BankingControls>> {
+  const { data, error } = await client.rpc("get_staff_banking_controls");
+  if (error) {
+    console.error(`[staff-bank:controls] ${error.message}`);
+    return { ok: false, code: failure(error) };
+  }
+  const parsed = bankingControlsSchema.safeParse(data);
   return parsed.success ? { ok: true, data: parsed.data } : { ok: false, code: "invalid_response" };
 }

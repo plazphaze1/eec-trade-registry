@@ -1093,6 +1093,12 @@ The original **Money** cashbook is now one source feeding the authoritative fict
 
 `loan_products` stores reusable effective terms. `loans` snapshots the selected rate, frequency, principal, dates, and borrower account. `loan_installments` records principal, interest, fees, due dates, status, and version. `loan_payments` is immutable money evidence; `loan_payment_allocations` assigns each payment to the oldest fee, interest, then principal obligation. Disbursement and repayment are balanced Treasury/account transactions.
 
+### Banking controls
+
+`invoice_payment_reversals` and `loan_payment_reversals` identify the exact payment and compensating transaction. A loan correction appends negative `loan_payment_allocations` linked to the original allocations, allowing all due totals to remain sums rather than mutable projections.
+
+`loan_fee_assessment_runs` records every servicing batch; `loan_late_fee_assessments` records the one permitted configured charge per overdue installment. `financial_reconciliations` stores the stated, ledger-derived, and difference amounts without posting an entry. `financial_periods` stores close/reopen evidence, while `financial_period_account_balances` freezes the ledger-derived account snapshot through the close date.
+
 ### Banking invariants
 
 1. Balances and available funds are derived in PostgreSQL and cannot be edited.
@@ -1102,6 +1108,9 @@ The original **Money** cashbook is now one source feeding the authoritative fict
 5. A business projection is limited to actively represented parties and reveals no counterparty account register.
 6. Generic reversal cannot be used for invoice or loan payments; their allocation/status requires a domain-specific correction.
 7. Registers are searched and paginated server-side; routine workspace arrays are bounded.
+8. Payment correction copies the exact inverse of the original entries and never depends on the counterparty account still being active.
+9. Reconciliation never changes a balance; it records a matched comparison or visible variance.
+10. A closed date range rejects new backdated transactions until an authorized reasoned reopen.
 
 ### Coupled invariants
 

@@ -449,7 +449,7 @@ Each deferred capability must preserve Supabase authority and existing audit inv
 
 ADR 0033 adds the server's authoritative Septim Treasury, business/personal/escrow accounts, balanced entries, statements, holds, freezes, order invoicing and partial payment, coupled procurement/consignment expenditure, business-portal banking, reusable loan products, disbursement, schedules, repayment allocation, default, and write-off evidence. Account search is paginated server-side and overview payloads are bounded for large deployments.
 
-Purpose-built invoice refund/payment correction, purpose-built loan payment correction, scheduled fee assessment, credit limits, multi-currency exchange, reconciliation import, bulk account administration, and formal financial period close remain later increments. They must extend rather than bypass the balanced immutable ledger.
+ADR 0034 adds exact latest-payment correction for invoices and loans, scheduled-fee assessment batches, immutable account reconciliation, and formal financial period close/reopen with frozen account snapshots. Partial refunds, negotiated fee waivers, recurring service charges, credit limits, multi-currency exchange, statement-file import, and bulk account administration remain later increments. They must extend rather than bypass the balanced immutable ledger.
 
 ## 15. Key risks and mitigations
 

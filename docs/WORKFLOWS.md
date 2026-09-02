@@ -787,6 +787,26 @@ No workflow-dependent implementation should guess these decisions. A decision re
 4. A repayment moves funds from borrower to Treasury and allocates the amount to oldest fees, interest, then principal.
 5. Default or write-off changes servicing status with a reason; it does not delete the schedule, transaction, or debt history.
 
+### Correct a payment
+
+1. Open **Money → Invoices** or **Money → Loans** and expand **Undo latest payment** on the affected record.
+2. Enter the plain-language reason and confirm once.
+3. Supabase reverses the exact latest unreversed payment, recalculates the invoice or loan, and retains both original and correction.
+4. If the payment was not the latest one, undo later payments first. If its date belongs to a closed period, reopen that period before posting the correction.
+
+### Review overdue loans
+
+1. **Money → Controls** shows how many installments are currently eligible for a configured late fee.
+2. Owner selects **Run today's late fees**. Supabase rechecks due date, grace period, outstanding amount, and earlier assessment.
+3. Each installment receives its configured fee no more than once. Repeating the command does not duplicate charges.
+
+### Compare and close the books
+
+1. Under **Money → Controls**, choose an account, enter the independently counted balance, and select the date through which it was counted.
+2. The ledger balance and exact difference are stored as immutable reconciliation evidence. Staff investigate a variance rather than editing it away.
+3. After finished dates are reviewed, close their range. Supabase freezes an account-balance snapshot and rejects future postings backdated into that range.
+4. A period can be reopened only with an Owner reason. The original close and snapshot remain in history.
+
 ### Supply pressure and resale
 
 1. The economy dashboard compares available reserve with configured thresholds and approved unfulfilled demand.

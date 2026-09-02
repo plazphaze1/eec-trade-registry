@@ -2126,6 +2126,7 @@ body > main > .hero::before,
 .bank-quick-actions summary { cursor: pointer; display: grid; gap: 3px; list-style: none; }
 .bank-quick-actions summary span { color: var(--ink-muted); font-size: .87rem; }
 .bank-quick-actions details[open] summary { margin-bottom: 15px; }
+.bank-control-actions { grid-template-columns: repeat(3,minmax(0,1fr)); }
 .bank-inline-form { margin-top: 6px; }
 .bank-invoice-list,.bank-loan-list { display: grid; gap: 10px; }
 .bank-invoice-list > article,.bank-loan-list > article { background: #fffdf8; border: 1px solid var(--line); border-radius: 12px; padding: 15px; }
@@ -2135,11 +2136,18 @@ body > main > .hero::before,
 .bank-invoice-main span,.bank-loan-summary span { color: var(--ink-muted); font-size: .84rem; }
 .bank-invoice-list details,.bank-loan-list details { border-top: 1px solid var(--line); margin-top: 13px; padding-top: 10px; }
 .bank-invoice-list details > summary,.bank-loan-list details > summary { color: var(--accent); cursor: pointer; font-weight: 750; margin-bottom: 12px; }
+.bank-correction-action > summary { color: var(--ink-muted) !important; font-size: .84rem; }
+.bank-table-action { position: relative; }
+.bank-table-action > summary { color: var(--accent); cursor: pointer; font-weight: 750; list-style: none; }
+.bank-table-action > .bank-action-form { background: #fffdf7; border: 1px solid var(--line-strong); border-radius: 12px; box-shadow: 0 16px 42px rgba(18,31,27,.18); min-width: 290px; padding: 15px; position: absolute; right: 0; top: calc(100% + 8px); z-index: 20; }
 .bank-system-note { background: rgba(247,242,228,.75); border: 1px solid var(--line); border-radius: 12px; color: var(--ink-muted); padding: 14px 18px; }
 .bank-system-note summary { color: var(--ink); cursor: pointer; font-weight: 750; }
 .money-status.is-frozen,.money-status.is-defaulted,.money-status.is-partially_paid { background: #fff0d8; color: #87560c; }
 .money-status.is-paid,.money-status.is-active { background: #e4f5eb; color: #17633c; }
+.money-status.is-matched { background: #e4f5eb; color: #17633c; }
+.money-status.is-variance { background: #fde9e4; color: #8c3026; }
 .money-status.is-closed,.money-status.is-void,.money-status.is-written_off { background: #eceae5; color: #67635d; }
+.money-status.is-reopened { background: #e8eef6; color: #315b83; }
 
 @media (max-width: 960px) {
   .bank-summary-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
@@ -2151,6 +2159,7 @@ body > main > .hero::before,
   .bank-panel { padding: 16px; }
   .bank-panel-heading { align-items: stretch; flex-direction: column; }
   .bank-action-menu > .bank-action-form { min-width: min(88vw,410px); position: static; }
+  .bank-table-action > .bank-action-form { min-width: min(78vw,290px); position: static; }
   .bank-form-row { grid-template-columns: 1fr; }
   .bank-invoice-main,.bank-loan-summary { align-items: start; grid-template-columns: 1fr; }
   .bank-invoice-main > div:last-child,.bank-loan-summary > div:last-child { text-align: left; }

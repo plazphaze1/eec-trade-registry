@@ -3,9 +3,14 @@ import { describe, expect, it } from "vitest";
 import {
   readAccountForm,
   readAccountHoldForm,
+  readClosePeriodForm,
   readInvoicePaymentForm,
+  readLateFeeRunForm,
   readLoanProductForm,
   readOriginateLoanForm,
+  readPaymentCorrectionForm,
+  readReconciliationForm,
+  readReopenPeriodForm,
   readTransferForm,
 } from "@/lib/banking-form";
 
@@ -75,6 +80,35 @@ describe("banking forms", () => {
     expect(readOriginateLoanForm(form({
       borrower_account_id: id(5), first_due_on: "2026-10-02", loan_product_id: id(6),
       originated_on: "2026-09-02", principal_minor: "5000", purpose: "Working capital", term_count: "12",
+    })).success).toBe(true);
+  });
+
+  it("requires a reason and record version for payment corrections", () => {
+    expect(readPaymentCorrectionForm(form({
+      expected_version: "2", reason: "Entered twice", record_id: id(7),
+    })).success).toBe(true);
+    expect(readPaymentCorrectionForm(form({
+      expected_version: "2", reason: "", record_id: id(7),
+    })).success).toBe(false);
+  });
+
+  it("accepts a negative counted balance during reconciliation", () => {
+    expect(readReconciliationForm(form({
+      account_id: id(8), note: "Counted from the treasury book",
+      statement_balance_minor: "-25", statement_through: "2026-09-01",
+    })).success).toBe(true);
+  });
+
+  it("rejects an inverted financial period", () => {
+    expect(readClosePeriodForm(form({
+      ends_on: "2026-08-01", note: "", starts_on: "2026-08-31",
+    })).success).toBe(false);
+  });
+
+  it("validates fee runs and period reopening", () => {
+    expect(readLateFeeRunForm(form({ as_of: "2026-09-02", reason: "Routine review" })).success).toBe(true);
+    expect(readReopenPeriodForm(form({
+      expected_version: "1", period_id: id(9), reason: "Post an authorized correction",
     })).success).toBe(true);
   });
 });

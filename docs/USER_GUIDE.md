@@ -1540,7 +1540,17 @@ Owner first saves reusable loan terms: rate, weekly/monthly frequency, term and 
 
 Open the loan to see principal, interest, fees, paid portions, remaining balance, due dates, past-due installments, and payment history. Repayment withdraws from the borrower account and deposits Treasury, applying the amount to the oldest fee, interest, and principal. Default or write-off preserves all evidence and does not erase the amount or transactions.
 
-### 31.6 Meaning of the main numbers
+### 31.6 Corrections and month-end controls
+
+For a duplicate or mistaken payment, open the affected invoice or loan and choose **Undo latest payment**. Enter the reason. The system restores the exact account movement and recalculates what remains due; the original payment stays visible as corrected. It can undo only the latest unreversed payment, preventing later allocations from being silently rearranged.
+
+Open **Controls** for the three Owner bookkeeping tasks:
+
+- **Compare an account:** choose the account, enter the independently counted balance and date, and save. The result says matched or shows the exact variance. It does not change money.
+- **Assess late fees:** one click rechecks every overdue installment and applies its loan product's configured fee once after the grace period. An empty run is safe and recorded.
+- **Close a period:** after reviewing finished dates, close the range. Supabase captures all account balances through the end date and blocks new entries backdated into the closed range. A reasoned reopen preserves both the original close and its snapshot.
+
+### 31.7 Meaning of the main numbers
 
 - **Treasury balance:** signed total of every entry in the Company Treasury account.
 - **Available:** ledger balance minus live holds.

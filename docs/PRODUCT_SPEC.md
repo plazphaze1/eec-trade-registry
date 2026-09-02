@@ -373,6 +373,8 @@ ADR 0033 approves a Supabase-authoritative Septim account and lending system for
 
 The product must remain usable at large account counts: searchable paginated registers, bounded overview payloads, exact account references, and object-centered account/loan pages are requirements. Browser code never calculates an authoritative balance, receivable, available amount, or loan allocation. Real-world financial services remain outside the product boundary.
 
+ADR 0034 completes the first operational-control layer: exact latest-payment correction for invoices and loans, idempotent overdue-fee batches, immutable balance reconciliation, and formal date-range close/reopen. These are exception controls, not alternate ways to edit balances. They must be available through compact task-centered screens and remain fully attributable.
+
 ## 12.1 Approved operating baseline
 
 The product owner approved the following initial deployment policy on 2026-08-04. ADR 0005 is the durable decision record.
