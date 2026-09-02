@@ -11,6 +11,7 @@ const items = [
   ["/dealer", "Home", "dashboard"],
   ["/dealer/orders/new", "Start an order", "catalogue"],
   ["/dealer/orders", "My orders", "clipboard"],
+  ["/dealer/money", "Money", "coins"],
 ] as const;
 
 export function DealerShell({ children, institutionName }: { children: React.ReactNode; institutionName: string }) {

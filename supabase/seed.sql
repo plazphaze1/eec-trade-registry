@@ -412,6 +412,29 @@ values
     'quarantine'
   );
 
+-- The banking migration runs before seed data exists during a local reset.
+-- Seed the same per-currency system accounts that production migrations create.
+insert into public.financial_accounts (
+  public_reference, display_name, account_type, party_id, currency_id,
+  allow_negative, hidden_from_routine_ui, notes
+)
+select private.allocate_finance_reference('financial_account'),
+  'East Empire Company Treasury · ' || currency.code, 'company_treasury',
+  '92000000-0000-0000-0000-000000000004'::uuid, currency.id, true, false,
+  'Authoritative Company treasury. Negative balance remains visible until opening funds or deposits are recorded.'
+from public.currencies as currency where currency.active
+on conflict do nothing;
+
+insert into public.financial_accounts (
+  public_reference, display_name, account_type, currency_id,
+  allow_negative, hidden_from_routine_ui, notes
+)
+select private.allocate_finance_reference('financial_account'),
+  'Outside-world clearing · ' || currency.code, 'external', currency.id,
+  true, true, 'System counter-account for cash entering or leaving the recorded banking boundary.'
+from public.currencies as currency where currency.active
+on conflict do nothing;
+
 insert into public.dealer_types (id, code, display_name, public_description)
 values (
   '93000000-0000-0000-0000-000000000001',

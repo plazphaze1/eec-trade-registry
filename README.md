@@ -2,7 +2,7 @@
 
 A configurable trade, licensing, wholesale distribution, inventory, and compliance platform. Supabase PostgreSQL is the sole authoritative data source; the web portal and future integrations are projections of its records.
 
-The active implementation includes the public catalogue and verification registry, public license applications and renewal intake, Discord-authenticated owner and agent operations, dealer access, staff-assisted business and direct-customer ordering, authoritative pricing previews, ledger inventory, reservations and fulfillment, keystone-material procurement, consignment settlement, serialized-asset custody and fulfillment, compliance casework/effects, generated documents, and one-way projection integrations. The machine-readable feature manifest generates the current status table in the [Player and Discord Admin Handbook](docs/PLAYER_ADMIN_HANDBOOK.md#current-feature-status); CI rejects documentation drift.
+The active implementation includes the public catalogue and verification registry, public license applications and renewal intake, Discord-authenticated owner and agent operations, business access, staff-assisted business and direct-customer ordering, authoritative pricing previews, ledger inventory, reservations and fulfillment, keystone-material procurement, a balanced fictional-currency Treasury/account/invoice/loan system, consignment settlement, serialized-asset custody and fulfillment, compliance casework/effects, generated documents, and one-way projection integrations. The machine-readable feature manifest generates the current status table in the [Player and Discord Admin Handbook](docs/PLAYER_ADMIN_HANDBOOK.md#current-feature-status); CI rejects documentation drift.
 
 ## Repository layout
 

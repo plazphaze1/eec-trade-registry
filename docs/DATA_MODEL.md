@@ -1075,7 +1075,33 @@ Immutable provenance for the simple activity journal. `anonymous_purchase` store
 
 `count_reconciliation` stores the stated total and the calculated delta for an ordinary fungible good. It has no purchase money. Both activity types retain the exact recording actor, request identifier, creation timestamp, audit row, and durable outbox event.
 
-The **Money** projection combines paid aggregate purchases and named-supplier delivery settlement evidence. It is an operational procurement cashbook, not a general ledger or treasury balance.
+The original **Money** cashbook is now one source feeding the authoritative fictional-currency ledger described in ADR 0033. Paid aggregate purchases, paid named-supplier deliveries, and paid consignment settlements post expenditure from Company Treasury. Unpriced purchases remain exceptions and never invent a zero amount.
+
+### `financial_accounts`, `financial_transactions`, and `financial_entries`
+
+`financial_accounts` stores identity, type, optional owning party, currency, lifecycle status, and version; it deliberately stores no balance. `financial_transactions` is the immutable business header and source link. `financial_entries` contains signed account movements. A deferred constraint requires at least two entries and a zero signed sum for every transaction. Balance is the entry sum; available balance subtracts current holds.
+
+### Sales invoices
+
+`sales_invoices` is a one-to-one receivable for an order. Immutable invoice lines snapshot approved quantity and price. `sales_invoice_payments` links each partial payment to one balanced transaction. Invoice status advances from open to partially paid to paid; an unpaid open invoice may be voided with version and reason.
+
+### Holds and account lifecycle
+
+`financial_account_holds` reserves available money without changing ledger balance. Release is effective-dated evidence. Frozen accounts keep their history and balance but reject movement. A nonzero account, an account with an active hold, or an account servicing an active/defaulted loan cannot be closed.
+
+### Loans
+
+`loan_products` stores reusable effective terms. `loans` snapshots the selected rate, frequency, principal, dates, and borrower account. `loan_installments` records principal, interest, fees, due dates, status, and version. `loan_payments` is immutable money evidence; `loan_payment_allocations` assigns each payment to the oldest fee, interest, then principal obligation. Disbursement and repayment are balanced Treasury/account transactions.
+
+### Banking invariants
+
+1. Balances and available funds are derived in PostgreSQL and cannot be edited.
+2. Posted transaction headers, entries, invoice lines/payments, and loan payments/allocations are immutable.
+3. A request identifier makes retryable monetary commands idempotent.
+4. A transaction locks both accounts before checking status, currency, and funds.
+5. A business projection is limited to actively represented parties and reveals no counterparty account register.
+6. Generic reversal cannot be used for invoice or loan payments; their allocation/status requires a domain-specific correction.
+7. Registers are searched and paginated server-side; routine workspace arrays are bounded.
 
 ### Coupled invariants
 

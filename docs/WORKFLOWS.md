@@ -753,10 +753,39 @@ No workflow-dependent implementation should guess these decisions. A decision re
 
 ### Review purchase money
 
-1. **Money** sums known paid aggregate purchases and paid named deliveries by currency.
-2. Pending named deliveries appear as still owed.
-3. Purchases without an effective buying rate appear as unpriced and are excluded from monetary sums.
-4. The page does not claim a cash balance or sales revenue because those movements do not yet have an authoritative payment workflow.
+1. **Money** reads the authoritative Treasury ledger and separately shows known purchasing, supplier obligations, receivables, loan principal, and overdue amounts.
+2. A priced aggregate purchase posts inventory and Treasury expenditure together. A named delivery posts expenditure when settlement becomes paid.
+3. Pending named deliveries remain still owed. Purchases without an effective rate remain unpriced and excluded from monetary sums.
+4. Orders do not become revenue automatically. Staff issues an invoice from approved priced lines; a payment then moves money into Treasury.
+
+## 22.1 Banking and lending workflow
+
+### Open an account
+
+1. Owner opens **Money → Accounts → Open an account**, chooses business, personal, or escrow, and optionally links a registry party.
+2. Licensed-business portal activation automatically creates the ordinary business account if one does not exist.
+3. An opening amount is a balanced clearing-to-account transaction, not a typed balance.
+
+### Invoice and collect an order
+
+1. The order must be approved or later and every included line must have a frozen unit price.
+2. Staff selects **Issue invoice**. Supabase snapshots the lines and creates the receivable.
+3. The business may pay from its own active account; staff may record an external cash/payment reference when appropriate.
+4. Each partial payment moves the amount to Treasury and remains individually visible. The invoice becomes paid only when the total is satisfied.
+
+### Transfer or protect funds
+
+1. Staff selects source, destination, amount, date, and purpose. A business uses its own account and the recipient's exact `EEC-ACC-*` reference.
+2. Supabase locks both accounts, checks currency, status, active representation, and available balance, then posts both entries atomically.
+3. A hold reduces available funds without changing balance. Freeze blocks movement without deleting the account or statement.
+
+### Issue and service a loan
+
+1. Owner defines reusable rate, repayment frequency, term range, principal range, grace days, and optional fee.
+2. Owner chooses an eligible account, principal, dates, number of payments, and purpose.
+3. One transaction moves principal from Treasury to the borrower and creates the complete installment schedule.
+4. A repayment moves funds from borrower to Treasury and allocates the amount to oldest fees, interest, then principal.
+5. Default or write-off changes servicing status with a reason; it does not delete the schedule, transaction, or debt history.
 
 ### Supply pressure and resale
 
