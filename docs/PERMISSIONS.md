@@ -563,8 +563,8 @@ The implemented economic permissions intentionally separate policy from routine 
 | `procurement.delivery.receive` | Accept a delivery and create its balanced receipt in an assigned warehouse. |
 | `procurement.delivery.settle` | Record external payment evidence against an accepted delivery. |
 | `finance.cashbook.read` | View known procurement spend, pending named-supplier obligations, and unpriced purchase exceptions. |
-| `finance.bank.read` | View Treasury, customer accounts, statements, invoices, holds, transactions, and loans. |
-| `finance.transaction.post` | Post controlled fictional-currency deposits, withdrawals, transfers, invoice payments, holds, and loan repayments. |
+| `finance.bank.read` | View Company books plus authorized customer accounts, statements, invoices, holds, transactions, and loans. |
+| `finance.transaction.post` | Post controlled cash infusions, customer deposits, withdrawals, transfers, invoice payments, holds, and loan repayments. |
 | `finance.invoice.manage` | Issue, collect, and void order invoices. |
 | `finance.account.manage` | Open/freeze/close accounts, configure lending terms, originate loans, assess configured late fees, reconcile accounts, close/reopen periods, and change loan servicing status. |
 | `finance.transaction.reverse` | Post an exact compensating transaction, including purpose-built invoice and loan payment correction with synchronized domain status. |

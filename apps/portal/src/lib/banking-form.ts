@@ -37,6 +37,14 @@ const cashSchema = z.object({
   reference: optionalText(200),
 });
 
+const cashInfusionSchema = z.object({
+  amount_minor: money,
+  currency_code: text(12),
+  note: optionalText(500),
+  occurred_on: z.iso.date(),
+  source_reference: optionalText(200),
+});
+
 const transferSchema = z.object({
   amount_minor: money,
   from_account_id: z.guid(),
@@ -161,6 +169,7 @@ const reopenPeriodSchema = z.object({
 
 export const readAccountForm = (form: FormData) => accountSchema.safeParse(object(form));
 export const readCashForm = (form: FormData) => cashSchema.safeParse(object(form));
+export const readCashInfusionForm = (form: FormData) => cashInfusionSchema.safeParse(object(form));
 export const readTransferForm = (form: FormData) => transferSchema.safeParse(object(form));
 export const readInvoiceForm = (form: FormData) => invoiceSchema.safeParse(object(form));
 export const readInvoicePaymentForm = (form: FormData) => invoicePaymentSchema.safeParse(object(form));

@@ -39,7 +39,7 @@ export default async function DashboardPage() {
     { href: "/staff/orders", icon: "package", label: "order waiting for stock", description: "Demand is recorded and needs replenishment.", value: value(dashboard.orders, "awaiting_stock") },
     { href: "/staff/inventory", icon: "box", label: "critical reserve", description: "A material is below its configured safety level.", value: value(dashboard.inventory, "critical_reserves") },
     { href: "/staff/inventory", icon: "box", label: "expired stock hold", description: "Review the order before releasing or extending it.", value: value(dashboard.inventory, "expired_reservations") },
-    { href: "/staff/money", icon: "coins", label: "payment outstanding", description: "A supplier purchase or settlement still needs evidence.", value: value(dashboard.finance, "procurement_payments_pending") + value(dashboard.finance, "settlements_pending") },
+    { href: "/staff/books", icon: "coins", label: "payment outstanding", description: "A supplier purchase or settlement still needs evidence.", value: value(dashboard.finance, "procurement_payments_pending") + value(dashboard.finance, "settlements_pending") },
     { href: "/staff/compliance", icon: "shield", label: "compliance action", description: "A recorded action is waiting for review.", value: value(dashboard.compliance, "actions_pending") },
     { href: "/staff/integrations", icon: "external", label: "Sheet or Discord failure", description: "Business data is safe; its projection needs attention.", value: value(dashboard.integrations, "outbox_failed") + value(dashboard.integrations, "exports_failed") + value(dashboard.integrations, "deliveries_failed") },
   ];
@@ -48,7 +48,7 @@ export default async function DashboardPage() {
     { href: "/staff/orders/new", icon: "clipboard", label: "Record an order", description: "Choose the buyer, goods, and handoff." },
     { href: "/staff/activity", icon: "package", label: "Record activity", description: "Save a material purchase or counted stock total." },
     { href: "/staff/applications", icon: "license", label: "Review applications", description: "Approve, renew, or deny a license request." },
-    { href: "/staff/money", icon: "coins", label: "Money", description: "See purchase spending, bills, and unpriced stock." },
+    { href: "/staff/books", icon: "document", label: "Company books", description: "See Treasury, sales, expenses, and add cash." },
   ];
 
   return (

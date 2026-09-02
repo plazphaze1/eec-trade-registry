@@ -26,7 +26,8 @@ describe("consumer experience contracts", () => {
 
     expect(staffShell).toContain('label: "Stock & prices"');
     expect(staffShell).toContain('label: "Record activity"');
-    expect(staffShell).toContain('label: "Money"');
+    expect(staffShell).toContain('label: "Company books"');
+    expect(staffShell).toContain('label: "Bank"');
     expect(staffShell).not.toContain('label: "Buy from a player"');
     expect(stockWorkspace).toContain('className="stock-sheet-table"');
     expect(stockWorkspace).toContain("Add stock");

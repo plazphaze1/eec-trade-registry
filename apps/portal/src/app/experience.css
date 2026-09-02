@@ -2120,6 +2120,12 @@ body > main > .hero::before,
 .bank-action-form label { display: grid; gap: 5px; }
 .bank-action-form label > span { color: var(--ink-muted); font-size: .78rem; font-weight: 750; }
 .bank-action-form input,.bank-action-form select { background: white; border: 1px solid var(--line-strong); border-radius: 8px; min-height: 42px; padding: 8px 10px; width: 100%; }
+.bank-cash-infusion { background: linear-gradient(120deg,#fffdf8,#f6edda); border-color: rgba(160,119,45,.45); }
+.bank-infusion-form { align-items: end; grid-template-columns: minmax(140px,.65fr) minmax(150px,.6fr) minmax(180px,1fr) minmax(200px,1.2fr) auto; }
+.bank-infusion-form .button { min-height: 42px; white-space: nowrap; }
+.money-input { align-items: center; background: white; border: 1px solid var(--line-strong); border-radius: 8px; display: grid; grid-template-columns: 1fr auto; overflow: hidden; }
+.money-input input { border: 0; border-radius: 0; }
+.money-input strong { color: var(--ink-muted); font-size: .76rem; padding: 0 11px; }
 .bank-form-row { display: grid; gap: 10px; grid-template-columns: repeat(2,minmax(0,1fr)); }
 .bank-quick-actions { display: grid; gap: 14px; grid-template-columns: repeat(2,minmax(0,1fr)); }
 .bank-quick-actions > details { background: rgba(255,255,255,.8); border: 1px solid var(--line); border-radius: 15px; padding: 18px; }
@@ -2153,6 +2159,7 @@ body > main > .hero::before,
   .bank-summary-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .bank-two-column,.bank-quick-actions { grid-template-columns: 1fr; }
   .bank-attention-strip { align-items: flex-start; flex-direction: column; }
+  .bank-infusion-form { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
 @media (max-width: 640px) {
   .bank-summary-grid { grid-template-columns: 1fr; }
@@ -2161,6 +2168,7 @@ body > main > .hero::before,
   .bank-action-menu > .bank-action-form { min-width: min(88vw,410px); position: static; }
   .bank-table-action > .bank-action-form { min-width: min(78vw,290px); position: static; }
   .bank-form-row { grid-template-columns: 1fr; }
+  .bank-infusion-form { grid-template-columns: 1fr; }
   .bank-invoice-main,.bank-loan-summary { align-items: start; grid-template-columns: 1fr; }
   .bank-invoice-main > div:last-child,.bank-loan-summary > div:last-child { text-align: left; }
 }
