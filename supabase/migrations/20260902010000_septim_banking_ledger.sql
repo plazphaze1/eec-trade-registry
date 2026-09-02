@@ -663,8 +663,8 @@ begin
     or p_issued_on is null or (p_due_on is not null and p_due_on < p_issued_on) then
     raise exception using errcode = '22023', message = 'order_not_invoiceable';
   end if;
-  if exists (select 1 from public.order_lines where order_id = order_record.id
-    and status not in ('denied', 'cancelled') and unit_price_minor_snapshot is null) then
+  if exists (select 1 from public.order_lines as candidate_line where candidate_line.order_id = order_record.id
+    and candidate_line.status not in ('denied', 'cancelled') and candidate_line.unit_price_minor_snapshot is null) then
     raise exception using errcode = '22023', message = 'order_price_required';
   end if;
   select currency.id into currency_id from public.currencies as currency
