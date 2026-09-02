@@ -54,6 +54,7 @@ create table public.loan_payment_reversals (
 
 alter table public.loan_payment_allocations
   drop constraint if exists loan_payment_allocations_loan_payment_id_loan_installment_id_key,
+  drop constraint if exists loan_payment_allocations_loan_payment_id_loan_installment_i_key,
   drop constraint if exists loan_payment_allocations_principal_minor_check,
   drop constraint if exists loan_payment_allocations_interest_minor_check,
   drop constraint if exists loan_payment_allocations_fee_minor_check,
