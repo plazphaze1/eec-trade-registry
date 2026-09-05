@@ -105,6 +105,8 @@ ADR 0031 removes the advanced dashboard catalogue that still made the console fe
 
 ADR 0032 removes the remaining catch-all configuration page. **Products** owns product creation and public presentation, **Stock & prices** and **Record activity** own quantities and normal prices, and **Company setup** contains reusable reference choices only. The atomic onboarding, ledger, permission, and audit functions remain unchanged beneath the smaller interface.
 
+ADR 0036 adds the first production-sized merchandise curation: 295 public products across complete outfit sets, individual armor and weapons, alchemy ingredients, food, and drinks. Every product has customer-facing sales copy and restricted fulfilment references; no stock or price is invented. Rejected factions, silver weapons, quest objects, ores, pelts/hides, Dwemer salvage, vampire-specific stock, and skooma remain outside the import.
+
 ### User outcome
 
 Authorized staff can maintain the master catalogue, prices, publication, and control metadata; public output changes from the same source record.
