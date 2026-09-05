@@ -148,6 +148,8 @@ The system maintains one item definition per sellable or controlled item type. C
 
 Separate catalogues for each dealer type must not duplicate item records. Eligibility and price are projections of rules applied to the master catalogue.
 
+The approved initial merchandise curation treats a complete clothing outfit as one sellable product, with visual styles and fulfilment component references kept behind that product. Armor pieces, weapons, ammunition, ingredients, food, and drinks remain individually countable products. Third-party game values never become EEC prices: newly curated merchandise may be published with price unset until staff deliberately create an effective-dated price. ADR 0036 records the included families and explicit exclusions.
+
 ### 5.2 Parties, dealers, and factors
 
 People and organizations are represented as parties. Dealer authorization is an explicit, effective-dated relationship rather than a free-text flag. The system supports:

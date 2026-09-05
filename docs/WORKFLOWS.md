@@ -30,6 +30,8 @@ Let any visitor discover publicly offered goods without authentication while pre
 4. Portal displays public item details, public price if any, purchasing requirements, and generated-at time where applicable.
 5. If the visitor follows a purchase path, the portal explains whether dealer access, a license, an endorsement, or special review may be required.
 
+For the initial curated merchandise in ADR 0036, a clothing selection adds one complete outfit product to an order; the buyer supplies a preferred colour or style in the order note when the product offers variants. Armor, weapons, ammunition, ingredients, foods, and drinks are selected and counted individually. A missing public price means staff have not set the current EEC price; source-game values are never substituted.
+
 ### Rules
 
 - Public visibility is effective-dated and independent of physical stock.

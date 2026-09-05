@@ -473,6 +473,8 @@ Key fields:
 
 An item name never determines authorization or control behavior.
 
+An item may represent a deliberately sold complete outfit rather than one underlying game object. In that case, inventory quantity is measured in complete sets and restricted `internal_notes` may retain the component and variant references staff need for fulfilment. Those notes are not a component inventory ledger and never appear in public projections. Individually sold armor, weapons, ammunition, ingredients, food, and drinks remain separate canonical items. ADR 0036 defines the initial merchandising boundary.
+
 ### `item_categories` and `item_tags`
 
 Configurable classification used for navigation and rule targeting. Tags may be many-to-many through `item_tag_assignments`.
