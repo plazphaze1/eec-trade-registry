@@ -21,9 +21,9 @@ select ok(not has_table_privilege('authenticated', 'public.procurement_deliverie
 select ok(not has_function_privilege('anon', 'public.staff_record_procurement_delivery(uuid,uuid,uuid,numeric,text,uuid)', 'execute'), 'anonymous callers cannot receive goods');
 select is((select count(*)::integer from public.permission_scopes where code like 'procurement.%' or code = 'economy.dashboard.read'), 6, 'six economic permissions are configured');
 select is((select count(*)::integer from public.staff_roles where code in ('procurement_officer','economic_steward')), 2, 'two separated economic roles are configured');
-select is((select count(*)::integer from public.items where item_code like 'RM-%'), 5, 'five initial keystone material records are configured');
+select is((select count(*)::integer from public.items where item_code like 'RM-%'), 10, 'ten initial keystone material records are configured');
 select is((select count(*)::integer from public.endorsement_definitions where code in ('raw-materials','smithing-metalwork','alchemical-goods','arcane-goods','tailoring-textiles','bulk-distribution','consignment')), 7, 'seven modular trade endorsements are configured, including the existing consignment authority');
-select is((select count(*)::integer from public.item_supply_policies where player_sourced_only), 5, 'all initial keystone materials require player sourcing');
+select is((select count(*)::integer from public.item_supply_policies where player_sourced_only), 10, 'all initial keystone materials require player sourcing');
 select is((select count(*)::integer from public.procurement_offers), 0, 'migration does not guess an economic purchase rate');
 select ok(exists(select 1 from public.get_public_catalogue(null, 'raw-materials') where item_code = 'RM-IRON-ORE'), 'raw materials are visible in the public catalogue');
 select is((select count(*)::integer from public.inventory_accounts where item_id = 'ce000000-0000-0000-0000-000000000001'), 0, 'configuration does not invent material stock');
