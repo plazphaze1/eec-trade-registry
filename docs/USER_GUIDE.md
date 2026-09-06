@@ -345,7 +345,7 @@ The item now exists once. If 10 were received, the ledger shows a balanced recei
 
 ### 7.7 Worked setup: player-sourced keystone material
 
-Example: add **Moonstone Ore** as an economic floor material.
+Example: add **Moonstone Ore** as an economic floor material. The built-in baseline already includes Iron Ore, Firewood, Iron Ingot, Corundum Ore, Corundum Ingot, Steel Ingot, Leather, and Leather Strips.
 
 1. Add a suitable category or unit first if the required option does not already exist.
 2. In **Products → Add product**, enter `Moonstone Ore`.

@@ -765,7 +765,7 @@ When the roleplay conversation, Discord message, Google Sheet, and portal appear
 Do not solve a disagreement by editing the Sheet, changing a Discord role, deleting a message, sharing credentials, or inventing an approval. Use the correct EEC workflow and leave an auditable reason.
 ## 27. Live workflow: miners, keystone materials, and Company reserves
 
-This is the ordinary player-facing story for iron ore, stone, leather rolls, lumber, cloth, and any later material configured the same way.
+This is the ordinary player-facing story for Iron Ore, Firewood, Iron Ingot, Corundum Ore, Corundum Ingot, Steel Ingot, Leather, Leather Strips, and any later material configured the same way.
 
 1. A miner, hunter, lumber worker, or supplier gathers goods through normal server play.
 2. An EEC agent can always offer the currently approved Company floor price. The floor is intentionally a safe fallback, not the best possible market price.
