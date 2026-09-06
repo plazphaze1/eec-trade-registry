@@ -125,8 +125,8 @@ select is(
 );
 select is(
   (select count(*)::integer from public.get_public_catalogue_export()),
-  301,
-  'the public catalogue export contains launch and curated merchandise while excluding demonstrations'
+  306,
+  'the public catalogue export contains launch, curated merchandise, and keystone materials while excluding demonstrations'
 );
 select is(
   (select count(*)::integer from public.get_public_dealer_export()),

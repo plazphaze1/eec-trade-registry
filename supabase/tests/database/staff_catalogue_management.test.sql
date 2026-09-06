@@ -223,8 +223,8 @@ select set_config(
 
 select is(
   (select count(*)::integer from public.get_staff_catalogue_items(null)),
-  306,
-  'an active catalogue manager sees the complete internal work queue, including curated merchandise'
+  311,
+  'an active catalogue manager sees the complete internal work queue, including curated merchandise and keystone materials'
 );
 
 select lives_ok(

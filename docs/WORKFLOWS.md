@@ -711,7 +711,7 @@ No workflow-dependent implementation should guess these decisions. A decision re
 
 ### Establish policy
 
-1. Player-sourced reserve mode is configured for each canonical material.
+1. Player-sourced reserve mode is configured for each canonical material. The initial baseline is Iron Ore, Firewood, Iron Ingot, Corundum Ore, Corundum Ingot, Steel Ingot, Leather, and Leather Strips.
 2. An authorized operator opens **Stock & prices** and enters the approved Company buying amount beside the material.
 3. Supabase serializes the material/currency change, retires any overlapping current offer, and creates the replacement with actor, reason, request identifier, and effective time.
 4. Optional critical, minimum, target, and surplus thresholds remain Owner system policy. They are not required to record a buying price.
