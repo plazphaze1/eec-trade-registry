@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   readCancelOrderForm,
-  readPriceOrderLineForm,
   readReviewOrderLineForm,
   readSubmitOrderForm,
 } from "./order-form";
@@ -52,39 +51,29 @@ describe("order form parsing", () => {
     expect(readSubmitOrderForm(form).success).toBe(false);
   });
 
-  it("parses awaiting-stock review with blank price", () => {
+  it("parses awaiting-stock review without asking the order form for a price", () => {
     const form = new FormData();
     form.set("order_id", orderId);
     form.set("order_line_id", lineId);
     form.set("expected_order_version", "2");
     form.set("decision", "awaiting_stock");
     form.set("approved_quantity", "4");
-    form.set("unit_price_minor", "");
     form.set("reason", "Approve commercially while awaiting warehouse stock.");
 
     const result = readReviewOrderLineForm(form);
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.unitPriceMinor).toBeNull();
       expect(result.data.approvedQuantity).toBe(4);
     }
   });
 
-  it("parses clearing a price and cancelling an order", () => {
-    const price = new FormData();
-    price.set("order_id", orderId);
-    price.set("order_line_id", lineId);
-    price.set("expected_order_version", "3");
-    price.set("unit_price_minor", "");
-    price.set("reason", "Return the line to pending pricing.");
-
+  it("parses cancelling an order", () => {
     const cancel = new FormData();
     cancel.set("order_id", orderId);
     cancel.set("expected_version", "4");
     cancel.set("reason", "Cancel before fulfillment.");
 
-    expect(readPriceOrderLineForm(price).success).toBe(true);
     expect(readCancelOrderForm(cancel).success).toBe(true);
   });
 });

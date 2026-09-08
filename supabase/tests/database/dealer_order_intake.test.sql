@@ -1,6 +1,6 @@
 begin;
 
-select plan(60);
+select plan(61);
 
 -- Order behavior is tested against the original mixed-control fixtures. They
 -- are withdrawn from public launch data, so publish them only inside this
@@ -14,6 +14,17 @@ where item_id in (
   '70000000-0000-0000-0000-000000000004'
 )
   and audience_code = 'public';
+
+insert into public.price_rules (
+  price_schedule_id, item_id, amount_minor, effective_from, approved_at
+)
+values (
+  '80000000-0000-0000-0000-000000000001',
+  '70000000-0000-0000-0000-000000000004',
+  2750,
+  '2026-01-01T00:00:00Z',
+  '2026-01-01T00:00:00Z'
+);
 
 select has_table('public', 'orders', 'orders table exists');
 select has_table('public', 'order_lines', 'order lines table exists');
@@ -295,6 +306,16 @@ select lives_ok(
 reset role;
 select is((select count(*)::integer from public.orders where source_request_id = 'e3000000-0000-0000-0000-000000000001'), 1, 'submission retry does not duplicate the order');
 select is((select count(*)::integer from public.outbox_events where deduplication_key = 'order.submitted:e3000000-0000-0000-0000-000000000001'), 1, 'submission retry does not duplicate outbox work');
+update public.order_lines
+set unit_price_minor_snapshot = null,
+    pricing_status = 'pending',
+    price_schedule_id_snapshot = null,
+    price_rule_id_snapshot = null,
+    price_source_snapshot = null,
+    base_price_minor_snapshot = null,
+    price_multiplier_basis_points_snapshot = null
+where order_id = (select id from public.orders where public_reference = 'EEC-ORD-1001')
+  and control_profile_code_snapshot = 'unique';
 select set_config(
   'test.submitted_order_id',
   (select id::text from public.orders where public_reference = 'EEC-ORD-1001'),
@@ -328,6 +349,15 @@ select throws_ok(
 
 select set_config('request.jwt.claims', '{"sub":"b3000000-0000-0000-0000-000000000004","role":"authenticated"}', true);
 select is((select count(*)::integer from public.get_staff_order_queue(null)), 1, 'limited order officer can read the order queue');
+select is(
+  (
+    select line ->> 'price_origin'
+    from public.get_staff_order_queue(null), lateral jsonb_array_elements(lines) as line
+    where line ->> 'control_profile_code' = 'unique'
+  ),
+  'current_product',
+  'a legacy pending line displays the currently applicable product price instead of asking for an order price'
+);
 select lives_ok(
   $test$
     select * from public.staff_review_order_line(
@@ -340,7 +370,7 @@ select lives_ok(
       'approve',
       1,
       null,
-      'Partially approve the ordinary line with pricing pending.',
+      'Partially approve the ordinary line at its product price.',
       'e3000000-0000-0000-0000-000000000003'
     )
   $test$,
@@ -368,21 +398,13 @@ select throws_ok(
 );
 
 select set_config('request.jwt.claims', '{"sub":"b3000000-0000-0000-0000-000000000003","role":"authenticated"}', true);
-select lives_ok(
-  $test$
-    select * from public.staff_set_order_line_price(
-      (
-        select (line ->> 'id')::uuid
-        from public.get_staff_order_queue(null), lateral jsonb_array_elements(lines) as line
-        where line ->> 'control_profile_code' = 'ordinary'
-      ),
-      2,
-      250,
-      'Record the reviewed Septim unit price.',
-      'e3000000-0000-0000-0000-000000000005'
-    )
-  $test$,
-  'authorized staff can configure a previously blank line price'
+select ok(
+  not has_function_privilege(
+    'authenticated',
+    'public.staff_set_order_line_price(uuid,bigint,bigint,text,uuid)',
+    'execute'
+  ),
+  'authenticated staff cannot bypass product pricing with an order-level price edit'
 );
 select lives_ok(
   $test$
@@ -392,11 +414,11 @@ select lives_ok(
         from public.get_staff_order_queue(null), lateral jsonb_array_elements(lines) as line
         where line ->> 'control_profile_code' = 'unique'
       ),
-      3,
+      2,
       'awaiting_stock',
       1,
-      null,
-      'Approve the unique request while waiting for an allocatable asset.',
+      999999,
+      'Approve the unique request at its frozen product price while waiting for an allocatable asset.',
       'e3000000-0000-0000-0000-000000000006'
     )
   $test$,
@@ -404,17 +426,17 @@ select lives_ok(
 );
 select is(
   (select status || ':' || version::text from public.get_staff_order_queue(null)),
-  'awaiting_stock:4',
+  'awaiting_stock:3',
   'mixed partial approval and unavailable unique stock produce awaiting-stock header state'
 );
 select ok(
   (
     select
-      count(*) filter (where line ->> 'pricing_status' = 'configured' and line ->> 'unit_price_minor' = '250') = 1
-      and count(*) filter (where line ->> 'pricing_status' = 'pending' and line -> 'unit_price_minor' = 'null'::jsonb) = 1
+      count(*) filter (where line ->> 'pricing_status' = 'configured' and line ->> 'unit_price_minor' = '180') = 1
+      and count(*) filter (where line ->> 'pricing_status' = 'configured' and line ->> 'unit_price_minor' = '2750') = 1
     from public.get_staff_order_queue(null), lateral jsonb_array_elements(lines) as line
   ),
-  'configured and pending prices remain distinct in one order'
+  'review preserves authoritative product prices and ignores a caller-supplied order price'
 );
 
 reset role;
@@ -449,7 +471,7 @@ select lives_ok(
   $test$
     select * from public.dealer_cancel_order(
       (select id from public.get_dealer_orders()),
-      4,
+      3,
       'Cancel before any fulfillment or inventory movement.',
       'e3000000-0000-0000-0000-000000000007'
     )
@@ -460,7 +482,7 @@ select lives_ok(
   $test$
     select * from public.dealer_cancel_order(
       (select id from public.get_dealer_orders()),
-      4,
+      3,
       'Cancel before any fulfillment or inventory movement.',
       'e3000000-0000-0000-0000-000000000007'
     )
@@ -481,8 +503,8 @@ select ok(
 
 reset role;
 select is((select count(*)::integer from public.order_status_events where order_id = (select id from public.orders where public_reference = 'EEC-ORD-1001')), 4, 'header submission, review changes, and cancellation are append-only');
-select is((select count(*)::integer from public.order_line_events where order_id = (select id from public.orders where public_reference = 'EEC-ORD-1001')), 7, 'line submissions, decisions, price edit, and cancellations are append-only');
-select is((select count(*)::integer from public.outbox_events where aggregate_type = 'order' and aggregate_id = (select id from public.orders where public_reference = 'EEC-ORD-1001')), 5, 'each accepted order command creates one durable outbox event');
+select is((select count(*)::integer from public.order_line_events where order_id = (select id from public.orders where public_reference = 'EEC-ORD-1001')), 6, 'line submissions, product-priced decisions, and cancellations are append-only');
+select is((select count(*)::integer from public.outbox_events where aggregate_type = 'order' and aggregate_id = (select id from public.orders where public_reference = 'EEC-ORD-1001')), 4, 'each accepted order command creates one durable outbox event');
 
 select * from finish();
 rollback;

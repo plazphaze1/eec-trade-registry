@@ -6,7 +6,6 @@ import { z } from "zod";
 
 import {
   readCancelOrderForm,
-  readPriceOrderLineForm,
   readReviewOrderLineForm,
 } from "@/lib/order-form";
 import { readCreateReservationForm } from "@/lib/inventory-form";
@@ -44,6 +43,9 @@ function errorPath(path: string, error: { code?: string; message: string }) {
   ) {
     return destination(path, "error", "insufficient_stock");
   }
+  if (error.message.includes("product_price_unavailable")) {
+    return destination(path, "error", "product_price_missing");
+  }
   if (error.code === "22023") return destination(path, "error", "invalid_input");
   return destination(path, "error", "save_failed");
 }
@@ -78,7 +80,7 @@ export async function reviewOrderLineAction(formData: FormData) {
     p_quantity_approved: input.decision === "deny" ? null : input.approvedQuantity,
     p_reason: input.reason,
     p_request_id: crypto.randomUUID(),
-    p_unit_price_minor: input.unitPriceMinor,
+    p_unit_price_minor: null,
   });
   if (error) redirect(errorPath(path, error));
 
@@ -94,7 +96,6 @@ const prepareOrderLineSchema = z.object({
   inventoryAccountId: z.union([z.literal(""), z.guid()]).transform((value) => value || null),
   orderId: z.guid(),
   orderLineId: z.guid(),
-  unitPriceMinor: z.union([z.literal(""), z.coerce.number().int().nonnegative().safe()]).transform((value) => value === "" ? null : value),
 });
 
 export async function prepareOrderLineAction(formData: FormData) {
@@ -104,7 +105,6 @@ export async function prepareOrderLineAction(formData: FormData) {
     inventoryAccountId: formData.get("inventory_account_id") ?? "",
     orderId: formData.get("order_id"),
     orderLineId: formData.get("order_line_id"),
-    unitPriceMinor: formData.get("unit_price_minor") ?? "",
   });
   const path = orderPath(formData.get("order_id"));
   if (!parsed.success) redirect(destination(path, "error", "invalid_input"));
@@ -118,7 +118,7 @@ export async function prepareOrderLineAction(formData: FormData) {
     p_quantity_approved: input.approvedQuantity,
     p_reason: "Ordinary order prepared by staff.",
     p_request_id: crypto.randomUUID(),
-    p_unit_price_minor: input.unitPriceMinor,
+    p_unit_price_minor: null,
   });
   if (reviewError) redirect(errorPath(path, reviewError));
   if (input.inventoryAccountId) {
@@ -133,29 +133,6 @@ export async function prepareOrderLineAction(formData: FormData) {
   }
   refreshOrderWorkflow(path);
   redirect(destination(path, "notice", input.inventoryAccountId ? "prepared" : "backordered"));
-}
-
-export async function priceOrderLineAction(formData: FormData) {
-  const path = orderPath(formData.get("order_id"));
-  const parsed = readPriceOrderLineForm(formData);
-  if (!parsed.success) redirect(destination(path, "error", "invalid_input"));
-
-  const client = await verifiedClient();
-  if (!client) redirect("/staff/login");
-  const input = parsed.data;
-  const { error } = await client.rpc("staff_set_order_line_price", {
-    p_expected_order_version: input.expectedOrderVersion,
-    p_order_line_id: input.orderLineId,
-    p_reason: input.reason,
-    p_request_id: crypto.randomUUID(),
-    p_unit_price_minor: input.unitPriceMinor,
-  });
-  if (error) redirect(errorPath(path, error));
-
-  revalidatePath("/staff/orders");
-  revalidatePath(path);
-  revalidatePath("/dealer/orders");
-  redirect(destination(path, "notice", "line_priced"));
 }
 
 export async function cancelStaffOrderAction(formData: FormData) {

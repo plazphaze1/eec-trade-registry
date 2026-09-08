@@ -139,12 +139,14 @@ function StockIntakeCell({
 
 export function SimpleStockWorkspace({
   defaultReceiptLocationId,
+  initialSearch,
   items,
 }: {
   defaultReceiptLocationId: string | null;
+  initialSearch?: string;
   items: StockItem[];
 }) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch ?? "");
   const filtered = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
     return query ? items.filter((item) => item.name.toLocaleLowerCase().includes(query)) : items;

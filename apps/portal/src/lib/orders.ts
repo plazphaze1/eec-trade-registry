@@ -7,6 +7,7 @@ const orderLineSchema = z.object({
   item_code: z.string(),
   item_name: z.string(),
   line_number: z.number().int().positive(),
+  price_origin: z.enum(["snapshot", "current_product"]).nullable().optional(),
   pricing_status: z.enum(["pending", "configured"]),
   quantity_approved: z.coerce.number().positive().nullable(),
   quantity_fulfilled: z.coerce.number().nonnegative(),
