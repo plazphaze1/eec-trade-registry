@@ -80,7 +80,7 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
   const nextInstruction = terminal
     ? "This order is finished."
     : pricesNeeded
-      ? `Set ${pricesNeeded === 1 ? "the missing price" : `${pricesNeeded} missing prices`} below.`
+      ? `Enter ${pricesNeeded === 1 ? "the missing price" : `${pricesNeeded} missing prices`} below${itemsNeedingAction ? "; approval happens with the same button." : "."}`
       : itemsNeedingAction
         ? `Approve ${itemsNeedingAction === 1 ? "the waiting item" : `${itemsNeedingAction} waiting items`} below.`
         : readyForHandoff
