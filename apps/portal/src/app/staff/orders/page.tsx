@@ -113,7 +113,9 @@ export default async function StaffOrdersPage({ searchParams }: StaffOrdersPageP
   const counts = Object.fromEntries(
     views.map((view) => [view.key, result.data.filter((order) => belongsToView(order, view.key)).length]),
   ) as Record<QueueView, number>;
-  const orders = result.data.filter((order) => belongsToView(order, selectedView));
+  const orders = result.data
+    .filter((order) => belongsToView(order, selectedView))
+    .sort((left, right) => Date.parse(left.submitted_at) - Date.parse(right.submitted_at));
 
   return (
     <main className="staff-main order-queue-page">
