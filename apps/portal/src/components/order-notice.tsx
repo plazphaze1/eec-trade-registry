@@ -15,6 +15,7 @@ const errors: Record<string, string> = {
   invalid_input: "Check the customer, goods, and quantities.",
   insufficient_stock: "That quantity is no longer in stock. The order remains open.",
   not_found: "That order is no longer available.",
+  product_price_missing: "Set the product's normal selling price in Stock & prices, then return to this order.",
   save_failed: "The order could not be updated. Please try again.",
 };
 

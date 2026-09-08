@@ -18,7 +18,7 @@ import { getMyStaffAccessState } from "@/lib/staff-access";
 import { requireStaffSession } from "@/lib/staff-auth";
 
 interface StaffInventoryPageProps {
-  searchParams: Promise<{ error?: string; notice?: string; view?: string }>;
+  searchParams: Promise<{ error?: string; notice?: string; q?: string; view?: string }>;
 }
 
 function quantity(value: number) {
@@ -120,7 +120,7 @@ export default async function StaffInventoryPage({ searchParams }: StaffInventor
 
       <InventoryNotice error={parameters.error} notice={parameters.notice} />
 
-      {!showSystemRecords && <SimpleStockWorkspace defaultReceiptLocationId={defaultReceiptLocationId} items={stockItems} />}
+      {!showSystemRecords && <SimpleStockWorkspace defaultReceiptLocationId={defaultReceiptLocationId} initialSearch={parameters.q?.trim().slice(0, 100) ?? ""} items={stockItems} />}
 
       {showSystemRecords && <div className="staff-tools-panel stock-tools-panel is-system-records"><div className="staff-tools-content">
       <section className="inventory-section embedded-inventory-section">

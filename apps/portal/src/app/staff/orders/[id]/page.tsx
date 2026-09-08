@@ -6,7 +6,6 @@ import {
   cancelStaffOrderAction,
   fulfillOrderReservationAction,
   prepareOrderLineAction,
-  priceOrderLineAction,
   reserveOrderLineAction,
   reviewOrderLineAction,
 } from "@/app/staff/orders/actions";
@@ -73,14 +72,14 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
   const terminal = ["cancelled", "denied", "fulfilled"].includes(order.status);
   const itemsNeedingAction = order.lines.filter((line) => line.status === "review_required").length;
   const activeLines = order.lines.filter((line) => line.status !== "denied");
-  const pricesNeeded = activeLines.filter((line) => line.unit_price_minor === null && line.status !== "fulfilled").length;
+  const productsMissingPrices = activeLines.filter((line) => line.unit_price_minor === null && line.status !== "fulfilled").length;
   const waitingForStock = activeLines.filter((line) => ["awaiting_stock", "partially_awaiting_stock"].includes(line.status)).length;
   const completedItems = order.lines.filter((line) => line.status === "fulfilled").length;
   const readyForHandoff = activeLines.filter((line) => ["reserved", "processing", "ready"].includes(line.status)).length;
   const nextInstruction = terminal
     ? "This order is finished."
-    : pricesNeeded
-      ? `Enter ${pricesNeeded === 1 ? "the missing price" : `${pricesNeeded} missing prices`} below${itemsNeedingAction ? "; approval happens with the same button." : "."}`
+    : productsMissingPrices
+      ? `Set ${productsMissingPrices === 1 ? "the missing product price" : `${productsMissingPrices} missing product prices`} in Stock & prices.`
       : itemsNeedingAction
         ? `Approve ${itemsNeedingAction === 1 ? "the waiting item" : `${itemsNeedingAction} waiting items`} below.`
         : readyForHandoff
@@ -110,7 +109,7 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
           <strong>{nextInstruction}</strong>
         </div>
         <dl>
-          <div className={pricesNeeded ? "needs-work" : "is-done"}><dt>Prices</dt><dd>{pricesNeeded ? `${pricesNeeded} missing` : "Done"}</dd></div>
+          <div className={productsMissingPrices ? "needs-work" : "is-done"}><dt>Products</dt><dd>{productsMissingPrices ? `${productsMissingPrices} need prices` : "Ready"}</dd></div>
           <div className={itemsNeedingAction ? "needs-work" : "is-done"}><dt>Approval</dt><dd>{itemsNeedingAction ? `${itemsNeedingAction} waiting` : "Done"}</dd></div>
           <div className={completedItems === activeLines.length ? "is-done" : "needs-work"}><dt>Handoff</dt><dd>{completedItems}/{activeLines.length} done</dd></div>
         </dl>
@@ -145,7 +144,7 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
             : ready
               ? "Ready for handoff"
               : reviewable && !hasPrice
-                ? "Price needed"
+                ? "Product price missing"
                 : reviewable
                   ? "Ready to approve"
                   : line.status === "awaiting_stock"
@@ -165,81 +164,17 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
 
               <div className="order-line-quick-facts">
                 <span><small>Stock</small>{readyQuantity ? `${readyQuantity} held` : `${availableQuantity} available`}</span>
-                <span><small>Price</small>{hasPrice ? `${line.unit_price_minor} ${order.currency_code} each` : "Not set"}</span>
+                <span><small>Product price</small>{hasPrice ? `${line.unit_price_minor} ${order.currency_code} each` : "Not set in Products"}</span>
               </div>
 
-              {actionable && !reviewable && !hasPrice && (
+              {actionable && !hasPrice && (
                 <section className="order-next-action is-price-step">
                   <div className="order-next-action-copy">
-                    <p className="eyebrow">Step 1 of 3</p>
-                    <h3>Set the price</h3>
-                    <p>This item cannot be approved or invoiced until its unit price is recorded.</p>
+                    <p className="eyebrow">Product setup needed</p>
+                    <h3>Set the normal selling price</h3>
+                    <p>Prices belong to products, not individual orders. Set it once and every eligible order will use it automatically.</p>
                   </div>
-                  <form action={priceOrderLineAction} className="order-price-form">
-                    <input name="order_id" type="hidden" value={order.id}/>
-                    <input name="order_line_id" type="hidden" value={line.id}/>
-                    <input name="expected_order_version" type="hidden" value={order.version}/>
-                    <input name="reason" type="hidden" value="Unit price recorded before order approval."/>
-                    <label className="field">
-                      <span>Price for one {line.unit_code}</span>
-                      <div className="order-price-input">
-                        <input autoFocus={pricesNeeded === 1} min="0" name="unit_price_minor" required step="1" type="number"/>
-                        <strong>{order.currency_code}</strong>
-                      </div>
-                    </label>
-                    <button className="button button-primary" type="submit"><UiIcon name="coins"/>Save price &amp; continue</button>
-                  </form>
-                </section>
-              )}
-
-              {!terminal && reviewable && ordinary && !hasPrice && (
-                <section className="order-next-action is-price-step">
-                  <div className="order-next-action-copy">
-                    <p className="eyebrow">Do this now</p>
-                    <h3>Price and prepare</h3>
-                    <p>{readyPosition ? `Enter the price; ${line.quantity_requested} will be approved and held automatically.` : "Enter the price; the item will be approved and kept open until stock arrives."}</p>
-                  </div>
-                  <form action={prepareOrderLineAction} className="order-combined-form">
-                    <input name="order_id" type="hidden" value={order.id}/>
-                    <input name="order_line_id" type="hidden" value={line.id}/>
-                    <input name="expected_order_version" type="hidden" value={order.version}/>
-                    <input name="approved_quantity" type="hidden" value={line.quantity_requested}/>
-                    <input name="inventory_account_id" type="hidden" value={readyPosition?.account_id ?? ""}/>
-                    <label className="field">
-                      <span>Price for one {line.unit_code}</span>
-                      <div className="order-price-input">
-                        <input autoFocus={pricesNeeded === 1} min="0" name="unit_price_minor" required step="1" type="number"/>
-                        <strong>{order.currency_code}</strong>
-                      </div>
-                    </label>
-                    <button className="button button-primary" type="submit"><UiIcon name={readyPosition ? "package" : "check"}/>{readyPosition ? "Save price & hold" : "Save price & approve"}</button>
-                  </form>
-                </section>
-              )}
-
-              {!terminal && reviewable && !ordinary && !hasPrice && (
-                <section className="order-next-action is-price-step">
-                  <div className="order-next-action-copy">
-                    <p className="eyebrow">Do this now</p>
-                    <h3>Set price and approve</h3>
-                    <p>This controlled item needs an authorized decision. The price and approval are recorded together.</p>
-                  </div>
-                  <form action={reviewOrderLineAction} className="order-combined-form">
-                    <input name="order_id" type="hidden" value={order.id}/>
-                    <input name="order_line_id" type="hidden" value={line.id}/>
-                    <input name="expected_order_version" type="hidden" value={order.version}/>
-                    <input name="decision" type="hidden" value="approve"/>
-                    <input name="approved_quantity" type="hidden" value={line.quantity_requested}/>
-                    <input name="reason" type="hidden" value="Controlled item priced, reviewed, and approved by staff."/>
-                    <label className="field">
-                      <span>Price for one {line.unit_code}</span>
-                      <div className="order-price-input">
-                        <input autoFocus={pricesNeeded === 1} min="0" name="unit_price_minor" required step="1" type="number"/>
-                        <strong>{order.currency_code}</strong>
-                      </div>
-                    </label>
-                    <button className="button button-primary" type="submit"><UiIcon name="check"/>Save price &amp; approve</button>
-                  </form>
+                  <Link className="button button-primary" href={`/staff/inventory?q=${encodeURIComponent(line.item_name)}`}><UiIcon name="coins"/>Open product price</Link>
                 </section>
               )}
 
@@ -255,7 +190,6 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
                     <input name="order_line_id" type="hidden" value={line.id} />
                     <input name="expected_order_version" type="hidden" value={order.version} />
                     <input name="approved_quantity" type="hidden" value={line.quantity_requested} />
-                    <input name="unit_price_minor" type="hidden" value={line.unit_price_minor ?? 0} />
                     <input name="inventory_account_id" type="hidden" value={readyPosition?.account_id ?? ""} />
                     <button className="button button-primary" type="submit"><UiIcon name={readyPosition ? "package" : "check"}/>{readyPosition ? "Approve & hold" : "Approve & wait"}</button>
                   </form>
@@ -308,9 +242,6 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
               {activeReservation && !readyReservation && <p className="order-action-note">Reservation {activeReservation.public_reference} is active. Your current assignment cannot post its handoff from this warehouse.</p>}
               {completed.map((entry) => <p className="order-completion-note" key={entry.id}><UiIcon name="check" size={15}/><span>Completed {new Date(entry.completed_at).toLocaleString(locale, { dateStyle: "medium", timeStyle: "short" })} · Qty {entry.quantity}</span></p>)}
 
-              {!reviewable && !terminal && line.status !== "fulfilled" && (
-                <details className="order-secondary-actions"><summary>Edit recorded price</summary><form action={priceOrderLineAction} className="staff-inline-action"><input name="order_id" type="hidden" value={order.id}/><input name="order_line_id" type="hidden" value={line.id}/><input name="expected_order_version" type="hidden" value={order.version}/><label className="field"><span>Unit price; blank returns to pending</span><input defaultValue={line.unit_price_minor ?? ""} min="0" name="unit_price_minor" step="1" type="number"/></label><label className="field"><span>Reason</span><input defaultValue="Recorded order price updated." maxLength={500} minLength={1} name="reason" required/></label><button className="button button-secondary">Save price</button></form></details>
-              )}
             </article>
           );
         })}
@@ -321,8 +252,8 @@ export default async function StaffOrderDetail({ params, searchParams }: StaffOr
           <p className="eyebrow">Company books</p>
           {invoice
             ? <><h2>{invoice.status === "paid" ? "Paid in full" : `${invoice.balance_due_minor} ${invoice.currency_code} due`}</h2><p>{invoice.public_reference} · {invoice.paid_amount_minor} of {invoice.total_amount_minor} {invoice.currency_code} paid</p></>
-            : pricesNeeded
-              ? <><h2>Invoice waits for pricing</h2><p>Set every missing price above; the order and the Company books stay linked.</p></>
+            : productsMissingPrices
+              ? <><h2>Invoice waits for product setup</h2><p>Set the missing normal selling price in Stock &amp; prices; the order will use it automatically.</p></>
               : <><h2>No invoice yet</h2><p>Issue the invoice from Company books after the order is approved.</p></>}
         </div>
         <Link className="button button-secondary" href="/staff/books?view=invoices">{invoice ? "Open invoice" : "Open invoices"}</Link>

@@ -43,8 +43,8 @@ function queueStage(order: OrderRecord) {
   ).length;
   if (unpriced > 0) {
     return {
-      action: "Set prices",
-      label: `${unpriced} ${unpriced === 1 ? "price" : "prices"} needed`,
+      action: "Open",
+      label: unpriced === 1 ? "Product price missing" : "Product prices missing",
       tone: "attention",
     } as const;
   }

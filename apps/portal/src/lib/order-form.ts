@@ -41,15 +41,6 @@ const reviewOrderLineSchema = z.object({
   orderId: z.guid(),
   orderLineId: z.guid(),
   reason: reasonSchema,
-  unitPriceMinor: z.coerce.number().int().nonnegative().safe().nullable(),
-});
-
-const priceOrderLineSchema = z.object({
-  expectedOrderVersion: z.coerce.number().int().positive().safe(),
-  orderId: z.guid(),
-  orderLineId: z.guid(),
-  reason: reasonSchema,
-  unitPriceMinor: z.coerce.number().int().nonnegative().safe().nullable(),
 });
 
 function optionalString(value: FormDataEntryValue | null): string | null {
@@ -99,16 +90,5 @@ export function readReviewOrderLineForm(formData: FormData) {
     orderId: formData.get("order_id"),
     orderLineId: formData.get("order_line_id"),
     reason: formData.get("reason"),
-    unitPriceMinor: optionalString(formData.get("unit_price_minor")),
-  });
-}
-
-export function readPriceOrderLineForm(formData: FormData) {
-  return priceOrderLineSchema.safeParse({
-    expectedOrderVersion: formData.get("expected_order_version"),
-    orderId: formData.get("order_id"),
-    orderLineId: formData.get("order_line_id"),
-    reason: formData.get("reason"),
-    unitPriceMinor: optionalString(formData.get("unit_price_minor")),
   });
 }
