@@ -2,6 +2,8 @@ const MAX_SEARCH_LENGTH = 100;
 const CATEGORY_PATTERN = /^[a-z0-9][a-z0-9_-]{0,49}$/;
 const MAX_PAGE = 10000;
 
+export const CATALOGUE_PAGE_SIZE = 30;
+
 export interface CatalogueQuery {
   category: string | null;
   page: number;

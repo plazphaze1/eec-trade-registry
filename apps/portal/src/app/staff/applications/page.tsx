@@ -76,10 +76,11 @@ export default async function StaffApplicationsPage({ searchParams }: Applicatio
   }
 
   const locale = getDefaultLocale();
-  const pending = result.data.applications.filter((application) =>
+  const currentApplications = result.data.applications.filter((application) => application.type === "new");
+  const pending = currentApplications.filter((application) =>
     application.status === "submitted" || application.status === "under_review"
   );
-  const recent = result.data.applications.filter((application) =>
+  const recent = currentApplications.filter((application) =>
     application.status !== "submitted" && application.status !== "under_review"
   );
 
@@ -94,15 +95,13 @@ export default async function StaffApplicationsPage({ searchParams }: Applicatio
       <header><div><h2>{pending.length ? `${pending.length} waiting` : "Nothing waiting"}</h2><p>Oldest requests appear first.</p></div></header>
       {pending.map((application) => <article className="license-review-card" key={application.id}>
         <header>
-          <div><span className="license-review-kind">{application.type === "new" ? "New business" : "Legacy renewal request"}</span><h2>{application.applicant_name}</h2><p>{application.contact_label} · {submittedLabel(application, locale)}</p></div>
+          <div><span className="license-review-kind">New business</span><h2>{application.applicant_name}</h2><p>{application.contact_label} · {submittedLabel(application, locale)}</p></div>
           <small>{application.reference}</small>
         </header>
         <div className="license-review-body">
           <div><span>Wants to sell</span><strong>{application.requested_endorsements.length ? application.requested_endorsements.map((item) => item.label).join(", ") : application.class_name}</strong></div>
           <div><span>What the business does</span><p>{application.statement}</p></div>
-          {application.existing_license_reference && <div><span>Current license</span><strong>{application.existing_license_reference}</strong></div>}
         </div>
-        {application.type === "renewal" && <div className="notice-panel"><strong>Renewals are no longer used.</strong><p>Decline this legacy request. The existing license record and its history remain unchanged.</p></div>}
         <ApprovalForm application={application} />
         <DenialForm application={application} />
       </article>)}
@@ -116,8 +115,8 @@ export default async function StaffApplicationsPage({ searchParams }: Applicatio
 
     <details className="staff-tools-disclosure license-manual-tools">
       <summary>Manual licensing tools</summary>
-      <p>Use these only for imported records or exceptional cases that did not begin with a public application.</p>
-      <div className="staff-button-row"><Link className="button button-secondary" href="/staff/dealers/new">Add a business manually</Link><Link className="button button-secondary" href="/staff/licensing">Open license registry</Link></div>
+      <p>Use these only for imported records or exceptional licensing cases that did not begin with a public application.</p>
+      <div className="staff-button-row"><Link className="button button-secondary" href="/staff/licensing">Open license registry</Link></div>
     </details>
   </main>;
 }

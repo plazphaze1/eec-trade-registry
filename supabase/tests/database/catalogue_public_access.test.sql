@@ -1,6 +1,6 @@
 begin;
 
-select plan(21);
+select plan(25);
 
 select has_table('public', 'items', 'items table exists');
 select has_table('public', 'item_publications', 'publication table exists');
@@ -23,6 +23,12 @@ select has_function(
   array['text'],
   'public item detail RPC exists'
 );
+select has_function(
+  'public',
+  'get_public_catalogue_page',
+  array['text', 'text', 'integer', 'integer'],
+  'paged public catalogue RPC exists'
+);
 
 select ok(
   (select relrowsecurity from pg_class where oid = 'public.items'::regclass),
@@ -43,6 +49,10 @@ select ok(
 select ok(
   has_function_privilege('anon', 'public.get_public_catalogue(text,text)', 'execute'),
   'anonymous callers can execute the public catalogue RPC'
+);
+select ok(
+  has_function_privilege('anon', 'public.get_public_catalogue_page(text,text,integer,integer)', 'execute'),
+  'anonymous callers can execute the paged catalogue RPC'
 );
 
 insert into public.currencies (
@@ -297,6 +307,24 @@ select ok(
     where item_code = 'TEST-PUBLIC-1'
   ),
   'the public response includes a projection timestamp'
+);
+
+select is(
+  (
+    select total_count
+    from public.get_public_catalogue_page(null, 'test-category', 1, 0)
+    where item_code = 'TEST-PUBLIC-1'
+  ),
+  1::bigint,
+  'the paged public response includes the filtered total'
+);
+select is(
+  (
+    select count(*)::integer
+    from public.get_public_catalogue_page(null, 'test-category', 1, 1)
+  ),
+  0,
+  'the paged public response honors the offset'
 );
 
 select * from finish();
