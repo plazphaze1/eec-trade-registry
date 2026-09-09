@@ -843,15 +843,15 @@ body > main h2 {
 }
 
 .staff-loading {
+  display: grid;
+  gap: 14px;
+}
+.staff-loading > div {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 58px;
-  padding: 16px 18px;
-  border: 1px solid var(--xp-line);
-  background: var(--xp-surface);
+  gap: 10px;
 }
-.staff-loading > span {
+.staff-loading > div > span {
   width: 16px;
   height: 16px;
   border: 2px solid var(--xp-line-strong);
@@ -859,8 +859,18 @@ body > main h2 {
   border-radius: 50%;
   animation: staff-loading-spin .8s linear infinite;
 }
-.staff-loading p { margin: 0; color: var(--xp-muted); font-size: .78rem; }
+.staff-loading p { margin: 0; color: var(--xp-muted); font-size: .82rem; }
+.staff-loading > span {
+  display: block;
+  min-height: 132px;
+  border: 1px solid var(--xp-line);
+  border-radius: var(--xp-radius);
+  background: linear-gradient(100deg, var(--xp-surface) 20%, var(--xp-surface-soft) 45%, var(--xp-surface) 70%);
+  background-size: 220% 100%;
+  animation: staff-loading-shimmer 1.5s ease-in-out infinite;
+}
 @keyframes staff-loading-spin { to { transform: rotate(360deg); } }
+@keyframes staff-loading-shimmer { to { background-position-x: -220%; } }
 
 /* Staff dashboard and generic cards */
 .dashboard-header h1 { font-size: clamp(2.4rem, 4vw, 3.7rem); }
@@ -889,6 +899,17 @@ body > main h2 {
 
 .dashboard-section-heading h2,
 .dashboard-panel-header h2 { color: var(--xp-ink); }
+
+.dashboard-live-loading { display: grid; gap: 10px; }
+.dashboard-live-loading > p { margin: 0; color: var(--xp-muted); font-size: .76rem; }
+.dashboard-live-loading .dashboard-layout > span {
+  min-height: 230px;
+  border: 1px solid var(--xp-line);
+  border-radius: var(--xp-radius);
+  background: linear-gradient(100deg, var(--xp-surface) 20%, var(--xp-surface-soft) 45%, var(--xp-surface) 70%);
+  background-size: 220% 100%;
+  animation: staff-loading-shimmer 1.5s ease-in-out infinite;
+}
 
 .staff-tools-panel > summary { border-radius: var(--xp-radius); }
 

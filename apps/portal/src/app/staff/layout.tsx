@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { StaffShell } from "@/components/staff-shell";
 import { getInstitutionName } from "@/lib/env";
 import { getMyStaffAccessState } from "@/lib/staff-access";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { getOptionalStaffSession } from "@/lib/staff-auth";
 
 export const metadata: Metadata = {
   title: "Staff console",
@@ -12,11 +12,10 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
-  const client = await createServerSupabaseClient();
-  const { data } = await client.auth.getClaims();
+  const { client, subject } = await getOptionalStaffSession();
   let accessClass: "owner" | "agent" | null = null;
   let displayName: string | null = null;
-  if (typeof data?.claims?.sub === "string") {
+  if (subject) {
     const access = await getMyStaffAccessState(client);
     if (access.ok && access.data.state === "authorized") {
       accessClass = access.data.access_class;
