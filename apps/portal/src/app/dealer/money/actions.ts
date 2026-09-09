@@ -7,19 +7,21 @@ import { z } from "zod";
 import { createBusinessSupabaseClient } from "@/lib/supabase-server";
 
 const transferSchema = z.object({
-  amount_minor: z.coerce.number().int().positive(),
+  amount_minor: z.coerce.number().int().positive().max(Number.MAX_SAFE_INTEGER),
   from_account_id: z.guid(),
   memo: z.string().trim().min(1).max(500),
   occurred_on: z.iso.date(),
   to_account_reference: z.string().trim().min(1).max(80),
+  request_id: z.guid(),
 });
 
 const paymentSchema = z.object({
-  amount_minor: z.coerce.number().int().positive(),
+  amount_minor: z.coerce.number().int().positive().max(Number.MAX_SAFE_INTEGER),
   from_account_id: z.guid(),
   invoice_id: z.guid(),
   occurred_on: z.iso.date(),
   payment_reference: z.string().trim().min(1).max(200),
+  request_id: z.guid(),
 });
 
 function destination(key: "error" | "notice", value: string) {
@@ -36,6 +38,7 @@ async function client() {
 function failure(error: { code?: string; message: string }) {
   console.error(`[dealer-bank:mutation] ${error.code ?? "unknown"}`);
   if (error.message.includes("insufficient_funds")) return destination("error", "insufficient_funds");
+  if (["40001", "40P01"].includes(error.code ?? "")) return destination("error", "concurrent_update");
   if (error.code === "42501" || error.code === "28000" || error.message.includes("scope_denied")) return destination("error", "access_denied");
   if (error.message.includes("invoice_payment_amount")) return destination("error", "payment_invalid");
   return destination("error", "save_failed");
@@ -50,7 +53,7 @@ export async function dealerTransferAction(form: FormData) {
     p_from_account_id: input.from_account_id,
     p_memo: input.memo,
     p_occurred_on: input.occurred_on,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
     p_to_account_reference: input.to_account_reference,
   });
   if (error) redirect(failure(error));
@@ -69,7 +72,7 @@ export async function dealerInvoicePaymentAction(form: FormData) {
     p_invoice_id: input.invoice_id,
     p_occurred_on: input.occurred_on,
     p_payment_reference: input.payment_reference,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
   });
   if (error) redirect(failure(error));
   revalidatePath("/dealer/money");

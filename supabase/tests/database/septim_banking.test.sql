@@ -1,6 +1,6 @@
 begin;
 
-select plan(42);
+select plan(43);
 
 select has_table('public', 'financial_accounts', 'financial account register exists');
 select has_table('public', 'financial_transactions', 'immutable transaction journal exists');
@@ -12,6 +12,10 @@ select has_function('public', 'get_dealer_banking_workspace', array[]::text[], '
 select ok((select relrowsecurity from pg_class where oid = 'public.financial_accounts'::regclass), 'accounts use RLS');
 select ok(not has_table_privilege('authenticated', 'public.financial_entries', 'select'), 'authenticated callers cannot bypass secured statements');
 select ok(not has_function_privilege('anon', 'public.staff_transfer_funds(uuid,uuid,bigint,date,text,text,text,uuid)', 'execute'), 'anonymous callers cannot move money');
+select ok(
+  position('order by account.id' in lower(pg_get_functiondef('private.post_two_sided_financial_transaction(text,uuid,uuid,bigint,date,text,text,text,uuid,text,uuid,uuid,uuid)'::regprocedure))) > 0,
+  'balanced transactions lock account pairs in deterministic order'
+);
 select is((select count(*)::integer from public.permission_scopes where code like 'finance.%' and code in (
   'finance.bank.read','finance.transaction.post','finance.invoice.manage','finance.account.manage','finance.transaction.reverse'
 )), 5, 'banking permissions are configured');

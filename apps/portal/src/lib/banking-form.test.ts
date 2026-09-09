@@ -18,6 +18,7 @@ import {
 const id = (suffix: number) => `10000000-0000-4000-8000-${String(suffix).padStart(12, "0")}`;
 function form(entries: Record<string, string>) {
   const result = new FormData();
+  result.set("request_id", id(99));
   Object.entries(entries).forEach(([key, value]) => result.set(key, value));
   return result;
 }
@@ -35,6 +36,20 @@ describe("banking forms", () => {
   it("rejects a zero Company cash infusion", () => {
     expect(readCashInfusionForm(form({
       amount_minor: "0", currency_code: "SEP", note: "", occurred_on: "2026-09-02", source_reference: "",
+    })).success).toBe(false);
+  });
+
+  it("requires a stable logical request id", () => {
+    const input = form({
+      amount_minor: "2500", currency_code: "SEP", note: "", occurred_on: "2026-09-02", source_reference: "",
+    });
+    input.delete("request_id");
+    expect(readCashInfusionForm(input).success).toBe(false);
+  });
+
+  it("rejects money outside JavaScript's exact integer range", () => {
+    expect(readCashInfusionForm(form({
+      amount_minor: "9007199254740992", currency_code: "SEP", note: "", occurred_on: "2026-09-02", source_reference: "",
     })).success).toBe(false);
   });
 
