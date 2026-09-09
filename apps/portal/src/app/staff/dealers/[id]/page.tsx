@@ -36,7 +36,7 @@ export default async function DealerDetailPage({ params, searchParams }: { param
     getStaffBusinessAccess(client, id),
   ]);
   if (!result.ok && result.code === "access_denied") return <main className="staff-main"><StaffAccessDenied /></main>;
-  if (!result.ok) return <main className="staff-main"><section className="notice-panel"><h1>The dealer record could not be loaded</h1><p>No authoritative data was changed.</p></section></main>;
+  if (!result.ok) return <main className="staff-main"><section className="notice-panel"><h1>The business record could not be loaded</h1><p>No authoritative data was changed.</p></section></main>;
   if (!result.data) notFound();
   const dealer = result.data;
   const licenses = licensesResult.ok ? licensesResult.data.filter((license) => license.dealer_reference === dealer.public_reference) : [];
@@ -44,7 +44,7 @@ export default async function DealerDetailPage({ params, searchParams }: { param
   const statusTargets = targets(dealer.status_code);
 
   return <main className="staff-main">
-    <header className="staff-page-header"><div><p className="eyebrow">Business customer</p><h1>{dealer.display_name}</h1><p>{dealer.status_label} · {dealer.dealer_type_label} · {dealer.jurisdiction_label}</p></div><div className="staff-button-row"><Link className="button button-secondary" href="/staff/dealers">Back to customers</Link><Link className="button button-primary" href="/staff/licensing/new">Issue license</Link></div></header>
+    <header className="staff-page-header"><div><p className="eyebrow">Business</p><h1>{dealer.display_name}</h1><p>{dealer.status_label} · {dealer.dealer_type_label} · {dealer.jurisdiction_label}</p></div><div className="staff-button-row"><Link className="button button-secondary" href="/staff/dealers">Back to businesses</Link><Link className="button button-primary" href="/staff/licensing/new">Issue license</Link></div></header>
     <ReferenceBlock label="Dealer reference" reference={dealer.public_reference} status={dealer.status_label}/>
     <StaffNotice error={parameters.error} notice={parameters.notice} />
     <section className="customer-license-section"><div className="inventory-section-heading"><div><p className="eyebrow">Licenses</p><h2>What this business may order</h2></div></div>{licenses.length > 0 ? <div className="customer-license-list">{licenses.map((license) => <Link href={`/staff/licensing/${license.id}`} key={license.id}><span className={`staff-status staff-status-${license.status_code}`}>{license.status_label}</span><strong>{license.license_class_label}</strong><small>{license.endorsements.filter((item) => !item.revoked_at).length} endorsement{license.endorsements.filter((item) => !item.revoked_at).length === 1 ? "" : "s"}</small></Link>)}</div> : <div className="empty-state"><p>No license is linked to this business yet.</p><Link className="button button-primary" href="/staff/licensing/new">Issue license</Link></div>}</section>
@@ -73,7 +73,7 @@ export default async function DealerDetailPage({ params, searchParams }: { param
         <label className="field field-full"><span>Private notes</span><textarea defaultValue={dealer.private_notes} maxLength={4000} name="private_notes" rows={4} /></label>
         <label className="checkbox-field"><input defaultChecked={dealer.public_disclosure_enabled} name="public_disclosure_enabled" type="checkbox" /><span>Publish this authorization in verification and exports</span></label>
         <label className="field field-full"><span>Audit reason</span><textarea maxLength={500} name="reason" required rows={3} /></label>
-      </div></section><button className="button button-primary" type="submit">Save dealer details</button>
+      </div></section><button className="button button-primary" type="submit">Save business details</button>
     </form>
     {statusTargets.length > 0 && <form action={changeDealerStatusAction} className="staff-form"><input name="dealer_authorization_id" type="hidden" value={dealer.id} /><input name="expected_version" type="hidden" value={dealer.version} /><section className="form-section"><div><p className="eyebrow">Authority decision</p><h2>Change status</h2></div><div className="form-grid"><label className="field"><span>Target status</span><select name="target_status_code" required>{statusTargets.map((status) => <option key={status} value={status}>{status.replaceAll("-", " ")}</option>)}</select></label><label className="field field-full"><span>Decision reason</span><textarea maxLength={500} name="reason" required rows={3} /></label></div></section><button className="button button-primary" type="submit">Record status decision</button></form>}
     </div></details>

@@ -78,7 +78,7 @@ export default async function NewStaffCatalogueItemPage({ searchParams }: NewSta
           <div className="product-create-fields">
             <div><h2>What is it?</h2><p>Use the name players should recognize.</p></div>
             <label className="field"><span>Product name</span><input autoFocus maxLength={200} name="display_name" placeholder="Example: Iron Sword" required /></label>
-            <label className="field"><span>Short description <small>optional</small></span><textarea maxLength={4000} name="description" placeholder="What should customers know?" rows={3} /></label>
+            <label className="field"><span>Short description <small>optional</small></span><textarea maxLength={4000} name="description" placeholder="What should shoppers know?" rows={3} /></label>
           </div>
         </section>
 

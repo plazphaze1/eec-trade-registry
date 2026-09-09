@@ -121,7 +121,7 @@ export default async function StaffOrdersPage({ searchParams }: StaffOrdersPageP
     <main className="staff-main order-queue-page">
       <header className="staff-page-header order-queue-header">
         <div>
-          <p className="eyebrow">Customer orders</p>
+          <p className="eyebrow">Order queue</p>
           <h1>Orders</h1>
           <p>Start with the first row. Each order tells you the one thing it needs next.</p>
         </div>
@@ -151,7 +151,7 @@ export default async function StaffOrdersPage({ searchParams }: StaffOrdersPageP
             defaultValue={search}
             maxLength={100}
             name="q"
-            placeholder="Search customer or order number"
+            placeholder="Search buyer or order number"
             type="search"
           />
           <button className="button button-secondary" type="submit">Search</button>
@@ -203,7 +203,7 @@ export default async function StaffOrdersPage({ searchParams }: StaffOrdersPageP
             <UiIcon name="check" size={22} />
             <div>
               <strong>{search ? "No matching orders" : "Nothing here needs work"}</strong>
-              <span>{search ? "Try a customer name or complete order number." : "Choose another tab or create a new order."}</span>
+              <span>{search ? "Try a buyer name or complete order number." : "Choose another tab or start a new order."}</span>
             </div>
           </div>
         )}

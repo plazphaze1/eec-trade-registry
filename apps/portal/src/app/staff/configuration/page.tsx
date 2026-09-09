@@ -107,9 +107,9 @@ export default async function ConfigurationPage({ searchParams }: PageProps) {
         ) : (
           <div className="configuration-advanced-layout">
             <section className="configuration-rule-card">
-              <div><p className="eyebrow">Customer wording</p><h3>Availability messages</h3><p>Reusable descriptions such as “Made to order” or “Reserve dependent.”</p></div>
+              <div><p className="eyebrow">Shop wording</p><h3>Availability messages</h3><p>Reusable descriptions such as “Made to order” or “Reserve dependent.”</p></div>
               <ul className="configuration-rule-list">{workspace.availability_profiles.map((entry) => <li key={entry.id}><strong>{entry.display_name}</strong><small>{entry.public_description}</small></li>)}</ul>
-              <details><summary>Add availability message</summary><form action={createConfigurationReferenceAction} className="configuration-add-form configuration-inline-add"><input name="kind" type="hidden" value="availability_profile" /><input name="quantity_scale" type="hidden" value="0" /><input name="sort_order" type="hidden" value="0" /><label className="field"><span>Name</span><input maxLength={200} name="display_name" required /></label><label className="field"><span>What customers see</span><textarea maxLength={2000} name="description" required rows={2} /></label><input name="code" type="hidden" value="" /><button className="button button-primary" type="submit">Add message</button></form></details>
+              <details><summary>Add availability message</summary><form action={createConfigurationReferenceAction} className="configuration-add-form configuration-inline-add"><input name="kind" type="hidden" value="availability_profile" /><input name="quantity_scale" type="hidden" value="0" /><input name="sort_order" type="hidden" value="0" /><label className="field"><span>Name</span><input maxLength={200} name="display_name" required /></label><label className="field"><span>What shoppers see</span><textarea maxLength={2000} name="description" required rows={2} /></label><input name="code" type="hidden" value="" /><button className="button button-primary" type="submit">Add message</button></form></details>
             </section>
 
             <section className="configuration-rule-card">
