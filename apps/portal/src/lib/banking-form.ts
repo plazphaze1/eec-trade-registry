@@ -13,7 +13,12 @@ const optionalDate = z.preprocess(
   (value) => typeof value === "string" && value.trim() === "" ? null : value,
   z.iso.date().nullable(),
 );
-const money = z.coerce.number().int().positive();
+export const MAX_MONEY_MINOR = Number.MAX_SAFE_INTEGER;
+
+const requestId = z.guid();
+const safeInteger = z.coerce.number().int().min(Number.MIN_SAFE_INTEGER).max(MAX_MONEY_MINOR);
+const money = z.coerce.number().int().positive().max(MAX_MONEY_MINOR);
+const nonnegativeMoney = z.coerce.number().int().nonnegative().max(MAX_MONEY_MINOR);
 
 function object(form: FormData) {
   return Object.fromEntries(form.entries());
@@ -24,8 +29,9 @@ const accountSchema = z.object({
   currency_code: text(12),
   display_name: text(160),
   note: optionalText(1000),
-  opening_balance_minor: z.coerce.number().int().nonnegative(),
+  opening_balance_minor: nonnegativeMoney,
   party_id: optionalUuid,
+  request_id: requestId,
 });
 
 const cashSchema = z.object({
@@ -35,6 +41,7 @@ const cashSchema = z.object({
   memo: text(500),
   occurred_on: z.iso.date(),
   reference: optionalText(200),
+  request_id: requestId,
 });
 
 const cashInfusionSchema = z.object({
@@ -43,6 +50,7 @@ const cashInfusionSchema = z.object({
   note: optionalText(500),
   occurred_on: z.iso.date(),
   source_reference: optionalText(200),
+  request_id: requestId,
 });
 
 const transferSchema = z.object({
@@ -52,6 +60,7 @@ const transferSchema = z.object({
   occurred_on: z.iso.date(),
   reference: optionalText(200),
   to_account_id: z.guid(),
+  request_id: requestId,
 }).refine((value) => value.from_account_id !== value.to_account_id, { path: ["to_account_id"] });
 
 const invoiceSchema = z.object({
@@ -59,6 +68,7 @@ const invoiceSchema = z.object({
   issued_on: z.iso.date(),
   note: optionalText(1000),
   order_id: z.guid(),
+  request_id: requestId,
 });
 
 const invoicePaymentSchema = z.object({
@@ -68,6 +78,7 @@ const invoicePaymentSchema = z.object({
   note: optionalText(500),
   occurred_on: z.iso.date(),
   payment_reference: text(200),
+  request_id: requestId,
 });
 
 const loanProductSchema = z.object({
@@ -76,15 +87,16 @@ const loanProductSchema = z.object({
   description: optionalText(1000),
   display_name: text(120),
   grace_days: z.coerce.number().int().min(0).max(365),
-  late_fee_minor: z.coerce.number().int().nonnegative(),
+  late_fee_minor: nonnegativeMoney,
   maximum_principal_minor: z.preprocess(
     (value) => typeof value === "string" && value.trim() === "" ? null : value,
-    z.coerce.number().int().positive().nullable(),
+    money.nullable(),
   ),
   maximum_term_count: z.coerce.number().int().positive().max(520),
   minimum_principal_minor: money,
   minimum_term_count: z.coerce.number().int().positive().max(520),
   repayment_frequency: z.enum(["weekly", "monthly"]),
+  request_id: requestId,
 }).refine((value) => value.maximum_term_count >= value.minimum_term_count, { path: ["maximum_term_count"] })
   .refine((value) => value.maximum_principal_minor === null || value.maximum_principal_minor >= value.minimum_principal_minor, { path: ["maximum_principal_minor"] });
 
@@ -96,6 +108,7 @@ const originateLoanSchema = z.object({
   principal_minor: money,
   purpose: optionalText(1000),
   term_count: z.coerce.number().int().positive().max(520),
+  request_id: requestId,
 });
 
 const loanPaymentSchema = z.object({
@@ -104,6 +117,7 @@ const loanPaymentSchema = z.object({
   note: optionalText(500),
   occurred_on: z.iso.date(),
   payment_reference: optionalText(200),
+  request_id: requestId,
 });
 
 const accountStatusSchema = z.object({
@@ -111,6 +125,7 @@ const accountStatusSchema = z.object({
   expected_version: z.coerce.number().int().positive(),
   reason: text(500),
   status: z.enum(["active", "frozen", "closed"]),
+  request_id: requestId,
 });
 
 const accountHoldSchema = z.object({
@@ -121,6 +136,7 @@ const accountHoldSchema = z.object({
     z.iso.datetime({ local: true }).nullable(),
   ),
   reason: text(500),
+  request_id: requestId,
 });
 
 const releaseHoldSchema = z.object({
@@ -128,6 +144,7 @@ const releaseHoldSchema = z.object({
   expected_version: z.coerce.number().int().positive(),
   hold_id: z.guid(),
   reason: text(500),
+  request_id: requestId,
 });
 
 const loanStatusSchema = z.object({
@@ -135,36 +152,42 @@ const loanStatusSchema = z.object({
   loan_id: z.guid(),
   reason: text(500),
   status: z.enum(["active", "defaulted", "written_off"]),
+  request_id: requestId,
 });
 
 const paymentCorrectionSchema = z.object({
   expected_version: z.coerce.number().int().positive(),
   record_id: z.guid(),
   reason: text(500),
+  request_id: requestId,
 });
 
 const lateFeeRunSchema = z.object({
   as_of: z.iso.date(),
   reason: text(500),
+  request_id: requestId,
 });
 
 const reconciliationSchema = z.object({
   account_id: z.guid(),
   note: optionalText(1000),
-  statement_balance_minor: z.coerce.number().int(),
+  statement_balance_minor: safeInteger,
   statement_through: z.iso.date(),
+  request_id: requestId,
 });
 
 const closePeriodSchema = z.object({
   ends_on: z.iso.date(),
   note: optionalText(1000),
   starts_on: z.iso.date(),
+  request_id: requestId,
 }).refine((value) => value.ends_on >= value.starts_on, { path: ["ends_on"] });
 
 const reopenPeriodSchema = z.object({
   expected_version: z.coerce.number().int().positive(),
   period_id: z.guid(),
   reason: text(500),
+  request_id: requestId,
 });
 
 export const readAccountForm = (form: FormData) => accountSchema.safeParse(object(form));

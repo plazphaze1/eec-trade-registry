@@ -45,6 +45,8 @@ function failure(error: { code?: string; message: string }, view: View) {
   if (error.message.includes("version_conflict")) return destination(view, "error", "version_conflict");
   if (error.message.includes("price_required")) return destination(view, "error", "price_required");
   if (error.message.includes("not_invoiceable")) return destination(view, "error", "not_invoiceable");
+  if (error.message.includes("financial_transaction_invalid")) return destination(view, "error", "same_account");
+  if (["40001", "40P01"].includes(error.code ?? "")) return destination(view, "error", "concurrent_update");
   if (error.code === "42501" || error.message.includes("permission_denied")) return destination(view, "error", "access_denied");
   if (["22023", "23514"].includes(error.code ?? "")) return destination(view, "error", "invalid_input");
   return destination(view, "error", "save_failed");
@@ -69,7 +71,7 @@ export async function createAccountAction(form: FormData) {
     p_opening_balance_minor: input.opening_balance_minor,
     p_party_id: input.party_id,
     p_reason: "Financial account opened through the Money workspace.",
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
   });
   if (error) redirect(failure(error, "accounts"));
   refresh();
@@ -88,7 +90,7 @@ export async function cashMovementAction(form: FormData) {
     p_occurred_on: input.occurred_on,
     p_reason: `${input.direction === "deposit" ? "Deposit" : "Withdrawal"} recorded through the Money workspace.`,
     p_reference: input.reference,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
   });
   if (error) redirect(failure(error, "transactions"));
   refresh();
@@ -105,7 +107,7 @@ export async function treasuryCashInfusionAction(form: FormData) {
     p_note: input.note ?? "",
     p_occurred_on: input.occurred_on,
     p_reason: "Company cash infusion recorded through Company books.",
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
     p_source_reference: input.source_reference,
   });
   if (error) {
@@ -129,7 +131,7 @@ export async function transferAction(form: FormData) {
     p_occurred_on: input.occurred_on,
     p_reason: "Account transfer recorded through the Money workspace.",
     p_reference: input.reference,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
     p_to_account_id: input.to_account_id,
   });
   if (error) redirect(failure(error, "transactions"));
@@ -147,7 +149,7 @@ export async function issueInvoiceAction(form: FormData) {
     p_note: input.note ?? "",
     p_order_id: input.order_id,
     p_reason: "Order invoice issued through the Money workspace.",
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
   });
   if (error) redirect(failure(error, "invoices"));
   refresh(input.order_id);
@@ -166,7 +168,7 @@ export async function recordInvoicePaymentAction(form: FormData) {
     p_occurred_on: input.occurred_on,
     p_payment_reference: input.payment_reference,
     p_reason: "Invoice payment recorded through the Money workspace.",
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
   });
   if (error) redirect(failure(error, "invoices"));
   refresh();
@@ -190,7 +192,7 @@ export async function createLoanProductAction(form: FormData) {
     p_minimum_term_count: input.minimum_term_count,
     p_reason: "Loan product configured through the Money workspace.",
     p_repayment_frequency: input.repayment_frequency,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
   });
   if (error) redirect(failure(error, "loans"));
   refresh();
@@ -209,7 +211,7 @@ export async function originateLoanAction(form: FormData) {
     p_principal_minor: input.principal_minor,
     p_purpose: input.purpose ?? "",
     p_reason: "Loan approved and disbursed through the Money workspace.",
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
     p_term_count: input.term_count,
   });
   if (error) redirect(failure(error, "loans"));
@@ -228,7 +230,7 @@ export async function recordLoanPaymentAction(form: FormData) {
     p_occurred_on: input.occurred_on,
     p_payment_reference: input.payment_reference,
     p_reason: "Loan payment recorded through the Money workspace.",
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
   });
   if (error) redirect(failure(error, "loans"));
   refresh();
@@ -247,7 +249,7 @@ export async function setAccountStatusAction(form: FormData) {
     p_account_id: input.account_id,
     p_expected_version: input.expected_version,
     p_reason: input.reason,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
     p_status: input.status,
   });
   if (error) redirect(failure(error, "accounts"));
@@ -267,7 +269,7 @@ export async function placeAccountHoldAction(form: FormData) {
     p_reason: input.reason,
     p_related_record_id: null,
     p_related_record_type: null,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
   });
   if (error) redirect(failure(error, "accounts"));
   refresh();
@@ -283,7 +285,7 @@ export async function releaseAccountHoldAction(form: FormData) {
     p_expected_version: input.expected_version,
     p_hold_id: input.hold_id,
     p_reason: input.reason,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
   });
   if (error) redirect(failure(error, "accounts"));
   refresh();
@@ -299,7 +301,7 @@ export async function setLoanStatusAction(form: FormData) {
     p_expected_version: input.expected_version,
     p_loan_id: input.loan_id,
     p_reason: input.reason,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
     p_status: input.status,
   });
   if (error) redirect(failure(error, "loans"));
@@ -316,7 +318,7 @@ export async function reverseInvoicePaymentAction(form: FormData) {
     p_expected_version: input.expected_version,
     p_invoice_id: input.record_id,
     p_reason: input.reason,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
   });
   if (error) redirect(failure(error, "invoices"));
   refresh();
@@ -331,7 +333,7 @@ export async function reverseLoanPaymentAction(form: FormData) {
     p_expected_version: input.expected_version,
     p_loan_id: input.record_id,
     p_reason: input.reason,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
   });
   if (error) redirect(failure(error, "loans"));
   refresh();
@@ -346,7 +348,7 @@ export async function assessLateFeesAction(form: FormData) {
   const { error } = await (await client()).rpc("staff_assess_overdue_loan_fees", {
     p_as_of: input.as_of,
     p_reason: input.reason,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
   });
   if (error) redirect(failure(error, "controls"));
   refresh();
@@ -361,7 +363,7 @@ export async function reconcileAccountAction(form: FormData) {
     p_account_id: input.account_id,
     p_note: input.note ?? "",
     p_reason: "Account statement reconciled through the Money controls.",
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
     p_statement_balance_minor: input.statement_balance_minor,
     p_statement_through: input.statement_through,
   });
@@ -378,7 +380,7 @@ export async function closeFinancialPeriodAction(form: FormData) {
     p_ends_on: input.ends_on,
     p_note: input.note ?? "",
     p_reason: "Financial period closed through the Money controls.",
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
     p_starts_on: input.starts_on,
   });
   if (error) redirect(failure(error, "controls"));
@@ -394,7 +396,7 @@ export async function reopenFinancialPeriodAction(form: FormData) {
     p_expected_version: input.expected_version,
     p_period_id: input.period_id,
     p_reason: input.reason,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
   });
   if (error) redirect(failure(error, "controls"));
   refresh();
