@@ -69,7 +69,7 @@ export default async function StaffLicensingPage({
           </p>
         </div>
         <div className="staff-button-row">
-          <Link className="button button-secondary" href="/staff/applications">Review applications</Link>
+          <Link className="button button-secondary" href="/staff/applications">License requests</Link>
           <Link className="button button-primary" href="/staff/licensing/new">
             Issue license
           </Link>

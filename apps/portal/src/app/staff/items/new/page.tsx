@@ -18,7 +18,7 @@ function preferredCode(codes: string[], preferred: string[]) {
 const supplyChoices = [
   { description: "Finished goods that staff can add to stock.", label: "Keep it in stock", value: "warehouse_stocked" },
   { description: "Materials the Company buys from players.", label: "Buy it from players", value: "player_sourced_reserve" },
-  { description: "Customers can order it without stock on hand.", label: "Make it when ordered", value: "made_to_order" },
+  { description: "Businesses and individuals can order it without stock on hand.", label: "Make it when ordered", value: "made_to_order" },
   { description: "Available only when staff deliberately release it.", label: "Limited release", value: "limited_release" },
   { description: "Each individual object has its own custody record.", label: "Track each one separately", value: "serialized_unique" },
 ] as const;

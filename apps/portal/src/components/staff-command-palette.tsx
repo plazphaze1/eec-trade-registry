@@ -16,13 +16,13 @@ type Command = {
 };
 
 const commands: Command[] = [
-  { href: "/staff/orders/new", icon: "spark", label: "Create an order", description: "Add goods to a customer order", keywords: "new customer cart", suggested: true },
+  { href: "/staff/orders/new", icon: "spark", label: "New order", description: "Add goods to a business or personal order", keywords: "create record customer cart", suggested: true },
   { href: "/staff/orders", icon: "clipboard", label: "Find an order", description: "See what is open, ready, or completed", keywords: "customer collect deliver", suggested: true },
   { href: "/staff/activity", icon: "package", label: "Record activity", description: "Save a purchase or counted stock total", keywords: "buy bought receive inventory quantity ore leather count", suggested: true },
   { href: "/staff/inventory", icon: "box", label: "Stock & prices", description: "Check stock or update normal prices", keywords: "inventory quantity procurement floor bulk price", suggested: true },
   { href: "/staff/books", icon: "document", label: "Company books", description: "Treasury, sales, spending, and cash infusions", keywords: "cashbook expenses bills payment finance treasury", suggested: true },
   { href: "/staff/money", icon: "coins", label: "Bank", description: "Customer accounts, transfers, statements, and loans", keywords: "bank account deposit withdrawal loan hold" },
-  { href: "/staff/applications", icon: "license", label: "Review license requests", description: "Approve or decline a business application", keywords: "pending license application", suggested: true },
+  { href: "/staff/applications", icon: "license", label: "License requests", description: "Approve or decline a business application", keywords: "review pending application", suggested: true },
   { href: "/staff/dealers", icon: "building", label: "Find a business", description: "Open a licensed business record", keywords: "dealer organization shop customer", suggested: true },
   { href: "/staff", icon: "catalogue", label: "Find a product", description: "Open or edit a catalogue item", keywords: "product material catalogue" },
   { href: "/staff/items/new", icon: "box", label: "Add a product", description: "Create and optionally publish a new good", keywords: "new product material catalogue" },

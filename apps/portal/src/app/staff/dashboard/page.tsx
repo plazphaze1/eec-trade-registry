@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { RelativeTime } from "@/components/relative-time";
 import { StaffAccessDenied } from "@/components/staff-access-denied";
@@ -24,11 +25,30 @@ function QuickAction({ description, href, icon, label }: DashboardAction) {
   );
 }
 
-export default async function DashboardPage() {
+const quickActions: DashboardAction[] = [
+  { href: "/staff/orders/new", icon: "clipboard", label: "New order", description: "Choose the buyer, goods, and handoff." },
+  { href: "/staff/activity", icon: "package", label: "Record activity", description: "Save a material purchase or counted stock total." },
+  { href: "/staff/applications", icon: "license", label: "License requests", description: "Approve or decline a business license request." },
+  { href: "/staff/books", icon: "document", label: "Company books", description: "See Treasury, sales, expenses, and add cash." },
+];
+
+function DashboardLiveFallback() {
+  return (
+    <div aria-label="Loading live work" aria-live="polite" className="dashboard-live-loading">
+      <p>Loading current work…</p>
+      <div className="dashboard-layout" aria-hidden="true">
+        <span />
+        <span />
+      </div>
+    </div>
+  );
+}
+
+async function DashboardLive() {
   const { client } = await requireStaffSession();
   const result = await getCommandDashboard(client);
-  if (!result.ok && result.denied) return <main className="staff-main"><StaffAccessDenied /></main>;
-  if (!result.ok) return <main className="staff-main"><section className="notice-panel"><h1>Today is unavailable</h1><p>The authoritative registry could not be reached. No fallback data is shown.</p></section></main>;
+  if (!result.ok && result.denied) return <StaffAccessDenied />;
+  if (!result.ok) return <section className="notice-panel"><h2>Today is unavailable</h2><p>The authoritative registry could not be reached. No fallback data is shown.</p></section>;
 
   const dashboard = result.data;
   const isOwner = dashboard.capabilities.can_manage_access;
@@ -44,25 +64,9 @@ export default async function DashboardPage() {
     { href: "/staff/integrations", icon: "external", label: "Sheet or Discord failure", description: "Business data is safe; its projection needs attention.", value: value(dashboard.integrations, "outbox_failed") + value(dashboard.integrations, "exports_failed") + value(dashboard.integrations, "deliveries_failed") },
   ];
   const attention = attentionCandidates.filter((item) => item.value > 0 && (!item.href.startsWith("/staff/access") || isOwner));
-  const quickActions: DashboardAction[] = [
-    { href: "/staff/orders/new", icon: "clipboard", label: "Record an order", description: "Choose the buyer, goods, and handoff." },
-    { href: "/staff/activity", icon: "package", label: "Record activity", description: "Save a material purchase or counted stock total." },
-    { href: "/staff/applications", icon: "license", label: "Review applications", description: "Approve or decline a business license request." },
-    { href: "/staff/books", icon: "document", label: "Company books", description: "See Treasury, sales, expenses, and add cash." },
-  ];
-
   return (
-    <main className="staff-main dashboard-main">
-      <header className="dashboard-header">
-        <div><p className="eyebrow">East Empire Company operations</p><h1>Today</h1><p>Start a routine task or handle the few records that actually need attention.</p></div>
-      </header>
+    <>
       <p className="dashboard-meta">Live from Supabase · refreshed <RelativeTime value={dashboard.generated_at} /></p>
-
-      <section aria-labelledby="quick-actions-title" className="dashboard-quick-section">
-        <div className="dashboard-section-heading"><div><p className="eyebrow">Everyday work</p><h2 id="quick-actions-title">What do you need to do?</h2></div></div>
-        <div className="dashboard-quick-grid">{quickActions.map((action) => <QuickAction key={action.href} {...action} />)}</div>
-      </section>
-
       <div className="dashboard-layout">
         <section className="dashboard-panel">
           <header className="dashboard-panel-header"><div><h2>Needs attention</h2><p>Only exceptions and decisions appear here.</p></div></header>
@@ -70,14 +74,14 @@ export default async function DashboardPage() {
             <ul className="dashboard-attention-list">{attention.map((item) => (
               <li key={item.label}><Link className="dashboard-attention-item" href={item.href}><span><UiIcon name={item.icon} size={16} /></span><span><strong>{item.value} {item.label}{item.value === 1 ? "" : "s"}</strong><small>{item.description}</small></span><UiIcon name="arrow" size={15} /></Link></li>
             ))}</ul>
-          ) : <div className="dashboard-clear-state"><UiIcon name="check" size={22} /><div><strong>Nothing needs immediate attention.</strong><p>You can start a new order or material purchase above.</p></div></div>}
+          ) : <div className="dashboard-clear-state"><UiIcon name="check" size={22} /><div><strong>Nothing needs immediate attention.</strong><p>You can start a new order or record material activity above.</p></div></div>}
         </section>
 
         <section className="dashboard-panel">
           <header className="dashboard-panel-header"><div><h2>Recent orders</h2><p>Open an order once and finish the work there.</p></div><Link href="/staff/orders">View all</Link></header>
           {dashboard.recent_orders.length > 0 ? <ul className="dashboard-activity-list">{dashboard.recent_orders.slice(0, 6).map((order) => (
             <li key={order.id}><Link className="dashboard-activity-item" href={`/staff/orders/${order.id}`}><span className="dashboard-activity-mark" /><span><strong>{order.customer}</strong><small>{order.status.replaceAll("_", " ")} · <RelativeTime value={order.submitted_at} /></small></span><UiIcon name="arrow" size={14} /></Link></li>
-          ))}</ul> : <div className="dashboard-empty dashboard-empty-action"><p>No orders yet.</p><Link className="button button-primary button-compact" href="/staff/orders/new">Record the first order</Link></div>}
+          ))}</ul> : <div className="dashboard-empty dashboard-empty-action"><p>No orders yet.</p><Link className="button button-primary button-compact" href="/staff/orders/new">Create the first order</Link></div>}
         </section>
       </div>
 
@@ -90,6 +94,23 @@ export default async function DashboardPage() {
           <Link href="/staff/operations"><UiIcon name="heart" size={16} />System health</Link>
         </nav>
       </section>}
+    </>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <main className="staff-main dashboard-main">
+      <header className="dashboard-header">
+        <div><p className="eyebrow">East Empire Company operations</p><h1>Today</h1><p>Start a routine task or handle the few records that actually need attention.</p></div>
+      </header>
+      <section aria-labelledby="quick-actions-title" className="dashboard-quick-section">
+        <div className="dashboard-section-heading"><div><p className="eyebrow">Everyday work</p><h2 id="quick-actions-title">What do you need to do?</h2></div></div>
+        <div className="dashboard-quick-grid">{quickActions.map((action) => <QuickAction key={action.href} {...action} />)}</div>
+      </section>
+      <Suspense fallback={<DashboardLiveFallback />}>
+        <DashboardLive />
+      </Suspense>
     </main>
   );
 }
