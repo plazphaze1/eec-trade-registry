@@ -83,7 +83,7 @@ function unavailable() {
 async function catalogueResponse(interaction: Interaction) {
   const query = option(interaction, "query");
   if (!query) return message("Provide an item name or code to search the public catalogue.");
-  const result = await getPublicCatalogue({ category: null, search: query });
+  const result = await getPublicCatalogue({ category: null, page: 1, search: query });
   if (!result.ok) return unavailable();
   if (result.data.length === 0) return message("No published catalogue entry matched that search.");
   const locale = getDefaultLocale();

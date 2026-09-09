@@ -11,6 +11,7 @@ import {
   readReverseInventoryForm,
 } from "@/lib/inventory-form";
 import { readPublicTermsForm } from "@/lib/configuration-form";
+import { readRequestId } from "@/lib/request-id";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
 const inventoryPath = "/staff/inventory";
@@ -66,7 +67,8 @@ function refreshInventorySurfaces() {
 
 export async function setInventorySalePriceAction(formData: FormData) {
   const parsed = readPublicTermsForm(formData);
-  if (!parsed.success) redirect(destination("error", "invalid_input"));
+  const requestId = readRequestId(formData);
+  if (!parsed.success || !requestId) redirect(destination("error", "invalid_input"));
   const client = await verifiedClient();
   if (!client) redirect("/staff/login");
   const input = parsed.data;
@@ -83,7 +85,7 @@ export async function setInventorySalePriceAction(formData: FormData) {
     p_public_name: input.publicName,
     p_publish: input.publish,
     p_reason: input.reason || "Base selling price updated from Stock and prices.",
-    p_request_id: crypto.randomUUID(),
+    p_request_id: requestId,
     p_requirement_summary: input.requirementSummary,
   });
   if (error) redirect(errorPath(error));
@@ -93,7 +95,8 @@ export async function setInventorySalePriceAction(formData: FormData) {
 
 export async function postInventoryReceiptAction(formData: FormData) {
   const parsed = readInventoryReceiptForm(formData);
-  if (!parsed.success) redirect(destination("error", "invalid_input"));
+  const requestId = readRequestId(formData);
+  if (!parsed.success || !requestId) redirect(destination("error", "invalid_input"));
   const client = await verifiedClient();
   if (!client) redirect("/staff/login");
   const input = parsed.data;
@@ -101,7 +104,7 @@ export async function postInventoryReceiptAction(formData: FormData) {
     p_item_id: input.itemId,
     p_quantity: input.quantity,
     p_reason: input.reason,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: requestId,
     p_source_reference: input.sourceReference,
     p_stock_location_id: input.stockLocationId,
   });
