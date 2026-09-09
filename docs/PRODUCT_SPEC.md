@@ -81,7 +81,7 @@ Authorized dealer representatives can:
 - Create and submit wholesale, institutional, or consignment requisitions
 - View order, reservation, collection, shipment, and transfer status
 - Confirm receipt or collection when required
-- Request renewal, an endorsement change, or a special transaction approval
+- Request an endorsement change or a special transaction approval
 - Download approved documents generated from authoritative records
 
 A dealer cannot edit authoritative eligibility, pricing, stock, quota, license, compliance, or custody state.
@@ -97,7 +97,7 @@ Authenticated staff receive a role-appropriate work queue rather than unrestrict
 - No-code creation of categories, units, license classes, endorsements, availability language, and control profiles
 - Catalogue, price schedule, control profile, and publication management
 - Party, dealer, representative, and factor administration
-- Application review and license issuance, renewal, suspension, and revocation
+- Application review and license issuance, suspension, and revocation
 - Endorsement and condition management
 - Order review, exceptions, reservations, fulfillment, and cancellation
 - Warehouse receipts, adjustments, transfers, reconciliations, and losses
@@ -175,7 +175,7 @@ Licenses have a configurable class and may contain zero or more modular endorsem
 - Issuing and approving actors
 - Public disclosure fields separated from private notes
 
-Applications for new licenses, renewals, endorsement changes, and reinstatement are review records. Pending applications are not licenses. Time-based labels such as "expiring soon" are derived rather than stored as authoritative statuses.
+Applications for new licenses, endorsement changes, and reinstatement are review records. Pending applications are not licenses. Ordinary licenses are open-ended and remain current until suspended, revoked, or surrendered; there is no renewal workflow.
 
 ### 5.4 Control profiles
 
@@ -276,7 +276,7 @@ The following must execute through database functions or secure server functions
 - Reservation creation, extension, consumption, release, and expiration
 - Inventory posting, reversal, transfer, receipt, and adjustment
 - Unique-asset allocation and custody transfer
-- License issuance, renewal, suspension, reinstatement, revocation, and endorsement changes
+- License issuance, suspension, reinstatement, revocation, and endorsement changes
 - Consequential compliance actions
 
 Frontend code may display estimates for usability only when clearly labeled and revalidated authoritatively on submission.
@@ -293,7 +293,7 @@ Frontend code may display estimates for usability only when clearly labeled and 
 - Ordinary order progress uses no more than Open, Ready, Completed, and Closed; a restricted-good approval is an explicit exception rather than a routine state.
 - A player-material purchase can be recorded from material, quantity, and date without naming an incidental seller. An effective buying rate is snapshotted automatically; an absent rate remains explicitly unpriced.
 - A buying price is entered beside the material in **Stock & prices** as one amount per unit. Changing it creates a new authoritative offer and preserves the prior one as history.
-- A public business applicant chooses between new and renewal using ordinary links, then answers business name, Discord contact, trade categories, and purpose. Configured routine class and region selections are derived; exceptional endorsements are optional.
+- A public business applicant completes one short new-license form with business name, Discord contact, trade categories, and purpose. Configured routine class and region selections are derived; exceptional endorsements are optional.
 - An Owner approves an ordinary new license request with one **Approve business** action. The application name and configured onboarding profile create the canonical business, current dealer authorization, and public license together; manual onboarding remains an exceptional Staff tool.
 - An order with several lines is presented as one compact item list. Status, quantity, price, and the next permitted action appear once per item; repeated progress diagrams, technical unit codes, database versions, and duplicated order-state labels stay out of the ordinary view.
 - A prepared ordinary product can be created in approximately 30 seconds through **Products**. Ordinary stock is then added on its **Stock & prices** row or recorded as a counted total in **Record activity**; Company setup never duplicates those tasks.
@@ -407,7 +407,7 @@ The product owner must resolve these before the affected feature is implemented:
 - Exact holder eligibility, class-specific authority, and whether additional classes are required
 - Exact endorsement prerequisites, inheritance, exclusivity, and jurisdiction-specific behavior beyond the approved modular baseline
 - Required identity assurance for public applicants, dealers, representatives, and factors
-- License duration, renewal windows, grace periods, provisional authority, and expiration behavior
+- Whether exceptional or imported authorities may carry a fixed end date
 - Whether any future public search should extend beyond the approved exact-reference-only behavior
 - Any future changes to the approved public verification field allowlists
 
@@ -447,7 +447,7 @@ Until these decisions are recorded, implementations must preserve configurabilit
 
 ## Launch command suite acceptance
 
-The implemented launch suite adds a full authenticated overview dashboard; rapid staff entry for licensed businesses and direct individuals; database-enforced `3×` direct pricing and weekly limits; deterministic dealer price precedence; public applications and renewals with a dedicated approval queue; consignment commission settlement; atomic unique-asset delivery; reviewed configured sanctions; and official license, order, fulfillment, and settlement PDFs from immutable snapshots. The access layer adds an owner-visible Discord request queue, explicit Agent approval/denial/blocking, and an owner roster without exposing the internal role catalogue as ordinary server administration.
+The implemented launch suite adds a full authenticated overview dashboard; rapid staff entry for licensed businesses and direct individuals; database-enforced `3×` direct pricing and weekly limits; deterministic dealer price precedence; public new-license applications with a dedicated approval queue; consignment commission settlement; atomic unique-asset delivery; reviewed configured sanctions; and official license, order, fulfillment, and settlement PDFs from immutable snapshots. The access layer adds an owner-visible Discord request queue, explicit Agent approval/denial/blocking, and an owner roster without exposing the internal role catalogue as ordinary server administration.
 
 The suite does not make Sheets, Discord, or PDFs authoritative; calculate stock in frontend code; impose a universal license duration or commission; create stock because an order exists; or provide a general accounting ledger.
 

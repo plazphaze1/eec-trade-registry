@@ -7,20 +7,12 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Apply or renew",
-  description: "Apply for configured East Empire Company trade authority or request renewal of an existing license.",
+  title: "Apply for a business license",
+  description: "Apply for configured East Empire Company business trade authority.",
 };
 
-interface ApplyPageProps {
-  searchParams: Promise<{ task?: string }>;
-}
-
-export default async function ApplyPage({ searchParams }: ApplyPageProps) {
-  const [{ task }, options] = await Promise.all([
-    searchParams,
-    getApplicationOptions(await createServerSupabaseClient()),
-  ]);
-  const mode = task === "renew" ? "renewal" : "new";
+export default async function ApplyPage() {
+  const options = await getApplicationOptions(await createServerSupabaseClient());
   return (
     <main>
       <section className="hero">
@@ -35,7 +27,7 @@ export default async function ApplyPage({ searchParams }: ApplyPageProps) {
         <EecHeroEmblem />
       </section>
       {options ? (
-        <ApplicationForms key={mode} mode={mode} options={options} />
+        <ApplicationForms options={options} />
       ) : (
         <section className="notice-panel">
           <h2>Applications are temporarily unavailable</h2>

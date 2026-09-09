@@ -47,8 +47,6 @@ export async function reviewLicenseApplicationAction(formData: FormData) {
   revalidatePath("/staff/launch");
   const notice = input.decision === "deny"
     ? "application_denied"
-    : input.expires_at
-      ? "application_renewed"
-      : "application_approved";
+    : "application_approved";
   redirect(destination("notice", notice));
 }

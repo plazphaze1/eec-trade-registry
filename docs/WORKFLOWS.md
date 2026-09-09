@@ -196,17 +196,16 @@ submitted / under_review / awaiting_information -> withdrawn
 
 ### Applicant flow
 
-1. Applicant or staff starts an application of a configured type.
-2. Form questions are rendered from a versioned definition appropriate to license class, jurisdiction, and request type.
-3. Applicant saves a draft.
-4. On submit, an authoritative function validates required answers, representative authority, duplicates, and policy prerequisites.
-5. The application becomes `submitted`, receives a public reference, and enters the staff queue.
-6. Applicant may supply requested information or withdraw while policy permits.
+1. Applicant opens the public new-business license form; no login or email is required.
+2. Applicant enters the business name, Discord contact, trade categories, and a short description.
+3. On submit, the secure server applies abuse limits and an authoritative function validates required answers, duplicates, and policy prerequisites.
+4. The application becomes `submitted`, receives a public reference plus one-time private status token, and enters the staff queue.
+5. Applicant uses both receipt values to check the decision later.
 
 ### Staff review flow
 
 1. An authorized Agent opens the dedicated `/staff/applications` queue from the dashboard.
-2. The officer reviews the submitted business name, contact, purpose, requested categories, existing license for a renewal, standing, prior actions, and requested endorsements.
+2. The officer reviews the submitted business name, contact, purpose, requested categories, standing, prior actions, and requested endorsements.
 3. For an ordinary new request, the officer chooses **Approve business** or declines with a reason. Advanced issuance remains available only in manual licensing tools.
 4. Required secondary approvals are collected according to the approval policy.
 5. The decision function validates actor authority and current application state.
@@ -224,7 +223,7 @@ One authoritative new-business approval command:
 7. Writes dealer, license, application, audit, and outbox evidence.
 8. Commits every coupled record or rolls the entire approval back.
 
-Implementation note: direct staff issuance and issuance/renewal from a public application are implemented. An ordinary new approval no longer requires staff to leave the queue and manually create a holder. It atomically creates the configured party and dealer authorization, issues the linked license, records history/audit, and emits outbox work. Renewal extends the existing license and still asks for an explicit new expiration because duration policy remains unresolved.
+Implementation note: direct staff issuance and issuance from a public application are implemented. An ordinary approval no longer requires staff to leave the queue and manually create a holder. It atomically creates the configured party and dealer authorization, issues the linked open-ended license, records history/audit, and emits outbox work.
 
 ### License states
 
@@ -234,19 +233,17 @@ provisional -> active -> suspended -> active
      |           |          +-------> revoked
      |           +------------------> revoked
      |           +------------------> surrendered
-     +------------------------------> revoked / expired
-active / suspended / provisional ---> expired (time policy or scheduled transition)
+     +------------------------------> revoked
 ```
 
-Exact allowed paths, grace behavior, and whether expiration is stored by a scheduled transition or derived are policy decisions. `expiring soon` is always derived.
+Ordinary licenses are open-ended. They remain current until an explicit, authorized suspension, revocation, or surrender. Historical or imported fixed-term records may still display an expiration, but the public workflow does not renew them.
 
-### Renewal
+### License continuity
 
-1. Authorized party opens a renewal application tied to the existing license.
-2. The system snapshots current endorsements and conditions as renewal inputs.
-3. Review considers compliance, standing, outstanding obligations, and updated policy.
-4. Approval either extends/supersedes the license term or issues a successor record, according to the chosen historical model.
-5. Changes in class, endorsements, or conditions are explicit and auditable.
+1. No routine renewal action is required.
+2. Changes in class, endorsements, or conditions use explicit, auditable change workflows.
+3. Suspension, revocation, and surrender change standing without deleting the original license or its history.
+4. Historical renewal rows remain immutable evidence; the database rejects new renewal applications and events.
 
 ### Suspension, reinstatement, revocation, and surrender
 
@@ -698,7 +695,7 @@ Rotate the secret, revoke affected sessions or principal, inspect audit/delivery
 - Payment, deposit, credit, and settlement gates in the order workflow
 - Dealer receipt proof beyond confirmation by an authorized actor
 - Consignment reporting frequency, acceptance, settlement amounts, shrinkage, and loss rules beyond retained EEC ownership
-- License expiration scheduling, grace periods, pending-renewal authority, and effects on existing orders
+- Effects of any exceptional imported fixed-term authority on existing orders
 - Whether an appeal stays an enforcement action
 - Emergency overrides and after-the-fact review requirements
 - Future changes to the approved public verification result categories and disclosure text
@@ -843,9 +840,9 @@ No workflow-dependent implementation should guess these decisions. A decision re
 
 ### License application
 
-`submitted → under_review → issued | renewed | denied | withdrawn`
+`submitted → under_review → issued | denied | withdrawn`
 
-Anonymous submission returns a one-time status token. Approval uses the existing issuance invariants or records an explicit new expiration. No default duration or grace period is inferred.
+Anonymous submission returns a one-time status token. Approval uses the existing issuance invariants and creates an open-ended ordinary license.
 
 ### Consignment settlement
 

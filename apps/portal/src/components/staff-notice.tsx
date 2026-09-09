@@ -20,7 +20,6 @@ const notices: Record<string, string> = {
   application_decided: "The application decision and resulting license change were recorded.",
   application_approved: "The business, trading authorization, and license were created together.",
   application_denied: "The request was declined. No business or license was created.",
-  application_renewed: "The existing business license was renewed.",
   asset_fulfilled: "The reservation was consumed and unique asset custody was transferred.",
   generated: "The official document snapshot was generated and is ready to download.",
   listing_saved: "The public shop listing was updated.",

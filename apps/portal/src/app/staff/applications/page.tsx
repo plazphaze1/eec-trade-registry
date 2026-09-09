@@ -36,14 +36,7 @@ function ApprovalForm({ application }: { application: Application }) {
     <input name="initial_status_code" type="hidden" value="active" />
   </>;
 
-  if (application.type === "renewal") {
-    return <form action={reviewLicenseApplicationAction} className="license-review-primary-action">
-      {common}
-      <input name="reason" type="hidden" value="Renewal application reviewed and approved." />
-      <label className="field"><span>Renew until</span><input name="expires_at" required type="datetime-local" /></label>
-      <button className="button button-primary"><UiIcon name="check" />Approve renewal</button>
-    </form>;
-  }
+  if (application.type === "renewal") return null;
 
   return <form action={reviewLicenseApplicationAction} className="license-review-primary-action">
     {common}
@@ -101,7 +94,7 @@ export default async function StaffApplicationsPage({ searchParams }: Applicatio
       <header><div><h2>{pending.length ? `${pending.length} waiting` : "Nothing waiting"}</h2><p>Oldest requests appear first.</p></div></header>
       {pending.map((application) => <article className="license-review-card" key={application.id}>
         <header>
-          <div><span className="license-review-kind">{application.type === "new" ? "New business" : "Renewal"}</span><h2>{application.applicant_name}</h2><p>{application.contact_label} · {submittedLabel(application, locale)}</p></div>
+          <div><span className="license-review-kind">{application.type === "new" ? "New business" : "Legacy renewal request"}</span><h2>{application.applicant_name}</h2><p>{application.contact_label} · {submittedLabel(application, locale)}</p></div>
           <small>{application.reference}</small>
         </header>
         <div className="license-review-body">
@@ -109,6 +102,7 @@ export default async function StaffApplicationsPage({ searchParams }: Applicatio
           <div><span>What the business does</span><p>{application.statement}</p></div>
           {application.existing_license_reference && <div><span>Current license</span><strong>{application.existing_license_reference}</strong></div>}
         </div>
+        {application.type === "renewal" && <div className="notice-panel"><strong>Renewals are no longer used.</strong><p>Decline this legacy request. The existing license record and its history remain unchanged.</p></div>}
         <ApprovalForm application={application} />
         <DenialForm application={application} />
       </article>)}

@@ -25,7 +25,7 @@ select ok((select relrowsecurity from pg_class where oid='public.license_applica
 select ok((select relrowsecurity from pg_class where oid='public.generated_documents'::regclass),'document table has RLS');
 select ok(not has_table_privilege('anon','public.license_applications','select'),'anonymous callers cannot enumerate applications');
 select ok(not has_table_privilege('authenticated','public.personal_quota_entries','insert'),'staff cannot bypass quota commands');
-select ok(has_function_privilege('anon','public.public_submit_license_application(text,text,text,text,text,text,text[],text,uuid)','execute'),'anonymous callers may submit constrained applications');
+select ok(not has_function_privilege('anon','public.public_submit_license_application(text,text,text,text,text,text,text[],text,uuid)','execute'),'anonymous callers cannot bypass the server application limiter');
 select ok(not has_function_privilege('anon','public.staff_create_trade_order(text,uuid,text,text,uuid,uuid,uuid,text,text,jsonb,text,uuid)','execute'),'anonymous callers cannot create staff orders');
 
 insert into auth.users(id,aud,role,email,encrypted_password,email_confirmed_at,created_at,updated_at)
@@ -87,11 +87,11 @@ select lives_ok(format($test$select * from public.staff_cancel_order(%L::uuid,1,
 reset role;
 select is((select status from public.personal_quota_entries),'released','cancellation releases quota');
 
-set local role anon;
+set local role service_role;
 select lives_ok($test$
   select * from public.public_submit_license_application('new','Solitude Tailor','tailor-discord','general-trade','harbor-district',null,
     array['tailoring-textiles'],'Operate a licensed tailoring business.','fb300000-0000-4000-8000-000000000004')
-$test$,'anonymous applicant can submit');
+$test$,'the secure public intake can submit');
 reset role;
 select is((select status from public.license_applications where source_request_id='fb300000-0000-4000-8000-000000000004'),'submitted','application enters submitted state');
 select ok((select status_token_digest ~ '^[0-9a-f]{64}$' from public.license_applications where source_request_id='fb300000-0000-4000-8000-000000000004'),'only a SHA-256 token digest is stored');

@@ -49,7 +49,7 @@ select
 from public.staff_roles as role
 where role.code = 'platform_administrator';
 
-set local role anon;
+set local role service_role;
 select lives_ok(
   $test$
     select * from public.public_submit_license_application(
@@ -64,7 +64,7 @@ select lives_ok(
       'fc300000-0000-4000-8000-000000000001'
     )
   $test$,
-  'a new business can submit one public request'
+  'the secure public intake can submit one request'
 );
 reset role;
 
