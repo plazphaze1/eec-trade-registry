@@ -66,9 +66,9 @@ export default async function NewLicensePage({ searchParams }: NewLicensePagePro
               </select>
             </label>
             <label className="field">
-              <span>Dealer authorization (optional)</span>
+              <span>Link to a business <small>optional</small></span>
               <select name="dealer_authorization_id">
-                <option value="">No linked dealer authorization</option>
+                <option value="">No linked business</option>
                 {references.data.dealer_authorizations.map((dealer) => (
                   <option key={dealer.id} value={dealer.id}>
                     {dealer.public_reference}

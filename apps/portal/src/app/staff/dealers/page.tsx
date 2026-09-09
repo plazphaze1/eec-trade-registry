@@ -25,7 +25,7 @@ export default async function StaffDealersPage({ searchParams }: { searchParams:
     <StaffNotice error={parameters.error} notice={parameters.notice} />
     <form className="staff-search" method="get" role="search"><label className="field"><span>Find a business</span><input defaultValue={search} maxLength={100} name="q" placeholder="Business name or reference" type="search" /></label><button className="button button-primary" type="submit">Search</button>{search && <Link className="button button-secondary" href="/staff/dealers">Clear</Link>}</form>
     <p className="result-count">{result.data.length} business account{result.data.length === 1 ? "" : "s"}</p>
-    <section className="staff-item-list" aria-label="Dealer authorizations">{result.data.map((dealer) => <article className="staff-item-row" key={dealer.id}>
+    <section className="staff-item-list" aria-label="Businesses">{result.data.map((dealer) => <article className="staff-item-row" key={dealer.id}>
       <div className="staff-item-identity"><div className="staff-status-row"><span className={`staff-status staff-status-${dealer.status_code}`}>{dealer.status_label}</span><span>{dealer.dealer_type_label}</span></div><h2>{dealer.display_name}</h2><p>{dealer.public_reference}</p></div>
       <dl className="staff-item-facts"><div><dt>Jurisdiction</dt><dd>{dealer.jurisdiction_label}</dd></div><div><dt>Public record</dt><dd>{dealer.public_disclosure_enabled ? "Enabled" : "Private"}</dd></div><div><dt>Premises</dt><dd>{dealer.approved_premises_public ?? "Not listed"}</dd></div><div><dt>Last update</dt><dd>{new Date(dealer.updated_at).toLocaleString(locale)}</dd></div></dl>
       <Link className="button button-secondary" href={`/staff/dealers/${dealer.id}`}>Open business</Link>

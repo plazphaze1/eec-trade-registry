@@ -54,7 +54,7 @@ async function DashboardLive() {
   const isOwner = dashboard.capabilities.can_manage_access;
   const attentionCandidates: AttentionItem[] = [
     { href: "/staff/access", icon: "people", label: "Discord access request", description: "An identity needs an Owner decision.", value: value(dashboard.access, "requests_pending") },
-    { href: "/staff/applications", icon: "document", label: "license application", description: "An applicant is waiting for a decision.", value: value(dashboard.licensing, "applications_pending") },
+    { href: "/staff/applications", icon: "document", label: "license request", description: "A business is waiting for a decision.", value: value(dashboard.licensing, "applications_pending") },
     { href: "/staff/orders", icon: "clipboard", label: "order needing review", description: "Open it and continue from the order page.", value: value(dashboard.orders, "under_review") },
     { href: "/staff/orders", icon: "package", label: "order waiting for stock", description: "Demand is recorded and needs replenishment.", value: value(dashboard.orders, "awaiting_stock") },
     { href: "/staff/inventory", icon: "box", label: "critical reserve", description: "A material is below its configured safety level.", value: value(dashboard.inventory, "critical_reserves") },

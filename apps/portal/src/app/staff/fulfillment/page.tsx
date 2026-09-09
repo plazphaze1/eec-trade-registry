@@ -91,7 +91,7 @@ export default async function StaffFulfillmentPage({
                 {reservation.order_reference} · line {reservation.line_number} · {reservation.item_code}
               </p>
               <dl className="order-facts">
-                <div><dt>Dealer</dt><dd>{reservation.ordering_party_name}</dd></div>
+                <div><dt>Business</dt><dd>{reservation.ordering_party_name}</dd></div>
                 <div><dt>Warehouse</dt><dd>{reservation.warehouse_name} / {reservation.location_name}</dd></div>
                 <div><dt>Mode</dt><dd>{reservation.fulfillment_mode}</dd></div>
                 <div><dt>Expires</dt><dd>{new Date(reservation.expires_at).toLocaleString(locale)}</dd></div>

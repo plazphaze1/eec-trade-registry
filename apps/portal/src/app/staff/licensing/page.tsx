@@ -122,7 +122,7 @@ export default async function StaffLicensingPage({
                 <dd>{license.jurisdiction_label}</dd>
               </div>
               <div>
-                <dt>Dealer authority</dt>
+                <dt>Business reference</dt>
                 <dd>{license.dealer_reference ?? "Not linked"}</dd>
               </div>
               <div>

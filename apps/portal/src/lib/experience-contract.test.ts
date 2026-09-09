@@ -94,4 +94,30 @@ describe("consumer experience contracts", () => {
     expect(productCreate).toContain("How does the Company get it?");
     expect(productEdit).toContain("<ItemPublicListingForm");
   });
+
+  it("keeps staff language aligned with the business-facing model", () => {
+    const businessList = source("../app/staff/dealers/page.tsx");
+    const businessDetail = source("../app/staff/dealers/[id]/page.tsx");
+    const orderQueue = source("../app/staff/orders/page.tsx");
+    const licensing = source("../app/staff/licensing/page.tsx");
+    const issueLicense = source("../app/staff/licensing/new/page.tsx");
+
+    expect(businessList).toContain('aria-label="Businesses"');
+    expect(businessDetail).toContain("Back to businesses");
+    expect(businessDetail).toContain("Save business details");
+    expect(businessDetail).not.toContain("Business customer");
+    expect(orderQueue).toContain('className="eyebrow">Order queue');
+    expect(licensing).toContain("Business reference");
+    expect(issueLicense).toContain("Link to a business");
+    expect(issueLicense).not.toContain("Dealer authorization (optional)");
+  });
+
+  it("makes both everyday bank movements visibly actionable", () => {
+    const money = source("../app/staff/money/page.tsx");
+    const experienceStyles = source("../app/experience.css");
+
+    expect(money).toContain("<details open><summary><strong>Deposit or withdraw");
+    expect(money).toContain("<details open><summary><strong>Transfer between accounts");
+    expect(experienceStyles).toContain(".bank-quick-actions summary::after");
+  });
 });
