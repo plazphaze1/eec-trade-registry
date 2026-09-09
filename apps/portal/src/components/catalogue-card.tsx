@@ -6,9 +6,10 @@ import { formatMinorAmount, formatQuantity } from "@/lib/format";
 interface CatalogueCardProps {
   item: PublicCatalogueItem;
   locale: string;
+  showPrice: boolean;
 }
 
-export function CatalogueCard({ item, locale }: CatalogueCardProps) {
+export function CatalogueCard({ item, locale, showPrice }: CatalogueCardProps) {
   const price = formatMinorAmount(
     item.price_amount_minor,
     item.currency_symbol,
@@ -32,11 +33,11 @@ export function CatalogueCard({ item, locale }: CatalogueCardProps) {
         <p>{item.description}</p>
       </div>
 
-      <div className="catalogue-list-fact">
+      {showPrice && <div className="catalogue-list-fact">
         <span>Price</span>
         <strong>{price ?? "By request"}</strong>
         {minimum && <small>Minimum {minimum}</small>}
-      </div>
+      </div>}
 
       <div className="catalogue-list-fact">
         <span>Availability</span>

@@ -14,6 +14,20 @@ import {
 import { getDefaultLocale, getInstitutionName } from "@/lib/env";
 import { parseCatalogueQuery } from "@/lib/query";
 
+const CATALOGUE_PAGE_SIZE = 30;
+
+function cataloguePageHref(
+  page: number,
+  query: { category: string | null; search: string | null },
+) {
+  const parameters = new URLSearchParams();
+  if (query.search) parameters.set("q", query.search);
+  if (query.category) parameters.set("category", query.category);
+  if (page > 1) parameters.set("page", String(page));
+  const suffix = parameters.toString();
+  return suffix ? `/?${suffix}` : "/";
+}
+
 export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Trade catalogue",
@@ -28,8 +42,9 @@ export default async function CataloguePage({
   searchParams,
 }: CataloguePageProps) {
   const query = parseCatalogueQuery(await searchParams);
+  const catalogueQuery = { category: query.category, page: 1, search: query.search };
   const [catalogueResult, categoriesResult] = await Promise.all([
-    getPublicCatalogue(query),
+    getPublicCatalogue(catalogueQuery),
     getPublicCatalogueCategories(),
   ]);
   const institutionName = getInstitutionName();
@@ -39,6 +54,15 @@ export default async function CataloguePage({
   const generatedAt = catalogueResult.ok
     ? catalogueResult.data[0]?.generated_at ?? null
     : null;
+  const totalItems = catalogueResult.ok ? catalogueResult.data.length : 0;
+  const pageCount = Math.max(1, Math.ceil(totalItems / CATALOGUE_PAGE_SIZE));
+  const currentPage = Math.min(query.page, pageCount);
+  const pageStart = (currentPage - 1) * CATALOGUE_PAGE_SIZE;
+  const visibleItems = catalogueResult.ok
+    ? catalogueResult.data.slice(pageStart, pageStart + CATALOGUE_PAGE_SIZE)
+    : [];
+  const showPrice = catalogueResult.ok
+    && catalogueResult.data.some((item) => item.price_amount_minor !== null);
 
   return (
     <main>
@@ -83,7 +107,7 @@ export default async function CataloguePage({
           <CatalogueUnavailable
             notConfigured={catalogueResult.code === "not_configured"}
           />
-        ) : catalogueResult.data.length === 0 ? (
+        ) : totalItems === 0 ? (
           <section className="empty-state" role="status">
             <p className="eyebrow">No matching records</p>
             <h2>No published goods match those filters.</h2>
@@ -92,20 +116,28 @@ export default async function CataloguePage({
         ) : (
           <>
             <p className="result-count" aria-live="polite">
-              {catalogueResult.data.length} published
-              {catalogueResult.data.length === 1 ? " entry" : " entries"}
+              Showing {pageStart + 1}–{Math.min(pageStart + CATALOGUE_PAGE_SIZE, totalItems)} of {totalItems} published goods
             </p>
-            <div className="catalogue-list">
+            <div className={`catalogue-list ${showPrice ? "" : "catalogue-list-no-price"}`}>
               <div className="catalogue-list-heading">
                 <span>Product</span>
-                <span>Price</span>
+                {showPrice && <span>Price</span>}
                 <span>Availability</span>
                 <span />
               </div>
-              {catalogueResult.data.map((item) => (
-                <CatalogueCard key={item.item_code} item={item} locale={locale} />
+              {visibleItems.map((item) => (
+                <CatalogueCard key={item.item_code} item={item} locale={locale} showPrice={showPrice} />
               ))}
             </div>
+            {pageCount > 1 && <nav aria-label="Catalogue pages" className="catalogue-pagination">
+              {currentPage > 1
+                ? <Link className="button button-secondary" href={cataloguePageHref(currentPage - 1, query)}>← Previous</Link>
+                : <span />}
+              <span>Page {currentPage} of {pageCount}</span>
+              {currentPage < pageCount
+                ? <Link className="button button-secondary" href={cataloguePageHref(currentPage + 1, query)}>Next →</Link>
+                : <span />}
+            </nav>}
           </>
         )}
       </section>

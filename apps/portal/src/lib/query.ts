@@ -1,8 +1,10 @@
 const MAX_SEARCH_LENGTH = 100;
 const CATEGORY_PATTERN = /^[a-z0-9][a-z0-9_-]{0,49}$/;
+const MAX_PAGE = 10000;
 
 export interface CatalogueQuery {
   category: string | null;
+  page: number;
   search: string | null;
 }
 
@@ -22,9 +24,17 @@ export function normalizeCategory(value: string | null): string | null {
   return CATEGORY_PATTERN.test(normalized) ? normalized : null;
 }
 
+export function normalizePage(value: string | null): number {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0
+    ? Math.min(parsed, MAX_PAGE)
+    : 1;
+}
+
 export function parseCatalogueQuery(params: SearchParams): CatalogueQuery {
   return {
     category: normalizeCategory(firstValue(params.category)),
+    page: normalizePage(firstValue(params.page)),
     search: normalizeSearch(firstValue(params.q)),
   };
 }

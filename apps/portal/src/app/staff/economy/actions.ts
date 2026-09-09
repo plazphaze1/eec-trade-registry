@@ -8,6 +8,7 @@ import {
   readSupplierForm, readSupplyPolicyForm,
 } from "@/lib/economy-form";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { readRequestId } from "@/lib/request-id";
 
 const economyPath = "/staff/economy";
 function returnPath(formData: FormData) {
@@ -91,7 +92,8 @@ export async function createOfferAction(formData: FormData) {
 export async function setBuyingPriceAction(formData: FormData) {
   const path = returnPath(formData);
   const parsed = readSimpleBuyingPriceForm(formData);
-  if (!parsed.success) redirect(destination("error", "invalid_input", path));
+  const requestId = readRequestId(formData);
+  if (!parsed.success || !requestId) redirect(destination("error", "invalid_input", path));
   const client = await verifiedClient(); if (!client) redirect("/staff/login");
   const input = parsed.data;
   const { error } = await client.rpc("staff_set_procurement_price", {
@@ -99,7 +101,7 @@ export async function setBuyingPriceAction(formData: FormData) {
     p_currency_id: input.currencyId,
     p_item_id: input.itemId,
     p_reason: "Guaranteed buying price set from the simple material desk.",
-    p_request_id: crypto.randomUUID(),
+    p_request_id: requestId,
   });
   if (error) redirect(errorPath(error, path));
   refresh();
