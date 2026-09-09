@@ -3,7 +3,7 @@ import { cache } from "react";
 import { z } from "zod";
 
 import { CatalogueConfigurationError, getPublicSupabaseClient } from "@/lib/supabase";
-import type { CatalogueQuery } from "@/lib/query";
+import { CATALOGUE_PAGE_SIZE, type CatalogueQuery } from "@/lib/query";
 
 const numericValueSchema = z
   .union([z.number(), z.string()])
@@ -45,6 +45,10 @@ const publicCatalogueItemSchema = z.object({
   unit_symbol: z.string().nullable(),
 });
 
+const publicCataloguePageItemSchema = publicCatalogueItemSchema.extend({
+  total_count: z.number().int().nonnegative(),
+});
+
 const publicCatalogueCategorySchema = z.object({
   code: z.string(),
   display_name: z.string(),
@@ -52,6 +56,7 @@ const publicCatalogueCategorySchema = z.object({
 });
 
 export type PublicCatalogueItem = z.infer<typeof publicCatalogueItemSchema>;
+export type PublicCataloguePageItem = z.infer<typeof publicCataloguePageItemSchema>;
 export type PublicCatalogueCategory = z.infer<
   typeof publicCatalogueCategorySchema
 >;
@@ -69,11 +74,13 @@ function reportQueryFailure(operation: string, message: string): void {
 
 async function queryPublicCatalogue(
   query: CatalogueQuery,
-): Promise<CatalogueResult<PublicCatalogueItem[]>> {
+): Promise<CatalogueResult<PublicCataloguePageItem[]>> {
   try {
     const client = getPublicSupabaseClient();
-    const { data, error } = await client.rpc("get_public_catalogue", {
+    const { data, error } = await client.rpc("get_public_catalogue_page", {
       p_category_code: query.category,
+      p_limit: CATALOGUE_PAGE_SIZE,
+      p_offset: (query.page - 1) * CATALOGUE_PAGE_SIZE,
       p_search: query.search,
     });
 
@@ -82,7 +89,7 @@ async function queryPublicCatalogue(
       return { ok: false, code: "query_failed" };
     }
 
-    const parsed = z.array(publicCatalogueItemSchema).safeParse(data);
+    const parsed = z.array(publicCataloguePageItemSchema).safeParse(data);
     if (!parsed.success) {
       reportQueryFailure("list", "Supabase returned an unexpected response shape.");
       return { ok: false, code: "invalid_response" };
@@ -106,7 +113,7 @@ const getCachedPublicCatalogue = unstable_cache(
 
 export function getPublicCatalogue(
   query: CatalogueQuery,
-): Promise<CatalogueResult<PublicCatalogueItem[]>> {
+): Promise<CatalogueResult<PublicCataloguePageItem[]>> {
   return getCachedPublicCatalogue(query);
 }
 

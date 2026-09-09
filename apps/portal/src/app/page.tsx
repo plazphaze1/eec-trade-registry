@@ -12,9 +12,7 @@ import {
   getPublicCatalogueCategories,
 } from "@/lib/catalogue";
 import { getDefaultLocale, getInstitutionName } from "@/lib/env";
-import { parseCatalogueQuery } from "@/lib/query";
-
-const CATALOGUE_PAGE_SIZE = 30;
+import { CATALOGUE_PAGE_SIZE, parseCatalogueQuery } from "@/lib/query";
 
 function cataloguePageHref(
   page: number,
@@ -54,13 +52,11 @@ export default async function CataloguePage({
   const generatedAt = catalogueResult.ok
     ? catalogueResult.data[0]?.generated_at ?? null
     : null;
-  const totalItems = catalogueResult.ok ? catalogueResult.data.length : 0;
+  const totalItems = catalogueResult.ok ? catalogueResult.data[0]?.total_count ?? 0 : 0;
   const pageCount = Math.max(1, Math.ceil(totalItems / CATALOGUE_PAGE_SIZE));
   const currentPage = Math.min(query.page, pageCount);
   const pageStart = (currentPage - 1) * CATALOGUE_PAGE_SIZE;
-  const visibleItems = catalogueResult.ok
-    ? catalogueResult.data.slice(pageStart, pageStart + CATALOGUE_PAGE_SIZE)
-    : [];
+  const visibleItems = catalogueResult.ok ? catalogueResult.data : [];
   const showPrice = catalogueResult.ok
     && catalogueResult.data.some((item) => item.price_amount_minor !== null);
 
