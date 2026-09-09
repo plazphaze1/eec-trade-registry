@@ -123,33 +123,37 @@ function companyLedgerTransactions(workspace: BankingWorkspace) {
   );
 }
 
+function TreasuryCashPanel({ currencyCode }: { currencyCode: string }) {
+  return <section className="bank-panel bank-cash-infusion">
+    <div className="bank-panel-heading"><div><p className="eyebrow">Company cash</p><h2>Add cash to Treasury</h2><p>Use this for owner funding, starting cash, or another cash infusion. It is not recorded as a sale.</p></div></div>
+    <form action={treasuryCashInfusionAction} className="bank-action-form bank-infusion-form">
+      <CommandRequestId />
+      <input name="currency_code" type="hidden" value={currencyCode}/>
+      <label><span>Amount</span><div className="money-input"><input min="1" name="amount_minor" placeholder="0" required step="1" type="number"/><strong>{currencyCode}</strong></div></label>
+      <label><span>Date</span><input defaultValue={today()} name="occurred_on" required type="date"/></label>
+      <label><span>Source or reference <small>optional</small></span><input name="source_reference" placeholder="Owner purse, opening funds…"/></label>
+      <label><span>Note <small>optional</small></span><input name="note" placeholder="Why cash was added"/></label>
+      <button className="button button-primary">Add cash</button>
+    </form>
+  </section>;
+}
+
 function CompanyOverview({ workspace }: { workspace: BankingWorkspace }) {
   const summary = workspace.summaries.find((row) => row.currency_code === REGISTRY_CONFIG.currency.code) ?? workspace.summaries[0];
   if (!summary) return <p className="empty-state">No active currency is configured.</p>;
   const openInvoices = workspace.invoices.filter((invoice) => ["open", "partially_paid"].includes(invoice.status));
   const companyTransactions = companyLedgerTransactions(workspace);
   return <>
+    {workspace.capabilities.can_post && <TreasuryCashPanel currencyCode={summary.currency_code} />}
+
     <section className="bank-summary-grid" aria-label="Company books summary">
       <article className={summary.treasury_balance_minor < 0 ? "needs-attention" : ""}><span>Company Treasury</span><strong>{amount(summary.treasury_balance_minor, summary.currency_code)}</strong><small>Actual ledger balance</small></article>
-      <article><span>Customers owe</span><strong>{amount(summary.receivable_minor, summary.currency_code)}</strong><small>{openInvoices.length} open invoices</small></article>
+      <article><span>Unpaid invoices</span><strong>{amount(summary.receivable_minor, summary.currency_code)}</strong><small>{openInvoices.length} open invoices</small></article>
       <article><span>We owe suppliers</span><strong>{amount(summary.outstanding_total_minor, summary.currency_code)}</strong><small>Recorded unpaid deliveries</small></article>
       <article><span>Purchases · 30 days</span><strong>{amount(summary.paid_30d_minor, summary.currency_code)}</strong><small>Recorded Company spending</small></article>
       <article><span>Money in · 30 days</span><strong>{amount(summary.money_in_30d_minor, summary.currency_code)}</strong><small>Posted to Treasury</small></article>
       <article><span>Money out · 30 days</span><strong>{amount(summary.money_out_30d_minor, summary.currency_code)}</strong><small>Posted from Treasury</small></article>
     </section>
-
-    {workspace.capabilities.can_post && <section className="bank-panel bank-cash-infusion">
-      <div className="bank-panel-heading"><div><p className="eyebrow">Company cash</p><h2>Add cash to Treasury</h2><p>Use this for owner funding, starting cash, or another cash infusion. It is not recorded as a sale.</p></div></div>
-      <form action={treasuryCashInfusionAction} className="bank-action-form bank-infusion-form">
-        <CommandRequestId />
-        <input name="currency_code" type="hidden" value={summary.currency_code}/>
-        <label><span>Amount</span><div className="money-input"><input min="1" name="amount_minor" placeholder="0" required step="1" type="number"/><strong>{summary.currency_code}</strong></div></label>
-        <label><span>Date</span><input defaultValue={today()} name="occurred_on" required type="date"/></label>
-        <label><span>Source or reference <small>optional</small></span><input name="source_reference" placeholder="Owner purse, opening funds…"/></label>
-        <label><span>Note <small>optional</small></span><input name="note" placeholder="Why cash was added"/></label>
-        <button className="button button-primary">Add cash</button>
-      </form>
-    </section>}
 
     {(summary.overdue_minor > 0 || workspace.unpriced_purchase_count > 0) && <section className="bank-attention-strip">
       <div><p className="eyebrow">Needs attention</p><h2>Money work waiting for you</h2></div>
@@ -179,6 +183,11 @@ function BankOverview({ workspace }: { workspace: BankingWorkspace }) {
   const activeLoans = workspace.loans.filter((loan) => ["active", "defaulted"].includes(loan.status));
   const bankTransactions = workspace.transactions.filter((transaction) => ["deposit", "withdrawal", "transfer", "loan_disbursement", "loan_payment"].includes(transaction.transaction_type));
   return <>
+    <nav className="bank-quick-links" aria-label="Common banking actions">
+      <Link href="/staff/money?view=accounts"><strong>Accounts</strong><span>Find or open an account</span></Link>
+      <Link href="/staff/money?view=transactions"><strong>Move money</strong><span>Deposit, withdraw, or transfer</span></Link>
+      <Link href="/staff/money?view=loans"><strong>Loans</strong><span>Create terms or record repayment</span></Link>
+    </nav>
     <section className="bank-summary-grid" aria-label="Bank summary">
       <article><span>Customer deposits</span><strong>{amount(summary.customer_deposits_minor, summary.currency_code)}</strong><small>Across {customerAccounts.length} accounts shown</small></article>
       <article><span>Active accounts</span><strong>{customerAccounts.filter((account) => account.status === "active").length}</strong><small>Business, personal, and escrow</small></article>
@@ -395,7 +404,7 @@ export default async function MoneyPage({ searchParams }: MoneyPageProps) {
   const workspace = result.data;
 
   return <main className="staff-main bank-workspace">
-    <header className="staff-page-header"><div><p className="eyebrow">{scope === "books" ? "East Empire Company accounting" : "East Empire Company Bank"}</p><h1>{scope === "books" ? "Company books" : "Bank"}</h1><p>{scope === "books" ? "Treasury, sales, spending, cash infusions, and the Company ledger." : "Customer accounts, transfers, statements, holds, and loans."}</p></div>{scope === "books" ? <Link className="button button-secondary" href="/staff/activity">Record stock activity</Link> : <Link className="button button-secondary" href="/staff/books">Open Company books</Link>}</header>
+    <header className="staff-page-header"><div><p className="eyebrow">{scope === "books" ? "East Empire Company accounting" : "East Empire Company Bank"}</p><h1>{scope === "books" ? "Company books" : "Bank"}</h1><p>{scope === "books" ? "Treasury, sales, spending, cash infusions, and the Company ledger." : "Customer accounts, transfers, statements, holds, and loans."}</p></div></header>
     {(parameters.notice && notices[parameters.notice]) && <p className="notice-panel notice-success">{notices[parameters.notice]}</p>}
     {(parameters.error && errors[parameters.error]) && <p className="notice-panel notice-error">{errors[parameters.error]}</p>}
     <nav className="bank-tabs" aria-label={scope === "books" ? "Company books sections" : "Bank sections"}>{viewLabels.map(([value, label]) => <Link aria-current={view === value ? "page" : undefined} href={`${basePath}?view=${value}`} key={value}>{label}</Link>)}</nav>
