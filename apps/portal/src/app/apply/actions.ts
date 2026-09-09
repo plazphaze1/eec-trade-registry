@@ -2,7 +2,8 @@
 
 import { z } from "zod";
 
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createIntegrationSupabaseClient } from "@/lib/integration-supabase";
+import { consumePublicActionRateLimit } from "@/lib/public-action-rate-limit";
 
 export interface ApplicationState {
   error?: string;
@@ -17,13 +18,8 @@ const newApplicationSchema = z.object({
   contact_label: z.string().trim().min(2).max(300),
   jurisdiction_code: z.string().trim().min(1).max(50),
   license_class_code: z.string().trim().min(1).max(50),
+  request_id: z.guid(),
   statement: z.string().trim().min(10).max(4000),
-  website: z.string().max(0).default(""),
-});
-
-const renewalSchema = z.object({
-  application_type: z.literal("renewal"),
-  existing_license_reference: z.string().trim().min(6).max(128),
   website: z.string().max(0).default(""),
 });
 
@@ -41,31 +37,6 @@ export async function submitApplicationAction(
   _previous: ApplicationState,
   form: FormData,
 ): Promise<ApplicationState> {
-  const applicationType = String(form.get("application_type") ?? "");
-  const client = await createServerSupabaseClient();
-
-  if (applicationType === "renewal") {
-    const parsed = renewalSchema.safeParse(Object.fromEntries(form.entries()));
-    if (!parsed.success) {
-      return { error: "Enter the exact LIC reference printed on the current license." };
-    }
-    const { data, error } = await client.rpc("public_submit_license_renewal", {
-      p_existing_license_reference: parsed.data.existing_license_reference,
-      p_request_id: crypto.randomUUID(),
-    });
-    if (error) {
-      console.error(`[public-renewal] ${error.code ?? "unknown"}`);
-      if (error.message.includes("renewal_license_not_found")) {
-        return { error: "That license reference was not found." };
-      }
-      if (error.message.includes("renewal_application_already_pending")) {
-        return { error: "A renewal for that license is already awaiting review." };
-      }
-      return { error: "The renewal could not be sent. Please try again." };
-    }
-    return receipt(data);
-  }
-
   const parsed = newApplicationSchema.safeParse(
     Object.fromEntries(form.entries()),
   );
@@ -73,9 +44,13 @@ export async function submitApplicationAction(
     return { error: "Check every required field and provide a useful statement." };
   }
   const input = parsed.data;
+  if (!(await consumePublicActionRateLimit("license_application_submit_ip"))) {
+    return { error: "Too many applications were sent from this connection. Try again later." };
+  }
   const endorsements = form
     .getAll("endorsement_codes")
     .filter((value): value is string => typeof value === "string");
+  const client = createIntegrationSupabaseClient();
   const { data, error } = await client.rpc("public_submit_license_application", {
     p_applicant_name: input.applicant_name,
     p_application_type: "new",
@@ -84,7 +59,7 @@ export async function submitApplicationAction(
     p_existing_license_reference: null,
     p_jurisdiction_code: input.jurisdiction_code,
     p_license_class_code: input.license_class_code,
-    p_request_id: crypto.randomUUID(),
+    p_request_id: input.request_id,
     p_statement: input.statement,
   });
   if (error) {
@@ -103,7 +78,14 @@ export async function checkApplicationAction(
   if (!reference || !token) {
     return { error: "Enter both the application reference and private status token." };
   }
-  const client = await createServerSupabaseClient();
+  const [ipAllowed, referenceAllowed] = await Promise.all([
+    consumePublicActionRateLimit("license_application_status_ip"),
+    consumePublicActionRateLimit("license_application_status_reference", reference),
+  ]);
+  if (!ipAllowed || !referenceAllowed) {
+    return { error: "Too many status checks were made. Wait a few minutes and try again." };
+  }
+  const client = createIntegrationSupabaseClient();
   const { data, error } = await client.rpc(
     "public_get_license_application_status",
     { p_reference: reference, p_status_token: token },

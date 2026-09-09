@@ -22,7 +22,7 @@ const commands: Command[] = [
   { href: "/staff/inventory", icon: "box", label: "Stock & prices", description: "Check stock or update normal prices", keywords: "inventory quantity procurement floor bulk price", suggested: true },
   { href: "/staff/books", icon: "document", label: "Company books", description: "Treasury, sales, spending, and cash infusions", keywords: "cashbook expenses bills payment finance treasury", suggested: true },
   { href: "/staff/money", icon: "coins", label: "Bank", description: "Customer accounts, transfers, statements, and loans", keywords: "bank account deposit withdrawal loan hold" },
-  { href: "/staff/applications", icon: "license", label: "Review license requests", description: "Approve, renew, or decline a business application", keywords: "pending license renew application", suggested: true },
+  { href: "/staff/applications", icon: "license", label: "Review license requests", description: "Approve or decline a business application", keywords: "pending license application", suggested: true },
   { href: "/staff/dealers", icon: "building", label: "Find a business", description: "Open a licensed business record", keywords: "dealer organization shop customer", suggested: true },
   { href: "/staff", icon: "catalogue", label: "Find a product", description: "Open or edit a catalogue item", keywords: "product material catalogue" },
   { href: "/staff/items/new", icon: "box", label: "Add a product", description: "Create and optionally publish a new good", keywords: "new product material catalogue" },

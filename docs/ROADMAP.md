@@ -137,7 +137,7 @@ Authorized staff can maintain the master catalogue, prices, publication, and con
 
 ## 5. Slice 3 — Parties, dealers, and licensing
 
-Implementation status: The public-verification increment provides configurable jurisdictions, party and dealer types, public-disclosure controls, dealer and license status definitions, license classes, modular endorsements, public conditions, exact-reference privacy-safe functions, and dealer/license pages. Dealer administration adds atomic party onboarding, configurable authorization types and statuses, versioned detail maintenance, activation/suspension/reinstatement/revocation, durable public-projection events, a least-privilege role, and a dedicated staff console. Credential access adds dealer actor identities, configurable representative roles, effective-dated scoped representation, cross-organization isolation, and a private read-only registry overview. The staff licensing lifecycle adds a work queue, configurable reference allocation, audited/idempotent issuance, versioned license commands, modular endorsement grant/revocation, and durable outbox records. Constrained public applications, private status tokens, renewals, requested endorsements, atomic decisions, and a dedicated 90-day staff review workspace are implemented. Ordinary new approval now creates the configured business, active dealer authorization, and linked public license in one transaction. Secure-link exchange, broader renewal rules, factor assignments, scheduled expiration, and production abuse controls remain gated.
+Implementation status: The public-verification increment provides configurable jurisdictions, party and dealer types, public-disclosure controls, dealer and license status definitions, license classes, modular endorsements, public conditions, exact-reference privacy-safe functions, and dealer/license pages. Dealer administration adds atomic party onboarding, configurable authorization types and statuses, versioned detail maintenance, activation/suspension/reinstatement/revocation, durable public-projection events, a least-privilege role, and a dedicated staff console. Credential access adds dealer actor identities, configurable representative roles, effective-dated scoped representation, cross-organization isolation, and a private read-only registry overview. The staff licensing lifecycle adds a work queue, configurable reference allocation, audited/idempotent issuance, versioned license commands, modular endorsement grant/revocation, and durable outbox records. Constrained public new-license applications, private status tokens, requested endorsements, atomic decisions, and a dedicated 90-day staff review workspace are implemented. Ordinary approval creates the configured business, active dealer authorization, and linked open-ended public license in one transaction. New renewal applications are disabled; historical renewal evidence is preserved. Secure-link exchange, factor assignments, and production monitoring remain gated.
 
 ### User outcome
 
@@ -150,7 +150,7 @@ Staff can authorize dealers and issue real licenses with modular endorsements; t
 - Public dealer and license verification functions and pages
 - Dealer enrollment foundation and secure representation model
 - Staff licensing work queue
-- Renewal, suspension, reinstatement, revocation, and surrender at the minimum approved policy depth
+- Suspension, reinstatement, revocation, and surrender at the minimum approved policy depth
 - Permission, privacy, and audit tests
 
 ### Decisions required
@@ -158,7 +158,7 @@ Staff can authorize dealers and issue real licenses with modular endorsements; t
 - Exact holder eligibility for the approved initial classes
 - Exact prerequisites for the approved modular endorsements
 - Dealer and regional factor definitions
-- Effective dates, duration, renewal, grace, and provisional authority
+- Effective dates and provisional authority for exceptional or imported records
 - Any future expansion beyond the approved public allowlist and exact-reference lookup
 - Action-specific licensing approval limits or dual-control rules, if any
 

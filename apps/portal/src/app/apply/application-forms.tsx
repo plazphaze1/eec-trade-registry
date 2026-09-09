@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState } from "react";
 
 import {
@@ -8,6 +7,7 @@ import {
   submitApplicationAction,
   type ApplicationState,
 } from "@/app/apply/actions";
+import { CommandRequestId } from "@/components/command-request-id";
 import { ReferenceBlock } from "@/components/reference-block";
 import type { ApplicationOptions } from "@/lib/license-application";
 import { REGISTRY_CONFIG } from "@/lib/registry-config";
@@ -15,10 +15,8 @@ import { REGISTRY_CONFIG } from "@/lib/registry-config";
 const initial: ApplicationState = {};
 
 export function ApplicationForms({
-  mode,
   options,
 }: {
-  mode: "new" | "renewal";
   options: ApplicationOptions;
 }) {
   const [state, submit, pending] = useActionState(submitApplicationAction, initial);
@@ -52,36 +50,9 @@ export function ApplicationForms({
         </section>
       ) : (
         <section className="application-intake">
-          <nav aria-label="Choose a licensing task" className="application-task-picker">
-            <Link aria-current={mode === "new" ? "page" : undefined} href="/apply">
-              <strong>I need a new license</strong>
-              <small>My business has never had one</small>
-            </Link>
-            <Link aria-current={mode === "renewal" ? "page" : undefined} href="/apply?task=renew">
-              <strong>I already have a license</strong>
-              <small>Renew using my LIC number</small>
-            </Link>
-          </nav>
-
-          {mode === "renewal" ? (
-            <form action={submit} className="verification-form application-form application-renewal-form">
-              <input name="application_type" type="hidden" value="renewal" />
-              <input aria-hidden="true" autoComplete="off" className="form-honeypot" name="website" tabIndex={-1} />
-              <div className="application-form-heading">
-                <p className="eyebrow">Renew a license</p>
-                <h2>What is your license number?</h2>
-                <p>We will copy the existing business details. This is the only question.</p>
-              </div>
-              <label className="field simple-primary-field">
-                <span>Your LIC number</span>
-                <input autoComplete="off" maxLength={128} name="existing_license_reference" placeholder="EEC-LIC-…" required spellCheck={false} />
-              </label>
-              {state.error && <p className="staff-flash staff-flash-error" role="alert">{state.error}</p>}
-              <button className="button button-primary" disabled={pending}>{pending ? "Sending…" : "Ask to renew"}</button>
-            </form>
-          ) : (
-            <form action={submit} className="verification-form application-form simple-application-form">
+          <form action={submit} className="verification-form application-form simple-application-form">
               <input name="application_type" type="hidden" value="new" />
+              <CommandRequestId />
               <input aria-hidden="true" autoComplete="off" className="form-honeypot" name="website" tabIndex={-1} />
               {jurisdiction && <input name="jurisdiction_code" type="hidden" value={jurisdiction.code} />}
               {defaultLicenseClass && <input name="license_class_code" type="hidden" value={defaultLicenseClass.code} />}
@@ -147,8 +118,7 @@ export function ApplicationForms({
               {(!jurisdiction || !defaultLicenseClass) && <p className="staff-flash staff-flash-error" role="alert">New applications are temporarily paused because the standard license setup is incomplete.</p>}
               {state.error && <p className="staff-flash staff-flash-error" role="alert">{state.error}</p>}
               <button className="button button-primary application-submit" disabled={pending || !jurisdiction || !defaultLicenseClass}>{pending ? "Sending…" : "Send for review"}</button>
-            </form>
-          )}
+          </form>
         </section>
       )}
 

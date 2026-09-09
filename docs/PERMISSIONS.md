@@ -86,7 +86,6 @@ Scope names are provisional; they should become stable machine identifiers befor
 - `license.own.read`
 - `license.private.read`
 - `license.issue`
-- `license.renew`
 - `license.condition.manage`
 - `license.suspend`
 - `license.reinstate`
@@ -200,9 +199,9 @@ ADR 0019 supersedes the publication/pricing portion of that initial note: catalo
 
 ### Licensing officer
 
-Can review applications, issue or renew within assigned authority, grant ordinary endorsements, and manage routine conditions. Suspension, revocation, or exceptional endorsements may require senior or compliance approval.
+Can review applications, issue within assigned authority, grant ordinary endorsements, and manage routine conditions. Suspension, revocation, or exceptional endorsements may require senior or compliance approval.
 
-The implemented initial role receives `license.private.read`, `license.issue`, `license.activate`, `license.suspend`, `license.reinstate`, `license.revoke`, `license.surrender.record`, and `endorsement.manage`. Each command resolves its exact permission at execution time. Renewal, conditions, application review, limits, and action-specific secondary approval are not yet granted.
+The implemented initial role receives `license.private.read`, `license.issue`, `license.activate`, `license.suspend`, `license.reinstate`, `license.revoke`, `license.surrender.record`, and `endorsement.manage`. Each command resolves its exact permission at execution time. Conditions, application review, limits, and action-specific secondary approval are separately controlled. Routine renewal is not a supported permission or workflow.
 
 ### Dealer registry officer
 

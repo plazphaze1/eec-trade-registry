@@ -148,10 +148,10 @@ Use **License requests** for public requests:
 1. Open the pending application.
 2. Read the applicant statement and requested endorsements.
 3. Match or create the correct holder record.
-4. Approve and issue, renew, request correction where supported, or deny.
+4. Approve and issue, request correction where supported, or deny.
 5. Enter a reason for the decision.
 
-A pending application is never a valid license. Approval must finish the issuance or renewal transaction.
+A pending application is never a valid license. Approval must finish the business-and-license issuance transaction.
 
 ## Company books and Bank
 

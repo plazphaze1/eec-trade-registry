@@ -824,7 +824,6 @@ This table is generated from the same manifest used by the application. Do not e
 | Public catalogue | Live | `/` |
 | Dealer and license verification | Live | `/verify` |
 | New license applications | Live | `/apply` |
-| License renewal requests | Live | `/apply` |
 | Staff-assisted and direct order entry | Live | `/staff/orders/new` |
 | Ledger inventory and reservations | Live | `/staff/inventory` |
 | Keystone material procurement | Live | `/staff/activity` |

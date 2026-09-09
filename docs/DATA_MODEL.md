@@ -344,7 +344,7 @@ Standing is private by default and must not be returned by public verification f
 
 ## 6. Licensing
 
-Implementation status: the public-verification increment implements configurable license classes and statuses, issued-license source records, modular endorsement grants, public/private conditions, and narrow exact-reference projections. The staff lifecycle increment adds transactional reference allocation, idempotent issuance, versioned status commands, endorsement grant/revocation, append-only domain events, complete audit context, and durable outbox events. Applications, reviews, renewal, condition mutation, and scheduled expiration remain future policy-gated work.
+Implementation status: the public-verification increment implements configurable license classes and statuses, issued-license source records, modular endorsement grants, public/private conditions, and narrow exact-reference projections. The staff lifecycle increment adds transactional reference allocation, idempotent issuance, versioned status commands, endorsement grant/revocation, append-only domain events, complete audit context, and durable outbox events. Applications and reviews are implemented. Ordinary licenses are open-ended; new renewal applications are disabled while historical renewal evidence is retained.
 
 ### `license_classes`
 
@@ -372,7 +372,7 @@ Key fields:
 
 ### `license_applications`
 
-Requests for a new license, renewal, endorsement change, reinstatement, or other configured service.
+Requests for a new license, endorsement change, reinstatement, or other configured service.
 
 Key fields:
 
@@ -388,7 +388,7 @@ Key fields:
 
 Application status is not license status.
 
-Implementation note: the current constrained public intake stores applicant/contact text, requested class, jurisdiction, renewal target, statement, status-token digest, requested endorsements, review evidence, and the resulting license link. The dedicated staff review projection returns pending work and 90 days of decision history without granting direct table access. For a new request without an existing holder, the authoritative approval command uses the class onboarding profile to create the canonical business party, dealer authorization, and linked license in one transaction.
+Implementation note: the current constrained public intake stores applicant/contact text, requested class, jurisdiction, statement, status-token digest, requested endorsements, review evidence, and the resulting license link. The dedicated staff review projection returns pending work and 90 days of decision history without granting direct table access. The authoritative approval command uses the class onboarding profile to create the canonical business party, dealer authorization, and linked open-ended license in one transaction. Legacy renewal fields remain nullable for preserved historical rows only.
 
 ### `license_application_onboarding_profiles`
 
@@ -1139,7 +1139,7 @@ Company books and the Bank do not have separate ledgers. They are bounded projec
 - `commercial_channel_policies`: multiplier and weekly-window policy; direct individual is approved at `30000` basis points.
 - `price_schedule_bindings`: effective-dated deterministic dealer pricing precedence.
 - `direct_customer_profiles` and `personal_quota_entries`: stable customer identity plus held/consumed/released weekly quantity.
-- `license_applications`, requested endorsements, and `license_renewal_events`: public intake and reviewed authority changes.
+- `license_applications` and requested endorsements: public intake and reviewed authority changes. `license_renewal_events` is retained as read-only historical evidence; new rows are rejected.
 - `consignment_finance_terms` and `consignment_settlements`: configurable commission and frozen settlement evidence.
 - `unique_fulfillments`: immutable reservation, asset, line, recipient, actor, and handoff link.
 - `compliance_effect_executions`: exact previous/new target state for approved configured sanctions.

@@ -575,33 +575,6 @@ body > main h2 {
   box-shadow: none;
 }
 
-.application-task-picker {
-  gap: 12px;
-  padding: 16px;
-  border-bottom: 1px solid var(--xp-line);
-  background: var(--xp-surface-soft);
-}
-
-.application-task-picker a {
-  min-height: 72px;
-  padding: 14px 18px;
-  border-color: var(--xp-line);
-  border-radius: var(--xp-radius-sm);
-  color: var(--xp-copy);
-  text-decoration: none;
-}
-
-.application-task-picker a[aria-current="page"] {
-  border-color: var(--xp-gold);
-  border-left-width: 3px;
-  background: var(--xp-gold-soft);
-  box-shadow: none;
-  color: var(--xp-blue-dark);
-}
-
-.application-task-picker strong { font-size: .94rem; }
-.application-task-picker small { font-size: .75rem; }
-
 .application-form {
   grid-template-columns: 1fr;
   gap: 18px;
@@ -736,7 +709,6 @@ body > main h2 {
   font-size: .95rem;
 }
 
-.application-renewal-form { grid-template-columns: minmax(0, 1fr) auto; }
 .application-status-check > summary { padding: 20px 24px; }
 .application-status-check > summary span { color: var(--xp-blue); }
 
@@ -1382,10 +1354,8 @@ body > main h2 {
   .catalogue-list-fact > span { display: block; }
   .catalogue-list-action { justify-self: end; width: auto; }
 
-  .application-task-picker,
   .application-step-fields,
-  .application-category-picker > div,
-  .application-renewal-form { grid-template-columns: 1fr; }
+  .application-category-picker > div { grid-template-columns: 1fr; }
   .application-form { padding: 18px; }
   .application-step { padding: 18px 0 22px; }
   .application-special-permissions > summary { align-items: flex-start; flex-direction: column; }

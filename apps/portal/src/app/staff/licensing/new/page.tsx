@@ -44,7 +44,7 @@ export default async function NewLicensePage({ searchParams }: NewLicensePagePro
         <h1>Issue license</h1>
         <p>
           References are allocated transactionally. The initial term is open-ended
-          because duration and renewal policy remain unresolved.
+          because ordinary licenses are open-ended unless an exceptional term is supplied.
         </p>
       </header>
 

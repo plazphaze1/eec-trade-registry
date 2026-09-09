@@ -47,7 +47,7 @@ export default async function DashboardPage() {
   const quickActions: DashboardAction[] = [
     { href: "/staff/orders/new", icon: "clipboard", label: "Record an order", description: "Choose the buyer, goods, and handoff." },
     { href: "/staff/activity", icon: "package", label: "Record activity", description: "Save a material purchase or counted stock total." },
-    { href: "/staff/applications", icon: "license", label: "Review applications", description: "Approve, renew, or deny a license request." },
+    { href: "/staff/applications", icon: "license", label: "Review applications", description: "Approve or decline a business license request." },
     { href: "/staff/books", icon: "document", label: "Company books", description: "See Treasury, sales, expenses, and add cash." },
   ];
 

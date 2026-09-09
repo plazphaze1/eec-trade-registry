@@ -1,6 +1,6 @@
 begin;
 
-select plan(24);
+select plan(33);
 
 select has_table(
   'private',
@@ -12,6 +12,12 @@ select has_function(
   'consume_public_verification_rate_limit',
   array['text', 'text'],
   'verification rate-limit command exists'
+);
+select has_function(
+  'public',
+  'consume_public_action_rate_limit',
+  array['text', 'text'],
+  'public action rate-limit command exists'
 );
 select has_table('private', 'scope_key_definitions', 'scope key definitions are explicit data');
 select has_function('private', 'scope_object_is_valid', array['text', 'jsonb'], 'scope validator exists');
@@ -50,6 +56,26 @@ select ok(
 select ok(
   has_function_privilege('service_role', 'public.consume_public_verification_rate_limit(text,text)', 'execute'),
   'the secure server can consume limit buckets'
+);
+select ok(
+  not has_function_privilege('anon', 'public.public_submit_license_application(text,text,text,text,text,text,text[],text,uuid)', 'execute'),
+  'anonymous clients cannot bypass the application limiter'
+);
+select ok(
+  not has_function_privilege('anon', 'public.public_get_license_application_status(text,text)', 'execute'),
+  'anonymous clients cannot bypass the status limiter'
+);
+select ok(
+  has_function_privilege('service_role', 'public.public_submit_license_application(text,text,text,text,text,text,text[],text,uuid)', 'execute'),
+  'the secure server can submit a constrained application'
+);
+select ok(
+  has_function_privilege('service_role', 'public.public_get_license_application_status(text,text)', 'execute'),
+  'the secure server can check an application status'
+);
+select ok(
+  not has_function_privilege('service_role', 'public.public_submit_license_renewal(text,uuid)', 'execute'),
+  'the retired renewal command is not callable'
 );
 
 set local role anon;
@@ -125,6 +151,41 @@ $$;
 select ok(
   not public.consume_public_verification_rate_limit(repeat('a', 64), repeat('b', 64)),
   'the eleventh lookup in a window is rejected'
+);
+
+select ok(
+  public.consume_public_action_rate_limit(
+    'license_application_submit_ip', repeat('c', 64)
+  ),
+  'the first public application submission is accepted'
+);
+
+do $$
+begin
+  for attempt in 1..4 loop
+    perform public.consume_public_action_rate_limit(
+      'license_application_submit_ip', repeat('c', 64)
+    );
+  end loop;
+end;
+$$;
+
+select ok(
+  not public.consume_public_action_rate_limit(
+    'license_application_submit_ip', repeat('c', 64)
+  ),
+  'the sixth public application submission in an hour is rejected'
+);
+
+reset role;
+select throws_ok(
+  $test$
+    insert into public.license_applications(public_reference, application_type)
+    values ('EEC-LAP-RENEWAL-DISABLED', 'renewal')
+  $test$,
+  '22023',
+  'license_renewals_disabled',
+  'new renewal applications are rejected while old history is preserved'
 );
 
 select * from finish();
